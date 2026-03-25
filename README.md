@@ -1,6 +1,5 @@
-G3-Bidding_Online
-Đấu giá trực tuyến nhóm 3
-Nguyên tắc khi code:
-  + Đối với mỗi phương thức, nếu có thể phải thêm comment mô tả ngắn gọn rằng phương thức này sẽ làm những việc gì.
-  + Chú ý các nguyên tắc của OOP (sợ bị check khi vấn đáp)
-  + Xử lí ngoại lệ
+# G3 - Bidding Online. Đấu giá trực tuyến nhóm 3
+### Nguyên tắc khi code:
++ Đối với mỗi phương thức, cố gắng comment mô tả ngắn gọn phương thức đó sẽ làm gì
++ Chú ý theo các đặc trưng OOP
++ Xử lí ngoại lệ
