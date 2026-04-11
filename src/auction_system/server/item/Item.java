@@ -1,6 +1,6 @@
-package auction_system.model.item;
+package auction_system.server.item;
 
-import auction_system.model.Entity;
+import auction_system.server.Entity;
 
 public abstract class Item extends Entity {
     protected String name;
