@@ -1,8 +1,7 @@
-package auction_system.core;
-
-import auction_system.model.Auction;
+package auction_system.server.model.core_system;
 
 import java.util.*;
+import auction_system.server.model.core_system.Auction;
 
 //Singleton
 public class AuctionManager {

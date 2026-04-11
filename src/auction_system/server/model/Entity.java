@@ -1,4 +1,4 @@
-package auction_system.server;
+package auction_system.server.model;
 
 import java.io.Serializable;
 import java.util.UUID;

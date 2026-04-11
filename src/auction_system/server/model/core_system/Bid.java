@@ -1,8 +1,8 @@
-package auction_system.model;
+package auction_system.server.model.core_system;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import auction_system.model.user.*;
+
+import auction_system.server.model.user.*;
 
 public class Bid {
     private Bidder bidder;
@@ -27,8 +27,8 @@ public class Bid {
         return new Bidder(bidder.getUsername(), bidder.getPassword());
     }
 
-    @Override
-    public boolean compareTo(Bid otherBid) {
-        return this.bidAmount > otherBid.bidAmount;
-    }
+//    @Override
+//    public boolean compareTo(Bid otherBid) {
+//        return this.bidAmount > otherBid.bidAmount;
+//    }
 }

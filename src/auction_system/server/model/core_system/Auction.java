@@ -1,11 +1,9 @@
-package auction_system.model;
+package auction_system.server.model.core_system;
 
-import auction_system.model.item.Item;
+import auction_system.server.model.item.Item;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.*;
+import java.util.*;
 
 public class Auction {
     private String id;

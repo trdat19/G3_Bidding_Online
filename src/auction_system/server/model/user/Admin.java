@@ -1,4 +1,4 @@
-package auction_system.server.user;
+package auction_system.server.model.user;
 
 public class Admin extends User{
 

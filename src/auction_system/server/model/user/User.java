@@ -1,6 +1,6 @@
-package auction_system.server.user;
+package auction_system.server.model.user;
 
-import auction_system.server.Entity;
+import auction_system.server.model.Entity;
 
 public abstract class User extends Entity{
     protected String username;
