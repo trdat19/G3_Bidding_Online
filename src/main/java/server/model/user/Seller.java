@@ -1,4 +1,4 @@
-package auction_system.server.model.user;
+package server.model.user;
 
 public class Seller extends User{
 

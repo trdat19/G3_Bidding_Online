@@ -1,6 +1,6 @@
-package auction_system.server.model.core_system;
+package server.model.core;
 
-import auction_system.server.model.item.Item;
+import server.model.item.Item;
 
 import java.time.*;
 import java.util.*;

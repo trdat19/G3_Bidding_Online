@@ -1,8 +1,9 @@
-package auction_system.server.model.core_system;
+package server.model.core;
+
+import server.model.user.Bidder;
+import server.model.user.User;
 
 import java.time.LocalDateTime;
-
-import auction_system.server.model.user.*;
 
 public class Bid {
     private Bidder bidder;
