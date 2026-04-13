@@ -1,8 +1,8 @@
-module com.example.g3_biddingonline {
+module client {
     requires javafx.controls;
     requires javafx.fxml;
 
 
-    opens com.example.g3_biddingonline to javafx.fxml;
-    exports com.example.g3_biddingonline;
+    opens client to javafx.fxml;
+    exports client;
 }
