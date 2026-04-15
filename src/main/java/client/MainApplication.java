@@ -14,11 +14,9 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Button button = new Button("Hello");
+        Button button = new Button("Hello TruongDat");
 
         Scene scene = new Scene(button, 400, 500);
-
-        primaryStage.setTitle("AduApplication");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
