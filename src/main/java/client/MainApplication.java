@@ -2,6 +2,7 @@ package client;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import javafx.scene.*;
 
@@ -13,6 +14,10 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Button button = new Button("Hello TruongDat");
 
+        Scene scene = new Scene(button, 400, 500);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 }
