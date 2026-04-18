@@ -1,5 +1,5 @@
 package server.model.user;
-
+import java.sql.Timestamp;
 import server.model.Entity;
 
 public abstract class User extends Entity{
