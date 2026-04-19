@@ -23,6 +23,7 @@ public class AuctionManager {
     }
 
     public void createAuction() {}
+    public void closeAuction() {}
 
     public Auction getAuction(String id) {
         return auctions.get(id);
