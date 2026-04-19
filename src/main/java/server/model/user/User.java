@@ -1,5 +1,6 @@
 package server.model.user;
 
+import java.sql.Timestamp;
 import server.model.Entity;
 import shared.enums.UserRole;
 
@@ -7,11 +8,13 @@ public abstract class User extends Entity{
     protected String username;
     protected String password;
     protected UserRole role;
+    protected Timestamp createdAt;
 
-    public User(String username, String password) {
+    public User(String username, String password , Timestamp crTimestamp) {
         super();
         this.username = username;
         this.password = password;
+        this.createdAt = crTimestamp;
     }
 
     public abstract String getRole();
