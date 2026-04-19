@@ -1,23 +1,28 @@
 package server.model.item;
 
+import shared.enums.ItemType;
+
 public class Electronics extends Item{
     private String brand;
     private int warrantyMonths;
+    private String model;
 
-    public Electronics(String id, String name, String description, double startPrice, String brand, int warrantyMonths) {
-        super(id, name, description, startPrice);
+    public Electronics(String name, String description, double basePrice, String sellerId, String brand, int warrantyMonths, String model) {
+        super(name, description, basePrice, sellerId);
         this.brand = brand;
         this.warrantyMonths = warrantyMonths;
+        this.model = model;
+        type = ItemType.ELECTRONICS;
     }
 
 
     @Override
     public String getType() {
-        return "ELECTRONICS";
+        return type.name();
     }
     public void printInfo() {
         //show sth;
-        System.out.println("Electronics: " + name + "| Brand: " + brand + "| Price: " + currentPrice);
+        System.out.println("Electronics: " + name + "| Brand: " + brand + "| Price: ");
     }
 
 }

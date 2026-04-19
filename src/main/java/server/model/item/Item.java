@@ -1,35 +1,35 @@
 package server.model.item;
 
 import server.model.Entity;
+import shared.enums.ItemType;
+import shared.enums.UserRole;
 
 public abstract class Item extends Entity {
     protected String name;
     protected String description;
-    protected double startPrice;
-    protected double currentPrice;
+    protected double basePrice;
+    protected String sellerId;
+    protected ItemType type;
 
-    public Item(String id, String name, String description, double startPrice) {
+    public Item(String name, String description, double basePrice, String sellerId) {
         super();
         this.name = name;
         this.description = description;
-        this.startPrice = startPrice;
+        this.basePrice = basePrice;
+        this.sellerId = sellerId;
     }
 
     public abstract String getType();
+    public abstract void printInfo();
 
-    public String getId() {
-        return id;
-    }
     public String getName() {
         return name;
     }
-    public double getCurrentPrice() {
-        return currentPrice;
+    public String getDescription() {
+        return description;
     }
-
-    public void setCurrentPrice(double price) {
-        currentPrice = price;
+    public String getSellerId() {
+        return sellerId;
     }
-
-    public abstract void printInfo();
 }
+

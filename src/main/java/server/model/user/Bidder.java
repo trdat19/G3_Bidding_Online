@@ -1,15 +1,16 @@
 package server.model.user;
 
-import java.sql.Timestamp;
+import shared.enums.UserRole;
 
 public class Bidder extends User{
 
-    public Bidder(String username, String password , Timestamp createdAt) {
-        super(username, password , createdAt);
+    public Bidder(String username, String password) {
+        super(username, password);
+        role = UserRole.BIDDER;
     }
 
     @Override
     public String getRole() {
-        return "BIDDER";
+        return role.name();
     }
 }

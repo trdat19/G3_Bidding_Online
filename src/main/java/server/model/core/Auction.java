@@ -1,33 +1,40 @@
 package server.model.core;
 
 import server.model.item.Item;
+import server.model.user.Seller;
+import shared.enums.AuctionStatus;
 
+import javax.swing.plaf.ActionMapUIResource;
 import java.time.*;
 import java.util.*;
 
 public class Auction {
-    private String id;
-    private Item item;
-    private List<Bid> bids;
+    private final String id;
+    private String itemId;
+    private String sellerId;
+    private double startPrice, currentPrice;
+    private AuctionStatus status;
     private LocalDateTime startTime, endTime;
-    private Bid highestBid;
+    private String winnerId;
 
-    public Auction(String id, Item item, LocalDateTime startTime, LocalDateTime endTime) {
+    public Auction(String id, String itemId, String sellerId, double startPrice, LocalDateTime startTime, LocalDateTime endTime) {
         this.id = id;
-       // this.item = new Item(), chắc là phải dùng ItemFactory để tạo ra Item,
-        // không gán this.item = item vì để đảm bảo tính đóng gói.
-
-        this.bids = new ArrayList<>();
+        this.itemId = itemId;
+        this.sellerId = sellerId;
+        this.startPrice = startPrice;
+        status = AuctionStatus.OPEN;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    public void addBid(Bid bid) {
-        bids.add(bid);
-        // highestBid = .... viết phương thức hay hàm để lấy ra highestBid trong bids mỗi khi add thêm bid mới
+    public void open() {
+        status = AuctionStatus.OPEN;
+    }
+    public void close() {
+        status = AuctionStatus.FINISHED;
     }
 
-    public Bid getHighestBid() {
-        return highestBid;
+    public boolean isRunning() {
+        return (status == AuctionStatus.RUNNING);
     }
 }
