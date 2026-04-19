@@ -5,11 +5,13 @@ import server.model.Entity;
 public abstract class User extends Entity{
     protected String username;
     protected String password;
+    protected Timestamp createdAt;
 
-    public User(String username, String password) {
+    public User(String username, String password , Timestamp crTimestamp) {
         super();
         this.username = username;
         this.password = password;
+        this.createdAt = crTimestamp;
     }
 
     public abstract String getRole();
