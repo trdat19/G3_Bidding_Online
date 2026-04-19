@@ -1,11 +1,12 @@
 package server.model.user;
 
 import shared.enums.UserRole;
+import java.sql.Timestamp;
 
 public class Admin extends User{
 
-    public Admin(String username, String password) {
-        super(username, password);
+    public Admin(String username, String password, Timestamp createAt) {
+        super(username, password, createAt);
         role = UserRole.ADMIN;
     }
 
