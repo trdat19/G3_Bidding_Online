@@ -29,7 +29,7 @@ public class AuctionManager {
         return auctions.get(id);
     }
     public List<Auction> getAllAuctions() {
-        return (ArrayList) auctions.values();
+        return new ArrayList<>(auctions.values());
     }
 
     public void removeAuction(String id) {

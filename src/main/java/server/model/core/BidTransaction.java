@@ -1,24 +1,15 @@
 package server.model.core;
 
-import java.time.LocalDateTime;
-
 public class BidTransaction {
-    private final String id;
-    private String auctionId;
-    private String bidderId;
-    private double amount;
-    private LocalDateTime timestamp;
+    private final Bid bid;
 
-    public BidTransaction(String id, String auctionId, String bidderId) {
-        this.id = id;
-        this.auctionId = auctionId;
-        this.bidderId = bidderId;
+    public BidTransaction(Bid bid) {
+        this.bid = bid;
     }
 
-    public boolean isHigherThan(BidTransaction other) {
-        if (this.amount == other.amount) {
-            return (this.timestamp.isBefore(other.timestamp));
-        }
-        return (this.amount > other.amount);
+    public void execute(Auction auction) {
+        //kiểm tra tính hợp lệ của bid
+        //ok thì cho vào auction
+        auction.add(bid);
     }
 }

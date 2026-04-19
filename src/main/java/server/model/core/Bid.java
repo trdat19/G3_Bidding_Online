@@ -7,29 +7,31 @@ import java.time.LocalDateTime;
 
 public class Bid {
     private Bidder bidder;
-    private double bidAmount;
+    private double amount;
     private LocalDateTime timestamp;
 
-    public Bid(User bidder, double bidAmount) {
-        if (bidder == null || bidder.getClass() != Bidder.class) {
+    public Bid(User bidder, double amount) {
+        if (!(bidder instanceof Bidder)) {
             throw new IllegalArgumentException("Only Bidder is allowed!");
         }
 
-        this.bidder = new Bidder(bidder.getUsername(), bidder.getPassword());
-        this.bidAmount = bidAmount;
+        this.bidder = (Bidder) bidder;
+        this.amount = amount;
         this.timestamp = LocalDateTime.now();
     }
 
-    public double getBidAmount() {
-        return bidAmount;
+    public double getAmount() {
+        return amount;
     }
 
-    public Bidder getBidder() {
-        return new Bidder(bidder.getUsername(), bidder.getPassword());
+    public String getBidderId() {
+        return bidder.getId();
     }
 
-//    @Override
-//    public boolean compareTo(Bid otherBid) {
-//        return this.bidAmount > otherBid.bidAmount;
-//    }
+    public boolean isHigherThan(Bid other) {
+        if (this.amount == other.amount) {
+            return (this.timestamp.isBefore(other.timestamp));
+        }
+        return (this.amount > other.amount);
+    }
 }
