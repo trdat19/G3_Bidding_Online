@@ -1,17 +1,19 @@
 package server.model.user;
 
 import shared.enums.UserRole;
+import shared.enums.UserStatus;
+
 import java.sql.Timestamp;
 
-public class Admin extends User{
+public class Admin extends User {
+    public Admin(){}
 
-    public Admin(String username, String password, Timestamp createAt) {
-        super(username, password, createAt);
-        role = UserRole.ADMIN;
+    public Admin(String username, String password, String fullName, String email) {
+        super(username, password, fullName, email, UserRole.ADMIN, UserStatus.ACTIVE);
     }
 
-    @Override
-    public String getRole() {
-        return role.name();
+    public Admin(Long id, String username, String password, String fullName, String email,
+                 UserStatus status, Timestamp createdAt) {
+        super(id, username, password, fullName, email, UserRole.ADMIN, status, createdAt);
     }
 }

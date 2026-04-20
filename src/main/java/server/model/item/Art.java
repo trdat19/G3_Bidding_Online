@@ -1,25 +1,20 @@
 package server.model.item;
 
-import shared.enums.ItemType;
+import shared.enums.ItemCategory;
+import shared.enums.ItemStatus;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
-public class Art extends Item{
-    private String artist;
-    private String material;
-    private int year;
-
-    public Art(String name, String description, double basePrice, String sellerId, String artist, String material, int year) {
-        super(name, description, basePrice, sellerId);
-        this.artist = artist;
-        this.material = material;
-        this.year = year;
-        type = ItemType.ART;
+public class Art extends Item {
+    public Art() {
+        this.category = ItemCategory.ART;
     }
-
-    @Override
-    public String getType() {
-        return type.name();
+    public Art(String nameItem, String description, Long sellerId,
+               BigDecimal priceStart, ItemStatus statusItem) {
+        super(nameItem, ItemCategory.ART, description, sellerId, priceStart, statusItem);
     }
-    public void printInfo() {
-        System.out.println("Art: " + name + "| Artist: " + artist + "| Year: " + year);
+    public Art(Long id, String nameItem, String description, Long sellerId,
+               BigDecimal priceStart, ItemStatus statusItem, Timestamp createdAtItem) {
+        super(id, nameItem, ItemCategory.ART, description, sellerId, priceStart, statusItem, createdAtItem);
     }
 }

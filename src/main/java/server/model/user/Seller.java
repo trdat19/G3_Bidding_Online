@@ -1,17 +1,19 @@
 package server.model.user;
 
-import java.sql.Timestamp;
 import shared.enums.UserRole;
+import shared.enums.UserStatus;
 
-public class Seller extends User{
+import java.sql.Timestamp;
 
-    public Seller(String username, String password, Timestamp createdAt) {
-        super(username, password,createdAt);
-        role = UserRole.SELLER;
+public class Seller extends User {
+    public Seller(){}
+
+    public Seller(String username, String password, String fullName, String email) {
+        super(username, password, fullName, email, UserRole.SELLER, UserStatus.ACTIVE);
     }
 
-    @Override
-    public String getRole() {
-        return role.name();
+    public Seller(Long id, String username, String password, String fullName, String email,
+                  UserStatus status, Timestamp createdAt) {
+        super(id, username, password, fullName, email, UserRole.SELLER, status, createdAt);
     }
 }
