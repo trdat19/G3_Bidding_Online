@@ -7,6 +7,8 @@ import shared.enums.UserRole;
 public abstract class User extends Entity{
     protected String username;
     protected String password;
+    protected String fullname;
+    protected String email;
     protected UserRole role;
     protected Timestamp createdAt;
 
@@ -22,6 +24,7 @@ public abstract class User extends Entity{
     public String getUsername() {
         return username;
     }
-
     public String getPassword() { return password; }
+    public String getEmail() { return email; }
+    public String getFullname() { return fullname; }
 }

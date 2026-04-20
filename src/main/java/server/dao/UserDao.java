@@ -18,7 +18,7 @@ public class UserDao {
 
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getPasswordHash());
-            ps.setString(3, user.getFullName());
+            ps.setString(3, user.getFullname());
             ps.setString(4, user.getEmail());
             ps.setString(5, user.getRole());
             ps.setString(6, user.getStatus());

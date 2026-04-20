@@ -5,7 +5,7 @@ import shared.enums.AuctionStatus;
 import java.time.*;
 import java.util.*;
 
-public class Auction { //state
+public class Auction { //state 1 phiên đấu giá có cái gì
     private final String id;
     private String itemId;
     private String sellerId;
