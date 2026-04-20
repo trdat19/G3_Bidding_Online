@@ -45,6 +45,7 @@
                       <PasswordField fx:id="password" promptText="Password" />
                   
                       <Button onAction="#handleLogin" text="Login" />
+                     <Label layoutX="500.0" layoutY="300.0" textFill="#f90909" />
                      <Label fx:id="errorLabel" textFill="#e00909" />
                      <Hyperlink text="Don't have a account? Register" />
                      <opaqueInsets>

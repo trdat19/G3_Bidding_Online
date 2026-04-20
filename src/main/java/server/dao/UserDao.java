@@ -1,4 +1,4 @@
-package server.dao;
+/*package server.dao;
 
 import server.config.DBconnection;
 import server.model.user.User;
@@ -168,4 +168,4 @@ public class UserDao {
         user.setCreatedAt(rs.getTimestamp("created_at"));
         return user;
     }
-}
+}*/
