@@ -14,9 +14,9 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Button button = new Button("Hello TruongDat");
-
-        Scene scene = new Scene(button, 400, 500);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
+        System.out.println(getClass().getResource("/view/login.fxml"));
+        Scene scene = new Scene(loader.load());
         primaryStage.setScene(scene);
         primaryStage.show();
     }
