@@ -16,9 +16,9 @@ public class AuctionServer {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println(">>> Có người mới kết nối: " + clientSocket.getInetAddress());
 
-                // Giao khách hàng này cho một "nhân viên" (ClientHandler) xử lý riêng
-                ClientHandler handler = new ClientHandler(clientSocket);
-                new Thread(handler).start(); // Chạy đa luồng để không ai phải đợi ai
+//                // Giao khách hàng này cho một "nhân viên" (ClientHandler) xử lý riêng
+//                ClientHandler handler = new ClientHandler(clientSocket);
+//                new Thread(handler).start(); // Chạy đa luồng để không ai phải đợi ai
             }
         } catch (IOException e) {
             e.printStackTrace();

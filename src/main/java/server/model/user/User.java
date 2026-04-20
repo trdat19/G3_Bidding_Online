@@ -21,10 +21,13 @@ public abstract class User extends Entity{
 
     public abstract String getRole();
 
+    //getter
     public String getUsername() {
         return username;
     }
     public String getPassword() { return password; }
     public String getEmail() { return email; }
-    public String getFullname() { return fullname; }
+    public String getFullName() { return fullname; }
+
+    //setter
 }
