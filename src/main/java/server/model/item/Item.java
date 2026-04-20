@@ -10,6 +10,7 @@ public abstract class Item extends Entity {
     protected double basePrice;
     protected String sellerId;
     protected ItemType type;
+    protected String idType;
 
     public Item(String name, String description, double basePrice, String sellerId) {
         super();

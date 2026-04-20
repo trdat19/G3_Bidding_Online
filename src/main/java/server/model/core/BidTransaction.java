@@ -1,6 +1,6 @@
 package server.model.core;
 
-public class BidTransaction {
+public class BidTransaction { // xử lí logic, xem Bid có hợp lệ k
     private final Bid bid;
 
     public BidTransaction(Bid bid) {

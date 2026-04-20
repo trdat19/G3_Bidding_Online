@@ -157,15 +157,17 @@ public class UserDao {
     }
 
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
-        User user = new User();
-        user.setId(rs.getLong("id"));
-        user.setUsername(rs.getString("username"));
-        user.setPasswordHash(rs.getString("password_hash"));
-        user.setFullName(rs.getString("full_name"));
-        user.setEmail(rs.getString("email"));
-        user.setRole(rs.getString("role"));
-        user.setStatus(rs.getString("status"));
-        user.setCreatedAt(rs.getTimestamp("created_at"));
-        return user;
+        // tạo lại nhé, hoặc là tự viết constructor mặc định cho user.
+
+//        User user = new User();
+//        user.setId(rs.getLong("id"));
+//        user.setUsername(rs.getString("username"));
+//        user.setPasswordHash(rs.getString("password_hash"));
+//        user.setFullName(rs.getString("full_name"));
+//        user.setEmail(rs.getString("email"));
+//        user.setRole(rs.getString("role"));
+//        user.setStatus(rs.getString("status"));
+//        user.setCreatedAt(rs.getTimestamp("created_at"));
+//        return user;
     }
 }

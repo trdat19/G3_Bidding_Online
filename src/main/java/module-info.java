@@ -1,13 +1,10 @@
-module client {
+module G3_BiddingOnline {
     requires javafx.controls;
     requires javafx.fxml;
-<<<<<<< HEAD
-=======
     requires java.sql;
->>>>>>> cc24ab1a490f8327e96db13cc7dbc03ad46ad134
     requires java.desktop;
 
-
-    opens client to javafx.fxml;
+    opens client to javafx.graphics, javafx.fxml;
+    opens client.controller to javafx.fxml;
     exports client;
 }
