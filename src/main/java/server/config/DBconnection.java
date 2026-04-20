@@ -21,6 +21,7 @@ public class DBconnection {
         } catch (SQLException e) {
             System.err.println("ERROR ");
         }
+        System.out.println("thu");
     }
 }
 
