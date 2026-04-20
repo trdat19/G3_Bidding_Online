@@ -20,24 +20,35 @@ public class LoginController {
     private PasswordField password;
 
     @FXML
+    private Label errorLabel;
+
+    @FXML
     private void handleLogin(ActionEvent event) {
 
         String user = username.getText();
         String pass = password.getText();
 
-        if(user.equals("admin") && pass.equals("123")) {
-            System.out.println("Login success");
+        if(user.equals("bidder") && pass.equals("bidder123")) {
             try {
                 Parent root = FXMLLoader.load(getClass().getResource("/view/auction-list-view.fxml"));
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.show();
-            }catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-
+        }
+        else if(user.equals("seller") && pass.equals("seller123")) {
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("/view/seller-dashboard.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
-            System.out.println("Login failed");
+            errorLabel.setText("Wrong password or username");
         }
     }
 }
