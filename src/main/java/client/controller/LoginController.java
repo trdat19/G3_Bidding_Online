@@ -47,7 +47,18 @@ public class LoginController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
+        }
+        else if(user.equals("admin") && pass.equals("admin123"))  {
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("/view/admin-dashboard.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
             errorLabel.setText("Wrong password or username");
         }
     }

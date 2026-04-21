@@ -153,3 +153,8 @@
 .detail-button:hover {
     -fx-background-color: #1e293b;
 }
+.logo-text {
+    -fx-font-size: 28px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1f2937;
+}

@@ -14,7 +14,7 @@
                      <font>
                         <Font size="20.0" />
                      </font></Label>
-                  <Label prefHeight="45.0" prefWidth="115.0" text="BidZone">
+                  <Label prefHeight="45.0" prefWidth="115.0" styleClass="logo-text" text="BidZone">
                      <font>
                         <Font size="27.0" />
                      </font></Label>
