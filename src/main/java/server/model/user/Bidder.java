@@ -7,6 +7,9 @@ import shared.enums.UserStatus;
 import java.util.Scanner;
 
 import java.sql.Timestamp;
+import shared.enums.UserStatus;
+
+import java.sql.Timestamp;
 
 public class Bidder extends User {
     public Bidder(){}
