@@ -2,20 +2,25 @@ package server.model.core;
 
 import shared.enums.AuctionStatus;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.*;
 import java.util.*;
 
 public class Auction { //state 1 phiên đấu giá có cái gì
-    private final String id;
-    private String itemId;
-    private String sellerId;
+    private Long id;
+    private Long itemId;
+    private Long sellerId;
     private double startPrice;
+    private double max_price;
+    private double min_increment;
+    private double buy_now_price;
     private AuctionStatus status;
-    private LocalDateTime startTime, endTime;
+    private Timestamp startTime, endTime;
     private List<Bid> bids;
     private Bid highestBid;
 
-    public Auction(String id, String itemId, String sellerId, double startPrice, LocalDateTime startTime, LocalDateTime endTime) {
+    public Auction(Long id, Long itemId, Long sellerId, double startPrice, Timestamp startTime, Timestamp endTime) {
         this.id = id;
         this.itemId = itemId;
         this.sellerId = sellerId;
@@ -30,10 +35,10 @@ public class Auction { //state 1 phiên đấu giá có cái gì
         status = AuctionStatus.OPEN;
     }
     public void close() {
-        status = AuctionStatus.FINISHED;
+        status = AuctionStatus.CLOSED;
     }
     public boolean isRunning() {
-        return (status == AuctionStatus.RUNNING);
+        return (status == AuctionStatus.OPEN);
     }
 
     public void add(Bid bid) {

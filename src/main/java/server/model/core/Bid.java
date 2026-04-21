@@ -3,34 +3,40 @@ package server.model.core;
 import server.model.user.Bidder;
 import server.model.user.User;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 public class Bid { //thông tin 1 lần đặt giá
-    private Bidder bidder;
+    private Long auctionId;
+    private Long bidderId;
     private double amount;
-    private LocalDateTime timestamp;
+    private Timestamp timestamp;
 
-    public Bid(User bidder, double amount) {
-        if (!(bidder instanceof Bidder)) {
-            throw new IllegalArgumentException("Only Bidder is allowed!");
-        }
-
-        this.bidder = (Bidder) bidder;
+    public Bid(Long bidderId, double amount) {
+        this.bidderId = bidderId;
         this.amount = amount;
-        this.timestamp = LocalDateTime.now();
     }
 
+    //dùng để tạo thông tin cho BidTransaction khi Bidder đặt lệnh Bid
+    public Bid(Long bidderId, double amount, Timestamp timestamp) {
+        this.bidderId = bidderId;
+        this.amount = amount;
+        this.timestamp = timestamp;
+    }
+
+    
     public double getAmount() {
         return amount;
     }
 
     public Long getBidderId() {
-        return bidder.getId();
+        return bidderId;
     }
 
     public boolean isHigherThan(Bid other) {
         if (this.amount == other.amount) {
-            return (this.timestamp.isBefore(other.timestamp));
+            int com = this.timestamp.compareTo(other.timestamp);
+            if (com <= 0)
+                return false;
         }
         return (this.amount > other.amount);
     }

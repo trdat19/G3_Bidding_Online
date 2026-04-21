@@ -1,4 +1,4 @@
-/*package server.dao;
+package server.dao;
 
 import server.config.DBconnection;
 import server.model.user.Admin;
@@ -255,4 +255,4 @@ public class UserDao {
         }
         return users;
     }
-}*/
+}
