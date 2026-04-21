@@ -1,16 +1,21 @@
 package server.model;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 public abstract class Entity implements Serializable {
-    protected String id;
-
-    public Entity() {
-        this.id = UUID.randomUUID().toString();
+    protected Long id;
+    public Entity(){
     }
 
-    public String getId() {
+    public Entity(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

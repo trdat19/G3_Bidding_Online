@@ -24,7 +24,7 @@ public class Bid { //thông tin 1 lần đặt giá
         return amount;
     }
 
-    public String getBidderId() {
+    public Long getBidderId() {
         return bidder.getId();
     }
 

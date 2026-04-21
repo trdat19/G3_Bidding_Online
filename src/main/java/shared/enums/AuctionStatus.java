@@ -1,9 +1,8 @@
 package shared.enums;
 
 public enum AuctionStatus {
-    OPEN,
-    RUNNING,
-    FINISHED,
-    PAID,
-    CANCELED
+    PREPARING,
+    OPEN ,
+    CLOSED,
+    CANCELLED
 }

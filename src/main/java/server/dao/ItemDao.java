@@ -1,0 +1,186 @@
+package server.dao;
+
+import server.config.DBconnection;
+import server.model.item.Art;
+import server.model.item.Electronics;
+import server.model.item.Item;
+import server.model.item.Vehicle;
+import shared.enums.ItemCategory;
+import shared.enums.ItemStatus;
+import java.math.BigDecimal;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ItemDao {
+
+    // thêm item mới
+    public boolean insertItem(Item item) {
+        String sql = "INSERT INTO Items(name_item, category, description, id_seller, price_start, status_item) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection con = DBconnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, item.getNameItem());
+            ps.setString(2, item.getCategory().name());
+            ps.setString(3, item.getDescription());
+            ps.setLong(4, item.getSellerId());
+            ps.setBigDecimal(5, item.getPriceStart());
+            ps.setString(6, item.getStatusItem().name());
+
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        item.setId(rs.getLong(1));
+                    }
+                }
+                return true;
+            }
+        } catch (SQLException e) {
+            System.err.println("insertItem error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // tìm item theo id
+    public Item findById(long id) {
+        String sql = "SELECT * FROM Items WHERE id_item = ?";
+        try (Connection con = DBconnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToItem(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("findById error: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // tìm item theo tên
+    public Item findByNameItem(String nameItem) {
+        String sql = "SELECT * FROM Items WHERE name_id = ?";
+        try(Connection con = DBconnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1,nameItem);
+            try(ResultSet rs = ps.executeQuery()) {
+                if(rs.next()) {
+                    return mapResultSetToItem(rs);
+                }
+            }
+        }catch (SQLException e) {
+            System.err.println("FindByname_item error: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // lấy tất cả item
+    public List<Item> findAll() {
+        String sql = "SELECT * FROM Items";
+        List<Item> items = new ArrayList<>();
+        try (Connection con = DBconnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                items.add(mapResultSetToItem(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("findAll error: " + e.getMessage());
+        }
+        return items;
+    }
+
+    // lấy item theo seller
+    public List<Item> findBySellerId(long sellerId) {
+        String sql = "SELECT * FROM Items WHERE id_seller = ?";
+        List<Item> items = new ArrayList<>();
+        try (Connection con = DBconnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, sellerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    items.add(mapResultSetToItem(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("findBySellerId error: " + e.getMessage());
+        }
+        return items;
+    }
+
+    // cập nhật toàn bộ item
+    public boolean updateItem(Item item) {
+        String sql = "UPDATE Items SET name_item = ?, category = ?, description = ?, " +
+                "id_seller = ?, price_start = ?, status_item = ? WHERE id_item = ?";
+        try (Connection con = DBconnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, item.getNameItem());
+            ps.setString(2, item.getCategory().name());
+            ps.setString(3, item.getDescription());
+            ps.setLong(4, item.getSellerId());
+            ps.setBigDecimal(5, item.getPriceStart());
+            ps.setString(6, item.getStatusItem().name());
+            ps.setLong(7, item.getId());
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("updateItem error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // đổi status item
+    public boolean updateStatus(long idItem, ItemStatus status) {
+        String sql = "UPDATE Items SET status_item = ? WHERE id_item = ?";
+        try (Connection con = DBconnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, status.name());
+            ps.setLong(2, idItem);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("updateStatus error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // xóa item
+    public boolean deleteItem(long idItem) {
+        String sql = "DELETE FROM Items WHERE id_item = ?";
+        try (Connection con = DBconnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, idItem);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("deleteItem error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // map 1 dòng DB -> object item
+    private Item mapResultSetToItem(ResultSet rs) throws SQLException {
+        long id = rs.getLong("id_item");
+        String nameItem = rs.getString("name_item");
+        ItemCategory category = ItemCategory.valueOf(rs.getString("category"));
+        String description = rs.getString("description");
+        long sellerId = rs.getLong("id_seller");
+        BigDecimal priceStart = rs.getBigDecimal("price_start");
+        ItemStatus statusItem = ItemStatus.valueOf(rs.getString("status_item"));
+        Timestamp createdAtItem = rs.getTimestamp("created_atItem");
+
+        switch (category) {
+            case ART:
+                return new Art(id, nameItem, description, sellerId, priceStart, statusItem, createdAtItem);
+            case ELECTRONICS:
+                return new Electronics(id, nameItem, description, sellerId, priceStart, statusItem, createdAtItem);
+            case VEHICLE:
+                return new Vehicle(id, nameItem, description, sellerId, priceStart, statusItem, createdAtItem);
+            default:
+                throw new SQLException("Invalid item category: " + category);
+        }
+    }
+}

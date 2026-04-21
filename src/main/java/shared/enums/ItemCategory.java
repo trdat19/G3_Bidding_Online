@@ -1,6 +1,6 @@
 package shared.enums;
 
-public enum ItemType {
+public enum ItemCategory {
     ELECTRONICS,
     ART,
     VEHICLE

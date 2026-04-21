@@ -1,23 +1,20 @@
 package server.model.item;
 
-import shared.enums.ItemType;
+import shared.enums.ItemCategory;
+import shared.enums.ItemStatus;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
-public class Vehicle extends Item{
-    private String manufacturer;
-    private int year;
-
-    public Vehicle(String name, String description, double basePrice, String sellerId, String manufacturer, int year) {
-        super(name, description, basePrice, sellerId);
-        this.manufacturer = manufacturer;
-        this.year = year;
-        type = ItemType.VEHICLE;
+public class Vehicle extends Item {
+    public Vehicle() {
+        this.category = ItemCategory.VEHICLE;
     }
-
-    @Override
-    public String getType() {
-        return type.name();
+    public Vehicle(String nameItem, String description, Long sellerId,
+                   BigDecimal priceStart, ItemStatus statusItem) {
+        super(nameItem, ItemCategory.VEHICLE, description, sellerId, priceStart, statusItem);
     }
-    public void printInfo() {
-        System.out.println("Vehicle: " + name + "| Manufacturer: " + manufacturer + "| Year: " + year);
+    public Vehicle(Long id, String nameItem, String description, Long sellerId,
+                   BigDecimal priceStart, ItemStatus statusItem, Timestamp createdAtItem) {
+        super(id, nameItem, ItemCategory.VEHICLE, description, sellerId, priceStart, statusItem, createdAtItem);
     }
 }
