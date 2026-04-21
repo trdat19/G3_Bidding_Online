@@ -5,7 +5,7 @@ import server.model.user.User;
 
 import java.time.LocalDateTime;
 
-public class Bid {
+public class Bid { //thông tin 1 lần đặt giá
     private Bidder bidder;
     private double amount;
     private LocalDateTime timestamp;
@@ -24,7 +24,7 @@ public class Bid {
         return amount;
     }
 
-    public String getBidderId() {
+    public Long getBidderId() {
         return bidder.getId();
     }
 

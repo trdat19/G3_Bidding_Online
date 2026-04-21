@@ -1,18 +1,19 @@
 package server.model.user;
 
+import shared.enums.UserRole;
+import shared.enums.UserStatus;
+
 import java.sql.Timestamp;
 
-import shared.enums.UserRole;
+public class Bidder extends User {
+    public Bidder(){}
 
-public class Bidder extends User{
-
-    public Bidder(String username, String password , Timestamp createdAt) {
-        super(username, password , createdAt);
-        role = UserRole.BIDDER;
+    public Bidder(String username, String password, String fullName, String email) {
+        super(username, password, fullName, email, UserRole.BIDDER, UserStatus.ACTIVE);
     }
 
-    @Override
-    public String getRole() {
-        return role.name();
+    public Bidder(Long id, String username, String password, String fullName, String email,
+                  UserStatus status, Timestamp createdAt) {
+        super(id, username, password, fullName, email, UserRole.BIDDER, status, createdAt);
     }
 }

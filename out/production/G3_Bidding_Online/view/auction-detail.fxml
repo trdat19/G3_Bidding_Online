@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" stylesheets="@auction-detail.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AuctionDetailController">
+    <children>
+        <VBox prefHeight="700.0" prefWidth="1100.0" spacing="20.0" styleClass="root-container" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="25" left="30" right="30" top="25" />
+            </padding>
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Button fx:id="backButton" onAction="#handleBack" styleClass="back-button" text="← Back" />
+                <Label styleClass="page-title" text="Thông tin đấu giá" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="statusLabel" styleClass="status-running" text="RUNNING" />
+            </HBox>
+            <HBox spacing="25.0" VBox.vgrow="ALWAYS">
+                <VBox alignment="TOP_CENTER" spacing="15.0" styleClass="image-card">
+                    <padding>
+                        <Insets bottom="20" left="20" right="20" top="20" />
+                    </padding>
+
+                    <Label styleClass="section-title" text="Ảnh sản phẩm" />
+                    <ImageView fx:id="productImageView" fitHeight="260" fitWidth="360" preserveRatio="true" />
+                    <Label styleClass="hint-text" text="(MacBook Pro M3 Max)" />
+                </VBox>
+                <VBox spacing="18.0" HBox.hgrow="ALWAYS">
+                    <VBox spacing="12.0" styleClass="info-card">
+                        <padding>
+                            <Insets bottom="22" left="22" right="22" top="22" />
+                        </padding>
+
+                        <Label fx:id="productNameLabel" styleClass="product-title" text="MacBook Pro M3 Max" />
+                        <Label fx:id="categoryLabel" styleClass="category-text" text="Category: Electronics" />
+
+                        <Separator />
+
+                        <Label styleClass="section-title" text="Mô tả sản phẩm" />
+                        <Label fx:id="descriptionLabel" styleClass="description-text" text="Sản phẩm còn mới, đầy đủ phụ kiện, bảo hành chính hãng. Đây là phần mô tả sản phẩm để người dùng xem thông tin chi tiết trước khi tham gia đấu giá." wrapText="true" />
+                    </VBox>
+                    <VBox spacing="14.0" styleClass="info-card">
+                        <padding>
+                            <Insets bottom="22" left="22" right="22" top="22" />
+                        </padding>
+
+                        <Label styleClass="section-title" text="Thông tin đấu giá" />
+
+                        <HBox spacing="20">
+                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
+                                <Label styleClass="small-label" text="Giá khởi điểm" />
+                                <Label fx:id="startPriceLabel" styleClass="price-text" text="20,000,000 VND" />
+                            </VBox>
+
+                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
+                                <Label styleClass="small-label" text="Giá cao nhất hiện tại" />
+                                <Label fx:id="currentPriceLabel" styleClass="highlight-price" text="25,500,000 VND" />
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="20">
+                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
+                                <Label styleClass="small-label" text="Người dẫn đầu" />
+                                <Label fx:id="leadingBidderLabel" styleClass="normal-value" text="user123" />
+                            </VBox>
+
+                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
+                                <Label prefHeight="17.0" prefWidth="101.0" styleClass="small-label" text="Bid Count" />
+                                <Label fx:id="bidCountLabel" styleClass="normal-value" text="12 bids" />
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="20">
+                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
+                                <Label styleClass="small-label" text="Thời gian bắt đầu" />
+                                <Label fx:id="startTimeLabel" styleClass="normal-value" text="18/04/2026 19:00" />
+                            </VBox>
+
+                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
+                                <Label prefHeight="13.0" prefWidth="110.0" styleClass="small-label" text="Thời gian kết thúc" />
+                                <Label fx:id="endTimeLabel" styleClass="normal-value" text="18/04/2026 20:00" />
+                            </VBox>
+                        </HBox>
+
+                        <VBox spacing="6" styleClass="small-info-box">
+                            <Label styleClass="small-label" text="Thời gian còn lại" />
+                            <Label fx:id="countdownLabel" styleClass="countdown-text" text="00:42:18" />
+                        </VBox>
+                    </VBox>
+
+                    <!-- Action buttons -->
+                    <HBox alignment="CENTER_RIGHT" spacing="15">
+                        <Button fx:id="joinAuctionButton" onAction="#handleJoinAuction" styleClass="join-button" text="Join Auction" />
+                        <Button fx:id="backToListButton" onAction="#handleBack" styleClass="secondary-button" text="Back to List" />
+                    </HBox>
+
+                </VBox>
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>

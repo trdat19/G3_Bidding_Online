@@ -1,20 +1,60 @@
 package server.service;
 
+import server.network.RealtimePushServer;
+import shared.response.BaseResponse;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class BidService {
-    public void placeBid()
-    {
+    // Đặt giá
+    public void placeBid(int auctionId, String userId, double bidAmount) {
+        // Bước A: Kiểm tra xem giá có hợp lệ không
+        if (validateBid(auctionId, bidAmount)) {
 
+            // Bước B: Cập nhật người dẫn đầu trong Database (logic DB để sau)
+            updateLeader(auctionId, userId, bidAmount);
+
+            // Bước C: BÁO CHO TẤT CẢ MỌI NGƯỜI (Realtime)
+            // Tạo một gói tin thông báo giá mới
+            BaseResponse bidEvent = new BaseResponse(true, "NEW_BID_UPDATE", "Người dùng " + userId + " vừa đặt giá: " + bidAmount);
+
+            // Gọi cái loa của bạn đây!
+            RealtimePushServer.pushToAuctionSubscribers(auctionId, bidEvent);
+
+            System.out.println(">>> Đã đẩy thông báo giá mới cho phiên #" + auctionId);
+        }
     }
-    public void validateBid()
-    {
+    // 2. Kiểm tra giá: Giá mới phải cao hơn giá hiện tại
+//    public boolean validateBid(int auctionId, double bidAmount) {
+//        // Logic: Truy vấn DB lấy giá cao nhất hiện tại của auctionId
+//        // double currentMax = database.getMaxBid(auctionId);
+//        // return bidAmount > currentMax;
+//        return true; // Tạm thời để true để test
+//    }
+//
+//    // 3. Cập nhật người dẫn đầu
+//    public void updateLeader(int auctionId, String userId, double bidAmount) {
+//        // Logic: Ghi vào bảng Auctions hoặc Bids trong Database
+//        System.out.println(">>> Đang cập nhật " + userId + " làm leader phiên #" + auctionId);
+//    }
 
+    // 4. Lấy lịch sử đấu giá
+    public void getHistory(int auctionId) {
+        // Logic: Trả về danh sách các lượt đặt giá của phiên này
     }
-    public void updateLeader()
-    {
 
+
+
+
+    private static final Map<Integer, Double> currentPrices = new HashMap<>(); // Lưu giá cao nhất tạm thời
+
+    public boolean validateBid(int auctionId, double bidAmount) {
+        double currentMax = currentPrices.getOrDefault(auctionId, 0.0);
+        return bidAmount > currentMax; // Chỉ cho phép đặt nếu giá mới cao hơn giá cũ
     }
-    public void getHistory()
-    {
 
+    public void updateLeader(int auctionId, String userId, double bidAmount) {
+        currentPrices.put(auctionId, bidAmount); // Cập nhật giá mới vào "Database ảo"
     }
 }
