@@ -30,11 +30,11 @@ public class Auction { //state 1 phiên đấu giá có cái gì
         status = AuctionStatus.OPEN;
     }
     public void close() {
-        status = AuctionStatus.FINISHED;
+//        status = AuctionStatus.FINISHED;
     }
-    public boolean isRunning() {
-        return (status == AuctionStatus.RUNNING);
-    }
+//    public boolean isRunning() {
+//        return (status == AuctionStatus.RUNNING);
+//    }
 
     public void add(Bid bid) {
         bids.add(bid);
