@@ -59,7 +59,6 @@ public class Bid { //thông tin 1 lần đặt giá
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
-
     public boolean isHigherThan(Bid other) {
         if (this.amount == other.amount) {
             int com = this.timestamp.compareTo(other.timestamp);
