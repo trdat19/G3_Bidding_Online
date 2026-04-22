@@ -82,9 +82,14 @@ public class LoginController {
                 errorLabel.setText(response.getMessage());
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
             errorLabel.setText("Không kết nối được tới Server!");
+        } catch (ClassCastException e) {
+            errorLabel.setText("Lỗi dữ liệu từ server!");
+            e.printStackTrace();
+        } catch (Exception e) {
+            errorLabel.setText("Lỗi không xác định!");
+            e.printStackTrace();
         }
     }
 

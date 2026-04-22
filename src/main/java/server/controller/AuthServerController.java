@@ -5,6 +5,8 @@ import server.network.RealtimePushServer;
 import server.service.AuthService;
 import shared.request.BaseRequest;
 import shared.response.BaseResponse;
+
+import java.util.HashMap;
 import java.util.Map;
 
 public class AuthServerController {
@@ -21,16 +23,19 @@ public class AuthServerController {
     public BaseResponse login(BaseRequest request, ClientConnectionHandler handler) {
         try {
             Map<String, String> data = (Map<String, String>) request.getData();
+
             String user = data.get("username");
             String pass = data.get("password");
 
             // Giả sử AuthService đã có Singleton
             if (AuthService.getInstance().login(user, pass)) {
-                // QUAN TRỌNG: Gắn tên người dùng với đường truyền Socket này
                 RealtimePushServer.registerUser(user, handler);
 
-                System.out.println(">>> [Auth] User " + user + " đã online.");
-                return new BaseResponse(true, "Chào " + user + "!", user);
+                Map<String, Object> userData = new HashMap<>();
+                userData.put("username", user);
+                userData.put("role", "SELLER"); // test
+
+                return new BaseResponse(true, "LOGIN", "Chào " + user + "!", userData);
             }
             return new BaseResponse(false, "Sai tài khoản/mật khẩu", null);
         } catch (Exception e) {
