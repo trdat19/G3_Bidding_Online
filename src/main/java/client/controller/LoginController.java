@@ -62,4 +62,19 @@ public class LoginController {
             errorLabel.setText("Wrong password or username");
         }
     }
+    @FXML
+    private void handleRegister() {
+        try {
+            Stage stage = (Stage) username.getScene().getWindow();
+            Scene scene = new Scene(
+                    FXMLLoader.load(getClass().getResource("/view/register-form.fxml"))
+            );
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
 }

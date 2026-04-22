@@ -23,6 +23,7 @@ public class MainApplication extends Application {
         Scene scene = new Scene(loader.load());
         primaryStage.setScene(scene);
         primaryStage.getIcons().add(icon);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 }
