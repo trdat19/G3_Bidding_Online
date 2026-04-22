@@ -1,4 +1,4 @@
-package server.exception;
+package shared.exception;
 
 public class AuctionException extends RuntimeException{
 

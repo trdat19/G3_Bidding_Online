@@ -1,4 +1,4 @@
-package server.config;
+package server.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
