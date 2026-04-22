@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6974b048-80de-41a8-a376-6c285bc2c810" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/Auction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/Auction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/AuctionDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/AuctionDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/ItemDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/ItemDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/UserDTO.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "git-widget-placeholder": "trdat"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <servers />
+  </component>
+</project>

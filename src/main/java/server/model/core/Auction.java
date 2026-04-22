@@ -21,6 +21,7 @@ public class Auction { //state 1 phiên đấu giá có cái gì
     private List<Bid> bids;
     private Bid highestBid;
 
+    //tạo mới
     public Auction(Long id, Long itemId, Long sellerId, double startPrice, Timestamp startTime, Timestamp endTime) {
         this.id = id;
         this.itemId = itemId;
