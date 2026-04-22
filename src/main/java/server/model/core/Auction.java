@@ -32,7 +32,6 @@ public class Auction { //state 1 phiên đấu giá có cái gì
         this.endTime = endTime;
         bids = new ArrayList<>();
     }
-
     public void open() {
         status = AuctionStatus.OPEN;
     }
@@ -68,7 +67,7 @@ public class Auction { //state 1 phiên đấu giá có cái gì
     public Bid getHighestBid() { return highestBid; }
 
     //setter
-    public void setStartPrice(double price) {
+    public void setStartPrice(double startPrice) {
         this.startPrice = startPrice;
     }
     public void setStatus(AuctionStatus status) {
@@ -86,5 +85,10 @@ public class Auction { //state 1 phiên đấu giá có cái gì
     public void setEndTime(Timestamp endTime) {
         this.endTime = endTime;
     }
-
+    public void setId(Long id) {
+        this.id = id ;
+    }
+    public void setBuy_now_price( double buy_now_price) {
+        this.buy_now_price = buy_now_price ;
+    }
 }
