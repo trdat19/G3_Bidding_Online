@@ -1,0 +1,78 @@
+.root-pane {
+    -fx-background-color: linear-gradient(to right, #eef4ff, #f8fbff);
+    -fx-font-family: "Segoe UI";
+}
+
+.top-bar {
+    -fx-background-color: white;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 0 0 1 0;
+}
+
+.logo-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2563eb;
+}
+
+.sidebar {
+    -fx-background-color: #1e293b;
+}
+
+.sidebar .button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 16;
+    -fx-background-radius: 10;
+}
+
+.sidebar .button:hover {
+    -fx-background-color: #334155;
+    -fx-cursor: hand;
+}
+
+.content-area {
+    -fx-background-color: transparent;
+}
+
+.stat-card {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: #e5e7eb;
+    -fx-spacing: 8;
+}
+
+.stat-number {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #111827;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f2937;
+}
+
+.logout-btn {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-padding: 8 16;
+}
+
+.logout-btn:hover {
+    -fx-background-color: #dc2626;
+    -fx-cursor: hand;
+}
+
+.table-view, .list-view {
+    -fx-background-color: white;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
