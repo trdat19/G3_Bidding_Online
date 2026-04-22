@@ -13,7 +13,7 @@ public class AuctionDetailController {
     @FXML
     private void handleBack(ActionEvent event) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/auction-list-view.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/view/bidder-dashboard.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();

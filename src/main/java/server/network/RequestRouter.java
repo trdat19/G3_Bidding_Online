@@ -17,11 +17,9 @@ public class RequestRouter {
         switch (action)
         {
             case "LOGIN":
-                // Sau này sẽ gọi AuthServerController.login(data)
                 return AuthServerController.getInstance().login(request, handler);
 
             case "PLACE_BID":
-                // Sau này sẽ gọi BidServerController.placeBid(data)
                 return BidServerController.getInstance().placeBid(request, handler);
 
             case "SUBSCRIBE_AUCTION":

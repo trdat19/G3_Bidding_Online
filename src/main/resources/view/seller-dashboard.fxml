@@ -29,10 +29,11 @@
 
                     <VBox alignment="CENTER_RIGHT" spacing="4">
                         <children>
-                            <Label fx:id="sellerNameLabel" styleClass="user-name" text="Nguyễn Việt Anh" />
-                            <Label prefHeight="18.0" prefWidth="145.0" styleClass="user-role" text="SELLER" />
+                            <Label fx:id="sellerNameLabel" prefHeight="23.0" prefWidth="207.0" styleClass="user-name" text="Nguyễn Việt Anh" />
+                            <Label prefHeight="20.0" prefWidth="200.0" styleClass="user-role" text="SELLER" />
                         </children>
                     </VBox>
+               <Button mnemonicParsing="false" onAction="#handleLogout" styleClass="logout-button" text="🚪" />
                 </children>
             </HBox>
 

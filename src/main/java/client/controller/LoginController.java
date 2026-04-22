@@ -30,35 +30,35 @@ public class LoginController {
         String pass = password.getText();
 
         try {
-            // 1. Kết nối
-            Socket socket = new Socket("localhost", 8888);
+            // 1. Kết nối (Nên dùng một lớp ConnectionManager để giữ socket này dùng lâu dài)
+            Socket socket = new Socket("localhost", 8888); // Port phải khớp với Server
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-            // 2. Gửi Request
+            // 2. Đóng gói dữ liệu Map để Server bóc được
             Map<String, String> credentials = new HashMap<>();
             credentials.put("username", user);
             credentials.put("password", pass);
 
+            // 3. Gửi Request
             BaseRequest loginReq = new BaseRequest("LOGIN", credentials);
             out.writeObject(loginReq);
             out.flush();
 
-            // 3. Đợi phản hồi
+            // 4. ĐỢI PHẢN HỒI TỪ SERVER
             BaseResponse response = (BaseResponse) in.readObject();
 
             if (response.isSuccess()) {
-                // --- PHẦN THAY ĐỔI Ở ĐÂY ---
+                System.out.println("Server xác nhận: " + response.getMessage());
 
-                // Giả sử Server trả về thông tin User trong field Data dưới dạng Map
-                // Hoặc nếu Server trả về một Object User, bạn hãy ép kiểu tương ứng
-                Map<String, Object> userData = (Map<String, Object>) response.getData();
-                String role = (String) userData.get("role");
+                // 1. Lấy đối tượng User từ response (Server phải trả về User trong field data)
+                // Lưu ý: Đảm bảo class User đã implement Serializable và có mặt ở cả Client/Server
+                server.model.user.User loggedInUser = (server.model.user.User) response.getData();
 
+                // 2. Xác định đường dẫn FXML dựa trên Role
                 String fxmlPath = "";
+                String role = loggedInUser.getRole().toString(); // Trả về "ADMIN", "SELLER", hoặc "BIDDER"
 
-                // Kiểm tra Role để chọn file FXML phù hợp
-                // Lưu ý: Chuỗi so sánh phải khớp hoàn toàn với Enum hoặc String ở Database/Server
                 switch (role) {
                     case "ADMIN":
                         fxmlPath = "/view/admin-dashboard.fxml";
@@ -67,29 +67,25 @@ public class LoginController {
                         fxmlPath = "/view/seller-dashboard.fxml";
                         break;
                     case "BIDDER":
-                        fxmlPath = "/view/auction-list-view.fxml";
+                        fxmlPath = "/view/bidder-dashboard.fxml";
                         break;
                     default:
-                        errorLabel.setText("Vai trò người dùng không hợp lệ!");
-                        return;
+                        fxmlPath = "/view/auction-list-view.fxml";
+                        break;
                 }
 
-                System.out.println("Đăng nhập thành công với quyền: " + role);
+                System.out.println(">>> Đang chuyển tới giao diện: " + role);
+
+                // 3. Chuyển cảnh
                 loadScene(event, fxmlPath);
 
-                // ---------------------------
             } else {
                 errorLabel.setText(response.getMessage());
             }
 
-        } catch (IOException e) {
-            errorLabel.setText("Không kết nối được tới Server!");
-        } catch (ClassCastException e) {
-            errorLabel.setText("Lỗi dữ liệu từ server!");
-            e.printStackTrace();
         } catch (Exception e) {
-            errorLabel.setText("Lỗi không xác định!");
             e.printStackTrace();
+            errorLabel.setText("Không kết nối được tới Server!");
         }
     }
 
@@ -99,5 +95,11 @@ public class LoginController {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
+    }
+    @FXML
+    private void handleRegister(ActionEvent event) {
+        // Tạm thời để trống hoặc in ra log để không bị lỗi load giao diện
+        System.out.println("Nút Đăng ký đã được nhấn!");
+        // Sau này bạn có thể dùng loadScene để chuyển sang trang register.fxml
     }
 }

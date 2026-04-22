@@ -28,16 +28,16 @@ public class AuthService {
 //        }
 //        return false;
 //    }
-    public boolean login(String username, String password) {
+    public User login(String username, String password) {
         UserDao userDao = new UserDao();
         User user = userDao.findByUsername(username);
 
         if (user != null && user.getPassword().equals(password)) {
             System.out.println(">>> [AuthService] Đăng nhập thành công: " + username);
-            return true;
+            return user;
         }
         System.out.println(">>> [AuthService] Đăng nhập thất bại: " + username);
-        return false;
+        return null;
     }
 
     public void register() {

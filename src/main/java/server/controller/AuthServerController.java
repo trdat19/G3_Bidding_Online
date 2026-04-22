@@ -5,8 +5,6 @@ import server.network.RealtimePushServer;
 import server.service.AuthService;
 import shared.request.BaseRequest;
 import shared.response.BaseResponse;
-
-import java.util.HashMap;
 import java.util.Map;
 
 public class AuthServerController {
@@ -23,23 +21,26 @@ public class AuthServerController {
     public BaseResponse login(BaseRequest request, ClientConnectionHandler handler) {
         try {
             Map<String, String> data = (Map<String, String>) request.getData();
-
-            String user = data.get("username");
+            String username = data.get("username");
             String pass = data.get("password");
 
-            // Giả sử AuthService đã có Singleton
-            if (AuthService.getInstance().login(user, pass)) {
-                RealtimePushServer.registerUser(user, handler);
+            // 1. Gọi AuthService (Hàm này bạn đã sửa để trả về User thay vì boolean)
+            server.model.user.User loggedInUser = AuthService.getInstance().login(username, pass);
 
-                Map<String, Object> userData = new HashMap<>();
-                userData.put("username", user);
-                userData.put("role", "SELLER"); // test
+            if (loggedInUser != null) {
+                // 2. Đăng ký Realtime bằng username
+                RealtimePushServer.registerUser(username, handler);
 
-                return new BaseResponse(true, "LOGIN", "Chào " + user + "!", userData);
+                System.out.println(">>> [Auth] User " + username + " đã online.");
+
+                // 3. QUAN TRỌNG: Gửi ĐỐI TƯỢNG loggedInUser về (KHÔNG gửi username)
+                return new BaseResponse(true, "Chào " + loggedInUser.getFullName() + "!", loggedInUser);
             }
+
             return new BaseResponse(false, "Sai tài khoản/mật khẩu", null);
         } catch (Exception e) {
-            return new BaseResponse(false, "Lỗi định dạng đăng nhập", null);
+            e.printStackTrace();
+            return new BaseResponse(false, "Lỗi hệ thống: " + e.getMessage(), null);
         }
     }
 
