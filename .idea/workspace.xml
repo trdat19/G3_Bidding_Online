@@ -5,13 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/view/register-form.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/view/register-form.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/MainApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/MainApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AddProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AddProductController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AuctionDetailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AuctionDetailController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BidderDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BidderDashboardController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/login.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/login.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/SellerDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/SellerDashboardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/model/Item.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/model/Item.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/register-form.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/register-form.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/register-form.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/register-form.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,7 +152,9 @@
       <workItem from="1776854639250" duration="143000" />
       <workItem from="1776854810698" duration="2370000" />
       <workItem from="1776857201168" duration="998000" />
-      <workItem from="1776866941654" duration="5591000" />
+      <workItem from="1776866941654" duration="6109000" />
+      <workItem from="1776885173783" duration="2749000" />
+      <workItem from="1776888284025" duration="1035000" />
     </task>
     <servers />
   </component>

@@ -29,37 +29,27 @@ public class LoginController {
         String pass = password.getText();
 
         if(user.equals("bidder") && pass.equals("bidder123")) {
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("/view/bidder-dashboard.fxml"));
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            loadScene("/view/bidder-dashboard.fxml", event);
         }
         else if(user.equals("seller") && pass.equals("seller123")) {
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("/view/seller-dashboard.fxml"));
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            loadScene("/view/seller-dashboard.fxml", event);
         }
         else if(user.equals("admin") && pass.equals("admin123"))  {
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("/view/admin-dashboard.fxml"));
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            loadScene("/view/admin-dashboard.fxml", event);
         }
         else {
             errorLabel.setText("Wrong password or username");
+        }
+
+    }
+    private void loadScene(String fxmlPath, ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     @FXML
