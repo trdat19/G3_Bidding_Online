@@ -46,7 +46,6 @@ public class Bid { //thông tin 1 lần đặt giá
     //setter
     public void setId(Long id) {
         this.id = id;
-    }
     public void setAuctionId(Long auctionId) {
         this.auctionId = auctionId;
     }

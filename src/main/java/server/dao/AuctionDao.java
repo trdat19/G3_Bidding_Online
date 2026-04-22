@@ -7,6 +7,10 @@ import shared.enums.AuctionStatus;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class AuctionDao {
 
@@ -166,6 +170,7 @@ public class AuctionDao {
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setLong(1, auction.getItemId());
             ps.setLong(2, auction.getSellerId());
             ps.setDouble(3, auction.getStartPrice());
@@ -174,6 +179,9 @@ public class AuctionDao {
             ps.setObject(6,
                     auction.getBuy_now_price() > 0 ? auction.getBuy_now_price() : null,
                     Types.DECIMAL);
+//            ps.setDouble(4, auction.getMaxPrice());
+//            ps.setDouble(5, auction.getMinIncrement());
+//            ps.setDouble(6, auction.getBuyNowPrice());
             ps.setTimestamp(7, auction.getStartTime());
             ps.setTimestamp(8, auction.getEndTime());
             ps.setString(9, auction.getStatus().name());
@@ -274,9 +282,10 @@ public class AuctionDao {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("deleteAuction error: " + e.getMessage());
+            return false;
         }
-        return false;
     }
+
 
     // chuyển dữ liêu DB thành Object
     private Auction mapResultSetToAuction(ResultSet rs) throws SQLException {

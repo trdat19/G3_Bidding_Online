@@ -30,7 +30,7 @@ public class AuctionManager {
         Auction auction = auctions.get(auctionId);
         auction.setStatus(AuctionStatus.CLOSED);
     }
-    public void removeAuction(String id) {
+    public void removeAuction(Long id) {
         auctions.remove(id);
     }
 

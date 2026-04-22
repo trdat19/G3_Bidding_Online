@@ -8,7 +8,8 @@ public class TestConection {
         try {
             Connection con = DBconnection.getInstance().getConnection();
             System.out.println("Database connected");
-        } catch (SQLException e) {
+        } catch (SQLException e)
+        {
             System.err.println("Database connection failed: " + e.getMessage());
         }
     }

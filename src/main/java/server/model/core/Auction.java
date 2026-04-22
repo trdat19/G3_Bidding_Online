@@ -91,4 +91,15 @@ public class Auction { //state 1 phiên đấu giá có cái gì
     public void setBuy_now_price( double buy_now_price) {
         this.buy_now_price = buy_now_price ;
     }
+
+    // Dán vào cuối file Auction.java, trước dấu } cuối cùng
+    public Long getItemId() { return this.itemId; }
+    public Long getSellerId() { return this.sellerId; }
+    public double getStartPrice() { return this.startPrice; }
+    public double getMaxPrice() { return this.max_price; }
+    public double getMinIncrement() { return this.min_increment; }
+    public double getBuyNowPrice() { return this.buy_now_price; }
+    public java.sql.Timestamp getStartTime() { return this.startTime; }
+    public java.sql.Timestamp getEndTime() { return this.endTime; }
+    public shared.enums.AuctionStatus getStatus() { return this.status; }
 }
