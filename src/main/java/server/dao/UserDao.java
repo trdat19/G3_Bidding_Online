@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.config.DBconnection;
+import server.database.DBconnection;
 import server.model.user.Admin;
 import server.model.user.Bidder;
 import server.model.user.Seller;

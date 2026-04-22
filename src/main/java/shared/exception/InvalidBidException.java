@@ -1,4 +1,4 @@
-package server.exception;
+package shared.exception;
 
 import java.time.LocalDateTime;
 

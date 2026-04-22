@@ -1,4 +1,4 @@
 package shared.dto;
 
-public class ItemDTO {
+public class BidDTO {
 }
