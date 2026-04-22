@@ -5,11 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/user/Bidder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/user/Bidder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/enums/AuctionStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/enums/AuctionStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDao.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +48,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "trdat",
+    "git-widget-placeholder": "masterdat",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/admin/Downloads/K70/NAM_1/KI_2/LAP_TRINH_NANG_CAO/BAI_TAP_LON/DUONG/G3_Bidding_Online",
     "project.structure.last.edited": "Project",
@@ -61,7 +57,7 @@
     "settings.editor.selected.configurable": "preferences.keymap"
   }
 }]]></component>
-  <component name="RunManager" selected="Application.MainApplication">
+  <component name="RunManager">
     <configuration name="MainApplication" type="Application" factoryName="Application" singleton="false">
       <option name="MAIN_CLASS_NAME" value="client.MainApplication" />
       <module name="G3_BiddingOnline" />
