@@ -3,25 +3,35 @@ package shared.response;
 import java.io.Serializable;
 
 public class BaseResponse implements Serializable {
+    private static final long serialVersionUID = 1L; // Đảm bảo đồng bộ khi truyền qua Socket
+
     private boolean success;
     private String action;
     private Object data;
-    private String message; // Thêm biến này để hiển thị thông báo ra màn hình
+    private String message;
 
-    // Constructor dùng ể thông bào login than công/ thất bại
-    public BaseResponse(boolean success, String action, Object data) {
-        this.success = success;
-        this.action = action;
-        this.data = data;
-    }
-
-    // Constructor dùng cho Realtime (có thêm Action để Client biết tin nhắn loại gì)
+    // Constructor 1: Đầy đủ tham số
     public BaseResponse(boolean success, String action, String message, Object data) {
         this.success = success;
         this.action = action;
         this.message = message;
         this.data = data;
     }
+
+    // Constructor 2: Rút gọn (tự tạo message mặc định)
+    public BaseResponse(boolean success, String action, Object data) {
+        this.success = success;
+        this.action = action;
+        this.data = data;
+        this.message = success ? "Thành công" : "Thất bại";
+    }
+
+    // --- CÁC PHƯƠNG THỨC GETTER (Để lấy dữ liệu) ---
+
+    public boolean isSuccess() {
+        return success;
+    }
+
     public String getAction() {
         return action;
     }
@@ -34,9 +44,21 @@ public class BaseResponse implements Serializable {
         return message;
     }
 
-    public boolean isSuccess() {
-        return success;
+    // --- CÁC PHƯƠNG THỨC SETTER (Để gán dữ liệu nếu cần) ---
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
+    public void setAction(String action) {
+        this.action = action;
+    }
 
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

@@ -12,7 +12,7 @@ public class DBconnection {
 
     private String url = "jdbc:mysql://localhost:3306/auction_system";
     private String user = "root";
-    private String pass = "011007";
+    private String pass = "mysql2007";
 
     private DBconnection() {
         HikariConfig config = new HikariConfig();
