@@ -1,15 +1,41 @@
 package server.config;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DBconnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/Auction_System";
-    private static final String USER = "root";
-    private static final String PASSWORD = "011007";
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+public class DBconnection {
+    private static DBconnection instance;
+    private final HikariDataSource dataSource;
+
+    private String url = "jdbc:mysql://localhost:3306/auction_system";
+    private String user = "root";
+    private String pass = "011007";
+
+    private DBconnection() {
+        HikariConfig config = new HikariConfig();
+
+        config.setJdbcUrl(url);
+        config.setUsername(user);
+        config.setPassword(pass);
+
+        config.setMaximumPoolSize(50);
+        config.setMinimumIdle(10);
+        config.setConnectionTimeout(30000);
+        config.setIdleTimeout(600000);
+        config.setMaxLifetime(1800000);
+
+        this.dataSource = new HikariDataSource(config);
+    }
+    public static synchronized DBconnection getInstance() {
+        if (instance == null) {
+            instance = new DBconnection();
+        }
+        return instance;
+    }
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 }
