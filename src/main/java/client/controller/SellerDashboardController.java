@@ -1,9 +1,9 @@
 package client.controller;
 
+import client.model.Item;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -14,8 +14,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SellerDashboardController {
 
@@ -25,16 +26,12 @@ public class SellerDashboardController {
     @FXML
     private FlowPane productContainer;
 
+    private final List<Item> itemList = new ArrayList<>();
+
     @FXML
     public void initialize() {
         sellerNameLabel.setText("Nguyễn Việt Anh");
-        loadProducts();
-    }
-
-    private void loadProducts() {
-        productContainer.getChildren().clear();
-
-        productContainer.getChildren().add(createProductCard(
+        itemList.add(new Item(
                 "ELECTRONICS",
                 "MacBook Pro M3 Max",
                 "Laptop hiệu năng cao dành cho đồ họa và lập trình",
@@ -42,7 +39,7 @@ public class SellerDashboardController {
                 "OPEN"
         ));
 
-        productContainer.getChildren().add(createProductCard(
+        itemList.add(new Item(
                 "ART",
                 "Bức tranh Hoa hướng dương",
                 "Tác phẩm nghệ thuật phong cách cổ điển",
@@ -50,16 +47,24 @@ public class SellerDashboardController {
                 "OPEN"
         ));
 
-        productContainer.getChildren().add(createProductCard(
+        itemList.add(new Item(
                 "HYPERCAR",
                 "Ferrari 250 GTO 1962",
                 "Mẫu siêu xe sưu tầm phiên bản hiếm",
                 "$51M",
                 "FINISHED"
         ));
+        loadProducts();
     }
 
-    private VBox createProductCard(String category, String title, String description, String price, String status) {
+    private void loadProducts() {
+        productContainer.getChildren().clear();
+        for (Item items : itemList) {
+            productContainer.getChildren().add(createProductCard(items));
+        }
+    }
+
+    private VBox createProductCard(Item item) {
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
         card.setPrefWidth(360);
@@ -72,7 +77,7 @@ public class SellerDashboardController {
         Label imageText = new Label("Image");
         imageText.setStyle("-fx-font-size: 48px; -fx-text-fill: #cbd5e1;");
 
-        Label categoryBadge = new Label(category);
+        Label categoryBadge = new Label(item.getCategory());
         categoryBadge.getStyleClass().add("category-badge");
         StackPane.setMargin(categoryBadge, new Insets(14, 0, 0, 14));
         StackPane.setAlignment(categoryBadge, javafx.geometry.Pos.TOP_LEFT);
@@ -82,11 +87,11 @@ public class SellerDashboardController {
         VBox body = new VBox(10);
         body.setPadding(new Insets(18));
 
-        Label titleLabel = new Label(title);
+        Label titleLabel = new Label(item.getTitle());
         titleLabel.getStyleClass().add("product-title");
         titleLabel.setWrapText(true);
 
-        Label descLabel = new Label(description);
+        Label descLabel = new Label(item.getDescription());
         descLabel.getStyleClass().add("product-desc");
         descLabel.setWrapText(true);
 
@@ -94,15 +99,15 @@ public class SellerDashboardController {
         VBox priceBox = new VBox(6);
         Label priceLabel = new Label("GIÁ KHỞI ĐIỂM");
         priceLabel.getStyleClass().add("meta-label");
-        Label priceValue = new Label(price);
+        Label priceValue = new Label(item.getPrice());
         priceValue.getStyleClass().add("meta-value");
         priceBox.getChildren().addAll(priceLabel, priceValue);
 
         VBox statusBox = new VBox(6);
         Label statusLabel = new Label("TRẠNG THÁI");
         statusLabel.getStyleClass().add("meta-label");
-        Label statusValue = new Label(status);
-        if ("OPEN".equals(status)) {
+        Label statusValue = new Label(item.getStatus());
+        if ("OPEN".equals(item.getStatus())) {
             statusValue.getStyleClass().add("status-open");
         } else {
             statusValue.getStyleClass().add("status-finished");
@@ -117,11 +122,11 @@ public class SellerDashboardController {
         HBox actionRow = new HBox(12);
         Button editButton = new Button("Edit");
         editButton.getStyleClass().add("edit-button");
-        editButton.setOnAction(e -> handleEditProduct(title));
+        editButton.setOnAction(e -> handleEditProduct(item.getTitle()));
 
         Button deleteButton = new Button("Delete");
         deleteButton.getStyleClass().add("delete-button");
-        deleteButton.setOnAction(e -> handleDeleteProduct(title));
+        deleteButton.setOnAction(e -> handleDeleteProduct(item));
 
         actionRow.getChildren().addAll(editButton, deleteButton);
 
@@ -137,6 +142,9 @@ public class SellerDashboardController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/add-product-view.fxml"));
             Parent root = loader.load();
 
+            AddProductController addProductController = loader.getController();
+            addProductController.setSellerDashboardController(this);
+
             Stage stage = new Stage();
             stage.setTitle("Thêm sản phẩm");
             stage.setScene(new Scene(root));
@@ -147,7 +155,11 @@ public class SellerDashboardController {
             e.printStackTrace();
         }
     }
+    public void addNewProduct(Item item) {
+        itemList.add(item);
+        loadProducts();
 
+    }
     @FXML
     private void handleRefresh() {
         System.out.println("Refresh clicked");
@@ -158,7 +170,8 @@ public class SellerDashboardController {
         System.out.println("Edit product: " + productName);
     }
 
-    private void handleDeleteProduct(String productName) {
-        System.out.println("Delete product: " + productName);
+    private void handleDeleteProduct(Item item) {
+        itemList.remove(item);
+        loadProducts();
     }
 }
