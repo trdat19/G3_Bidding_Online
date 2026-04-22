@@ -27,7 +27,7 @@ public class SellerDashboardController {
 
     @FXML
     public void initialize() {
-        sellerNameLabel.setText("Nguyễn Việt Anh");
+        sellerNameLabel.setText("truongthanhdat");
         loadProducts();
     }
 
