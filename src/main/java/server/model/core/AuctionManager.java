@@ -1,5 +1,7 @@
 package server.model.core;
 
+import server.model.user.Bidder;
+
 import java.util.*;
 
 //Singleton
@@ -24,6 +26,9 @@ public class AuctionManager {
 
     public void createAuction() {}
     public void closeAuction() {}
+    public void removeAuction(String id) {
+        auctions.remove(id);
+    }
 
     public Auction getAuction(String id) {
         return auctions.get(id);
@@ -32,8 +37,14 @@ public class AuctionManager {
         return new ArrayList<>(auctions.values());
     }
 
-    public void removeAuction(String id) {
-        auctions.remove(id);
-    }
+    public void placeBid(Long bidderId, String auctionId, double amount) {
+        Auction auction = auctions.get(auctionId);
 
+        if (auction == null) {
+            throw new IllegalArgumentException("Auction not found!");
+        }
+
+        //BidTransaction transaction = new BidTransaction(new Bid(bidderId, amount, ));
+
+    }
 }

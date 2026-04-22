@@ -19,7 +19,7 @@ public class ItemDao {
         String sql = "INSERT INTO Items(name_item, category, description, id_seller, price_start, status_item) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, item.getNameItem());
             ps.setString(2, item.getCategory().name());
@@ -27,7 +27,6 @@ public class ItemDao {
             ps.setLong(4, item.getSellerId());
             ps.setBigDecimal(5, item.getPriceStart());
             ps.setString(6, item.getStatusItem().name());
-
             int rowsAffected = ps.executeUpdate();
 
             if (rowsAffected > 0) {
@@ -47,7 +46,7 @@ public class ItemDao {
     // tìm item theo id
     public Item findById(long id) {
         String sql = "SELECT * FROM Items WHERE id_item = ?";
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -64,7 +63,7 @@ public class ItemDao {
     // tìm item theo tên
     public Item findByNameItem(String nameItem) {
         String sql = "SELECT * FROM Items WHERE name_id = ?";
-        try(Connection con = DBconnection.getConnection();
+        try(Connection con = DBconnection.getInstance().getConnection();
             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1,nameItem);
             try(ResultSet rs = ps.executeQuery()) {
@@ -82,7 +81,7 @@ public class ItemDao {
     public List<Item> findAll() {
         String sql = "SELECT * FROM Items";
         List<Item> items = new ArrayList<>();
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -94,11 +93,11 @@ public class ItemDao {
         return items;
     }
 
-    // lấy item theo seller
+    // lấy item theo id của seller
     public List<Item> findBySellerId(long sellerId) {
         String sql = "SELECT * FROM Items WHERE id_seller = ?";
         List<Item> items = new ArrayList<>();
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, sellerId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -116,7 +115,7 @@ public class ItemDao {
     public boolean updateItem(Item item) {
         String sql = "UPDATE Items SET name_item = ?, category = ?, description = ?, " +
                 "id_seller = ?, price_start = ?, status_item = ? WHERE id_item = ?";
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, item.getNameItem());
             ps.setString(2, item.getCategory().name());
@@ -136,7 +135,7 @@ public class ItemDao {
     // đổi status item
     public boolean updateStatus(long idItem, ItemStatus status) {
         String sql = "UPDATE Items SET status_item = ? WHERE id_item = ?";
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, status.name());
             ps.setLong(2, idItem);
@@ -151,7 +150,7 @@ public class ItemDao {
     // xóa item
     public boolean deleteItem(long idItem) {
         String sql = "DELETE FROM Items WHERE id_item = ?";
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, idItem);
             return ps.executeUpdate() > 0;

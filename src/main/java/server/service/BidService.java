@@ -7,19 +7,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BidService {
+    // Sử dụng Singleton để đảm bảo mọi luồng đều dùng chung một đối tượng xử lý giá
+    private static BidService instance;
+
+    public static synchronized BidService getInstance() {
+        if (instance == null)
+        {
+            instance = new BidService();
+        }
+
+        return instance;
+    }
+
     // Đặt giá
-    public void placeBid(int auctionId, String userId, double bidAmount) {
-        // Bước A: Kiểm tra xem giá có hợp lệ không
+    public synchronized void placeBid(int auctionId, String userId, double bidAmount) {
+        // Kiểm tra xem giá có hợp lệ không
         if (validateBid(auctionId, bidAmount)) {
 
-            // Bước B: Cập nhật người dẫn đầu trong Database (logic DB để sau)
+            // Cập nhật người dẫn đầu trong Database (logic DB để sau)
             updateLeader(auctionId, userId, bidAmount);
 
-            // Bước C: BÁO CHO TẤT CẢ MỌI NGƯỜI (Realtime)
+            // BÁO CHO TẤT CẢ MỌI NGƯỜI (Realtime)
             // Tạo một gói tin thông báo giá mới
             BaseResponse bidEvent = new BaseResponse(true, "NEW_BID_UPDATE", "Người dùng " + userId + " vừa đặt giá: " + bidAmount);
 
-            // Gọi cái loa của bạn đây!
+            // Gọi cái loa của bạn đây
             RealtimePushServer.pushToAuctionSubscribers(auctionId, bidEvent);
 
             System.out.println(">>> Đã đẩy thông báo giá mới cho phiên #" + auctionId);
@@ -30,7 +42,7 @@ public class BidService {
 //        // Logic: Truy vấn DB lấy giá cao nhất hiện tại của auctionId
 //        // double currentMax = database.getMaxBid(auctionId);
 //        // return bidAmount > currentMax;
-//        return true; // Tạm thời để true để test
+//        return true; // Tạm thời để true để test do chưa c DB
 //    }
 //
 //    // 3. Cập nhật người dẫn đầu
@@ -38,15 +50,15 @@ public class BidService {
 //        // Logic: Ghi vào bảng Auctions hoặc Bids trong Database
 //        System.out.println(">>> Đang cập nhật " + userId + " làm leader phiên #" + auctionId);
 //    }
-
-    // 4. Lấy lịch sử đấu giá
-    public void getHistory(int auctionId) {
-        // Logic: Trả về danh sách các lượt đặt giá của phiên này
-    }
-
-
+//
+//    // 4. Lấy lịch sử đấu giá
+//    public void getHistory(int auctionId) {
+//        // Logic: Trả về danh sách các lượt đặt giá của phiên này
+//    }
 
 
+
+// Tạm thời cưa có DataBase
     private static final Map<Integer, Double> currentPrices = new HashMap<>(); // Lưu giá cao nhất tạm thời
 
     public boolean validateBid(int auctionId, double bidAmount) {

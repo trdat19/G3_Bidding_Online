@@ -3,6 +3,7 @@ module client {
     requires javafx.fxml;
     requires java.sql;
     requires java.desktop;
+    requires com.zaxxer.hikari;
 
     // Phải mở package chứa Controller thì JavaFX mới không báo lỗi IllegalAccessException
     opens client.controller to javafx.fxml;

@@ -8,11 +8,7 @@ import shared.response.BaseResponse;
 
 public class RequestRouter {
 
-    // Hàm điều hướng chính
-    // Khởi tạo sẵn các bộ phận chuyên môn
-    private static final AuthServerController authController = new AuthServerController();
-    private static final BidServerController bidController = new BidServerController();
-    public static BaseResponse route(BaseRequest request) {
+    public static BaseResponse route(BaseRequest request, ClientConnectionHandler handler) {
         String action = request.getAction();
         Object data = request.getData();
 
@@ -22,11 +18,16 @@ public class RequestRouter {
         {
             case "LOGIN":
                 // Sau này sẽ gọi AuthServerController.login(data)
-                return new BaseResponse(true, "Đăng nhập thành công (giả lập)", null);
+                return AuthServerController.getInstance().login(request, handler);
 
             case "PLACE_BID":
                 // Sau này sẽ gọi BidServerController.placeBid(data)
-                return new BaseResponse(true, "Đặt giá thành công", null);
+                return BidServerController.getInstance().placeBid(request, handler);
+
+            case "SUBSCRIBE_AUCTION":
+                int auctionId = Integer.parseInt(data.toString());
+                RealtimePushServer.subscribeToAuction(auctionId, handler);
+                return new BaseResponse(true, "Đã tham gia phòng đấu giá #" + auctionId, null);
 
             default:
                 return new BaseResponse(false, "Hành động không xác định", null);

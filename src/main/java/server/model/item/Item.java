@@ -44,6 +44,7 @@ public abstract class Item extends Entity {
         this.createdAtItem = createdAtItem;
     }
 
+    public abstract void printInfo();
     //get
     public String getNameItem() {
         return nameItem;

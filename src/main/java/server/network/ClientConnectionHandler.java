@@ -2,74 +2,74 @@ package server.network;
 
 import shared.request.BaseRequest;
 import shared.response.BaseResponse;
-
 import java.io.*;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class ClientConnectionHandler implements  Runnable{
+public class ClientConnectionHandler implements Runnable {
     private Socket clientSocket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
-    public ClientConnectionHandler(Socket socket)
-    {
-        this.clientSocket = socket;
+    public ClientConnectionHandler(Socket socket) {
+        this.clientSocket = socket; // QUAN TRỌNG: Phải gán socket vào biến class
+        try {
+            // Khởi tạo stream MỘT LẦN DUY NHẤT ở đây
+            this.out = new ObjectOutputStream(clientSocket.getOutputStream());
+            this.out.flush();
+            this.in = new ObjectInputStream(clientSocket.getInputStream());
+            System.out.println(">>> Đã thiết lập Stream cho: " + clientSocket.getInetAddress());
+        } catch (IOException e) {
+            System.err.println("Lỗi khởi tạo Stream: " + e.getMessage());
+        }
     }
 
-    public void run()
-    {
-        try
-        {
-            out = new ObjectOutputStream(clientSocket.getOutputStream());
-            in = new ObjectInputStream(clientSocket.getInputStream());
+    @Override
+    public void run() {
+        try {
+            // KHÔNG khởi tạo lại out/in ở đây nữa!
 
-            // Đăng kí tạm thời khách có địa chỉ IP (Lúc sau có userId thì thay đổi) đang đuươợc this phục vụ
+            // Đăng ký tạm thời (Sẽ được cập nhật lại khi Login thành công)
             RealtimePushServer.registerUser(clientSocket.getInetAddress().toString(), this);
-            while (!clientSocket.isClosed())
-            {
-                readRequest();
+
+            while (!clientSocket.isClosed()) {
+                Object obj = in.readObject(); // Đọc trực tiếp ở đây hoặc dùng readRequest
+                if (obj instanceof BaseRequest) {
+                    dispatch((BaseRequest) obj);
+                }
             }
-        }
-        catch (Exception e)
-        {
-            System.out.println("Client ngắt kết nối: " + e.getMessage());
-        } finally
-        {
-            try
-            {
-                if (clientSocket != null) clientSocket.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        } catch (EOFException e) {
+            System.out.println("Client đã ngắt kết nối (EOF).");
+        } catch (Exception e) {
+            System.out.println("Lỗi kết nối: " + e.getMessage());
+        } finally {
+            closeConnection();
         }
     }
-    public void readRequest() throws IOException, ClassNotFoundException
-    {
-            BaseRequest request = (BaseRequest) in.readObject();
-            if (request != null)
-            {
-                dispatch(request);
-            }
 
-
-    }
     public void dispatch(BaseRequest request) {
-        // 1. Gọi Router để xử lý và lấy kết quả trả về
-        BaseResponse response = RequestRouter.route(request);
-
-        // 2. Gửi kết quả ngược lại cho Client
+        // Truyền 'this' để Router/Controller có thể dùng handler này đăng ký Realtime
+        BaseResponse response = RequestRouter.route(request, this);
         sendResponse(response);
     }
-    public void sendResponse(Object response)
-    {
+
+    public void sendResponse(Object response) {
         try {
-            out.writeObject(response);
-            out.flush();
+            if (out != null) {
+                out.writeObject(response);
+                out.flush();
+                out.reset(); // Quan trọng: Tránh cache object cũ khi gửi nhiều lần
+            }
+        } catch (IOException e) {
+            System.err.println("Lỗi gửi response: " + e.getMessage());
         }
-        catch (IOException e)
-        {
+    }
+
+    private void closeConnection() {
+        try {
+            RealtimePushServer.removeConnection(this);
+            if (clientSocket != null) clientSocket.close();
+            System.out.println(">>> Đã đóng kết nối.");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -7,7 +7,6 @@ import server.model.user.Seller;
 import server.model.user.User;
 import shared.enums.UserRole;
 import shared.enums.UserStatus;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,7 @@ public class UserDao {
         String sql = "INSERT INTO users(username, password, full_name, email, role, status) " +
                      "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, user.getUsername());
@@ -46,8 +45,8 @@ public class UserDao {
     public User findById(long id) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
-        try (Connection conn = DBconnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, id);
 
@@ -66,8 +65,8 @@ public class UserDao {
     public User findByUsername(String username) {
         String sql = "SELECT * FROM users WHERE username = ?";
 
-        try (Connection conn = DBconnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, username);
 
@@ -87,8 +86,8 @@ public class UserDao {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
 
-        try (Connection conn = DBconnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 users.add(mapResultSetToUser(rs));
@@ -104,7 +103,7 @@ public class UserDao {
         String sql = "UPDATE users SET username = ?, password = ?, full_name = ?, " +
                      "email = ?, role = ?, status = ? WHERE id = ?";
 
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, user.getUsername());
@@ -129,7 +128,7 @@ public class UserDao {
     // đổi mật khẩu user
     public boolean UpdatePassword(long id , String passwordNew) {
         String sql = "UPDATE users SET password = ? Where id = ?";
-        try(Connection con = DBconnection.getConnection();
+        try(Connection con = DBconnection.getInstance().getConnection();
         PreparedStatement ps = con.prepareStatement(sql)){
             ps.setString(1,passwordNew);
             ps.setLong(2,id);
@@ -143,7 +142,7 @@ public class UserDao {
     // đổi username
     public boolean updateUsername(long id, String newUsername) {
         String sql = "UPDATE users SET username = ? WHERE id = ?";
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, newUsername);
             ps.setLong(2, id);
@@ -158,8 +157,8 @@ public class UserDao {
     public boolean updateStatus(long id, UserStatus status) {
         String sql = "UPDATE users SET status = ? WHERE id = ?";
 
-        try (Connection conn = DBconnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, status.name());
             ps.setLong(2, id);
             int rowsAffected = ps.executeUpdate();
@@ -172,8 +171,8 @@ public class UserDao {
     // xoá user
     public boolean deleteUser(long id) {
         String sql = "DELETE FROM users WHERE id = ?";
-        try (Connection conn = DBconnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, id);
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
@@ -186,7 +185,7 @@ public class UserDao {
     // kiểm tra xem username tồn tại chưa
     public boolean existsByUsername(String username) {
         String sql = "SELECT 1 FROM users WHERE username = ?";
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
@@ -201,7 +200,7 @@ public class UserDao {
     // kiểm tra email đã tồn tại hay chưa
     public boolean existsByEmail(String email) {
         String sql = "SELECT 1 FROM users WHERE email = ?";
-        try (Connection con = DBconnection.getConnection();
+        try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
@@ -243,7 +242,7 @@ public class UserDao {
         String sql = "SELECT * FROM users";
         List<User> users = new ArrayList<>();
         try (
-                Connection con = DBconnection.getConnection();
+                Connection con = DBconnection.getInstance().getConnection();
                 PreparedStatement ps = con.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery()
         ) {

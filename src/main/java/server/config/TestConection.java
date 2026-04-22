@@ -6,9 +6,10 @@ import java.sql.SQLException;
 public class TestConection {
     public static void main(String[] args) {
         try {
-            Connection con = DBconnection.getConnection();
+            Connection con = DBconnection.getInstance().getConnection();
             System.out.println("Database connected");
-        } catch (SQLException e) {
+        } catch (SQLException e)
+        {
             System.err.println("Database connection failed: " + e.getMessage());
         }
     }

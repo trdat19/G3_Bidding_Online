@@ -1,29 +1,54 @@
 package server.service;
 
-public class AuthService {
-    public boolean login(String username, String password) {
-        // Tạm thời cho phép 2 tài khoản này để test Realtime
-        if ((username.equals("user1") && password.equals("123")) ||
-                (username.equals("user2") && password.equals("123"))) {
+import server.dao.UserDao;
+import server.model.user.User;
 
-            System.out.println(">>> Đăng nhập ảo thành công cho: " + username);
+public class AuthService {
+    // 1. Singleton: Đảm bảo duy nhất 1 thực thể quản lý User online
+    private static AuthService instance;
+
+    // Khóa constructor để không ai 'new' lung tung
+    private AuthService() {}
+
+    public static synchronized AuthService getInstance() {
+        if (instance == null) {
+            instance = new AuthService();
+        }
+        return instance;
+    }
+
+    // 2. Logic kiểm tra đăng nhập
+//    public boolean login(String username, String password) {
+//        // Tạm thời cho phép 2 tài khoản này để test Realtime
+//        if ((username.equals("user1") && password.equals("123")) ||
+//                (username.equals("user2") && password.equals("123"))) {
+//
+//            System.out.println(">>> [AuthService] Xác thực thành công: " + username);
+//            return true;
+//        }
+//        return false;
+//    }
+    public boolean login(String username, String password) {
+        UserDao userDao = new UserDao();
+        User user = userDao.findByUsername(username);
+
+        if (user != null && user.getPassword().equals(password)) {
+            System.out.println(">>> [AuthService] Đăng nhập thành công: " + username);
             return true;
         }
-
-        // Khi nào có DB thì dùng đoạn dưới này
-        // return database.checkLogin(username, password);
+        System.out.println(">>> [AuthService] Đăng nhập thất bại: " + username);
         return false;
     }
-    public void register()
-    {
 
+    public void register() {
+        // Sau này code DB vào đây
     }
-    public void logout()
-    {
 
+    public void logout() {
+        // Xử lý logic đăng xuất nếu cần
     }
-    public void verifySession()
-    {
 
+    public void verifySession() {
+        // Kiểm tra token hoặc session sau này
     }
 }
