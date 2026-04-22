@@ -14,10 +14,15 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
-        System.out.println(getClass().getResource("/view/login.fxml"));
-        Scene scene = new Scene(loader.load());
-        primaryStage.setScene(scene);
+        // Đảm bảo có dấu "/" ở đầu đại diện cho thư mục resources
+        java.net.URL resource = getClass().getResource("/view/login.fxml");
+        if (resource == null) {
+            System.err.println("Lỗi: Không tìm thấy file login.fxml tại /view/");
+            return;
+        }
+        Parent root = FXMLLoader.load(resource);
+        primaryStage.setTitle("Hệ thống Đấu giá");
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 }

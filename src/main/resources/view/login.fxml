@@ -26,7 +26,7 @@
                      </children>
                   </StackPane>
                
-                   <Label text="BidZone" textAlignment="CENTER">
+                   <Label text="BIDZONE" textAlignment="CENTER">
                      <font>
                         <Font size="36.0" />
                      </font>
@@ -47,7 +47,7 @@
                       <Button onAction="#handleLogin" text="Login" />
                      <Label layoutX="500.0" layoutY="300.0" textFill="#f90909" />
                      <Label fx:id="errorLabel" textFill="#e00909" />
-                     <Hyperlink text="Don't have a account? Register" />
+                     <Hyperlink onAction="#handleRegister" text="Don't have a account? Register" />
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>

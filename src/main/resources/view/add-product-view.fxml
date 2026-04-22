@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="TOP_LEFT" prefHeight="600" prefWidth="500" spacing="14" style="-fx-background-color: white; -fx-padding: 25;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AddProductController">
+    <children>
+        <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #111827;" text="Thêm sản phẩm mới" />
+
+        <Label text="Tên sản phẩm" />
+        <TextField fx:id="nameField" promptText="Nhập tên sản phẩm" />
+
+        <Label text="Danh mục" />
+        <TextField fx:id="categoryField" promptText="Ví dụ: ELECTRONICS" />
+        <TextArea fx:id="descriptionField" prefHeight="100" promptText="Nhập mô tả sản phẩm" />
+
+        <Label text="Giá khởi điểm" />
+        <TextField fx:id="priceField" promptText="Ví dụ: 2500" />
+
+        <Label text="Ngày bắt đầu" />
+        <DatePicker fx:id="startDatePicker" />
+
+        <Label text="Ngày kết thúc" />
+        <DatePicker fx:id="endDatePicker" />
+
+        <Label fx:id="errorLable" textFill="#de0808" />
+
+        <HBox spacing="12">
+            <children>
+                <Button onAction="#handleSave" style="-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-weight: bold;" text="Lưu" />
+                <Button onAction="#handleCancel" style="-fx-background-color: #e5e7eb; -fx-font-weight: bold;" text="Hủy" />
+            </children>
+        </HBox>
+    </children>
+</VBox>

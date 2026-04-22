@@ -5,7 +5,8 @@ import server.model.Entity;
 import shared.enums.UserRole;
 import shared.enums.UserStatus;
 
-public abstract class User extends Entity{
+public abstract class User extends Entity implements java.io.Serializable{
+    private static final long serialVersionUID = 1L;
     protected String username;
     protected String password;
     protected String fullname;

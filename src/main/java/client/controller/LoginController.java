@@ -50,10 +50,37 @@ public class LoginController {
 
             if (response.isSuccess()) {
                 System.out.println("Server xác nhận: " + response.getMessage());
-                // Đăng nhập thành công thì mới chuyển cảnh
-                loadScene(event, "/view/auction-list-view.fxml");
+
+                // 1. Lấy đối tượng User từ response (Server phải trả về User trong field data)
+                // Lưu ý: Đảm bảo class User đã implement Serializable và có mặt ở cả Client/Server
+                server.model.user.User loggedInUser = (server.model.user.User) response.getData();
+
+                // 2. Xác định đường dẫn FXML dựa trên Role
+                String fxmlPath = "";
+                String role = loggedInUser.getRole().toString(); // Trả về "ADMIN", "SELLER", hoặc "BIDDER"
+
+                switch (role) {
+                    case "ADMIN":
+                        fxmlPath = "/view/admin-dashboard.fxml";
+                        break;
+                    case "SELLER":
+                        fxmlPath = "/view/seller-dashboard.fxml";
+                        break;
+                    case "BIDDER":
+                        fxmlPath = "/view/bidder-dashboard.fxml";
+                        break;
+                    default:
+                        fxmlPath = "/view/auction-list-view.fxml";
+                        break;
+                }
+
+                System.out.println(">>> Đang chuyển tới giao diện: " + role);
+
+                // 3. Chuyển cảnh
+                loadScene(event, fxmlPath);
+
             } else {
-                errorLabel.setText(response.getMessage()); // Hiển thị lỗi từ Server (ví dụ: "Sai tài khoản")
+                errorLabel.setText(response.getMessage());
             }
 
         } catch (Exception e) {
@@ -68,5 +95,11 @@ public class LoginController {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
+    }
+    @FXML
+    private void handleRegister(ActionEvent event) {
+        // Tạm thời để trống hoặc in ra log để không bị lỗi load giao diện
+        System.out.println("Nút Đăng ký đã được nhấn!");
+        // Sau này bạn có thể dùng loadScene để chuyển sang trang register.fxml
     }
 }

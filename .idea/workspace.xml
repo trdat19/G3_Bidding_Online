@@ -6,32 +6,19 @@
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/MainApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/MainApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AuctionDetailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AuctionDetailController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AuctionListController.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/config/DBconnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/config/DBconnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/config/TestConection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/config/TestConection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/ItemDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/ItemDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/UserDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/Auction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/Auction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/Bid.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/Bid.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Art.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Art.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Electronics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Electronics.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Item.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Item.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/ItemFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/ItemFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Vehicle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Vehicle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/user/Bidder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/user/Bidder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/ClientConnectionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/ClientConnectionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/SocketSever.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/SocketSever.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/SellerDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/SellerDashboardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/user/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/user/User.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/enums/AuctionStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/enums/AuctionStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/response/BaseResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/response/BaseResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/admin-dashboard.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/admin-dashboard.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/auction-list-view.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/auction-list.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/login.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/login.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/seller-dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/seller-dashboard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/seller-dashboard.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/seller-dashboard.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
