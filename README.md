@@ -15,7 +15,7 @@ Tổng quát có: GUI, Database, Backend
 
 3. Tiến Đạt: Phụ trách Máy chủ (Server) & Cơ sở dữ liệu (Database)
 
-• Database: Kết nổi và thao tác với Cơ sở dữ liệu (lưu tài khoản, lích sử đặt giá, kết quả phiên đầu giá). Xử lý khóa luồng (synchronized) để dữ liệu lưu vào DB không bị lỗi khi nhiều người cùng đặt giá.
+• Database: Kết nổi và thao tác với Cơ sở dữ liệu (lưu tài khoản, lích sử đặt giá, kết quả phiên đầu giá).
 
 4. Thành Đạt (Nhóm trưởng): Hỗ trợ logic, merge code, cấu trúc dữ liệu
 • T: đóng góp ý tưởng và xây dựng các hàm logic nền tảng trong giai đoạn khởi tạo dự án.
