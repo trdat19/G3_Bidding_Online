@@ -7,6 +7,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
+
+
 public class AddProductController {
     @FXML
     private TextField nameField;
@@ -33,14 +36,16 @@ public class AddProductController {
     }
     @FXML
     private void handleSave() {
-        String name = nameField.getText().trim();
+        String title = nameField.getText().trim();
         String category = categoryField.getText().trim();
         String description = descriptionField.getText().trim();
-        String price = priceField.getText().trim();
+        Double startPrice = Double.parseDouble(priceField.getText().trim());
+        LocalDate startDate = startDatePicker.getValue();
+        LocalDate endDate = endDatePicker.getValue();
 
-        Item newItem = new Item(name, category, description, price, "OPEN");
+        Item newItem = new Item(title,category,description, startPrice, startPrice, "None", startDate, endDate, "OPEN", 0);
 
-        if (name.isEmpty() || category.isEmpty() || description.isEmpty() || price.isEmpty()) {
+        if (title.isEmpty() || category.isEmpty() || description.isEmpty() ) {
             errorLabel.setText("Vui lòng nhập đầy đủ thông tin");
         }
         if (sellerDashboardController != null) {

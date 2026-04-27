@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 import javafx.event.ActionEvent;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,27 +33,42 @@ public class BidderDashboardController {
     public void initialize() {
         bidderNameLabel.setText("Nguyễn Việt Anh");
         itemList.add(new Item(
-                "ELECTRONICS",
                 "MacBook Pro M3 Max",
+                "Electronics",
                 "Laptop hiệu năng cao dành cho đồ họa và lập trình",
-                "$2500",
-                "OPEN"
+                2000,
+                2500,
+                "user123",
+                LocalDate.parse("2024-04-18"),
+                LocalDate.parse("2026-04-18"),
+                "OPEN",
+                12
         ));
 
         itemList.add(new Item(
-                "ART",
                 "Bức tranh Hoa hướng dương",
+                "Art",
                 "Tác phẩm nghệ thuật phong cách cổ điển",
-                "$40M",
-                "OPEN"
+                30000000,
+                40000000,
+                "bidder02",
+                LocalDate.parse("2024-04-18"),
+                LocalDate.parse("2024-04-18"),
+                "OPEN",
+                8
         ));
 
         itemList.add(new Item(
-                "HYPERCAR",
                 "Ferrari 250 GTO 1962",
+                "Hypercar",
                 "Mẫu siêu xe sưu tầm phiên bản hiếm",
-                "$51M",
-                "FINISHED"
+                50000000,
+                51000000,
+                "bidder07",
+                LocalDate.parse("2024-04-18"),
+                LocalDate.parse("2024-04-18"),
+                "FINISHED",
+                20
         ));
         loadProducts();
     }
@@ -104,7 +120,7 @@ public class BidderDashboardController {
         Label priceText = new Label("GIÁ HIỆN TẠI");
         priceText.getStyleClass().add("meta-label");
 
-        Label priceValue = new Label(item.getPrice());
+        Label priceValue = new Label(String.valueOf(item.getStartPrice()));
         priceValue.setFont(new Font(22));
 
         priceBox.getChildren().addAll(priceText, priceValue);
@@ -116,7 +132,7 @@ public class BidderDashboardController {
         timeBox.setSpacing(4);
         timeBox.setAlignment(Pos.CENTER_RIGHT);
 
-        Label timeText = new Label("KẾT THÚC TRONG");
+        Label timeText = new Label("TRẠNG THÁI");
         timeText.getStyleClass().add("meta-label");
 
         Label timeValue = new Label(item.getStatus());
@@ -128,7 +144,7 @@ public class BidderDashboardController {
 
         Button detailButton = new Button("Xem chi tiết");
         detailButton.getStyleClass().add("detail-button");
-        detailButton.setOnAction(event -> viewDetail(event));
+        detailButton.setOnAction(event -> viewDetail(item));
 
         card.getChildren().addAll(
                 imageBox,
@@ -152,12 +168,18 @@ public class BidderDashboardController {
         }
     }
     @FXML
-    private void viewDetail(ActionEvent event) {
+    private void viewDetail(Item item) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/auction-detail.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/auction-detail.fxml"));
+            Parent root = loader.load();
+
+            AuctionDetailController controller = loader.getController();
+            controller.setItemData(item);
+
+            Stage stage = (Stage) auctionContainer.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

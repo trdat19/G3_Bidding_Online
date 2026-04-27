@@ -17,6 +17,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,27 +35,42 @@ public class SellerDashboardController {
     public void initialize() {
         sellerNameLabel.setText("Nguyễn Việt Anh");
         itemList.add(new Item(
-                "ELECTRONICS",
                 "MacBook Pro M3 Max",
+                "Electronics",
                 "Laptop hiệu năng cao dành cho đồ họa và lập trình",
-                "$2500",
-                "OPEN"
+                2000,
+                2500,
+                "user123",
+                LocalDate.parse("2024-04-18"),
+                LocalDate.parse("2026-04-18"),
+                "OPEN",
+                12
         ));
 
         itemList.add(new Item(
-                "ART",
                 "Bức tranh Hoa hướng dương",
+                "Art",
                 "Tác phẩm nghệ thuật phong cách cổ điển",
-                "$40M",
-                "OPEN"
+                30000000,
+                40000000,
+                "bidder02",
+                LocalDate.parse("2024-04-18"),
+                LocalDate.parse("2024-04-18"),
+                "OPEN",
+                8
         ));
 
         itemList.add(new Item(
-                "HYPERCAR",
                 "Ferrari 250 GTO 1962",
+                "Hypercar",
                 "Mẫu siêu xe sưu tầm phiên bản hiếm",
-                "$51M",
-                "FINISHED"
+                50000000,
+                51000000,
+                "bidder07",
+                LocalDate.parse("2024-04-18"),
+                LocalDate.parse("2024-04-18"),
+                "FINISHED",
+                20
         ));
         loadProducts();
     }
@@ -101,7 +117,7 @@ public class SellerDashboardController {
         VBox priceBox = new VBox(6);
         Label priceLabel = new Label("GIÁ KHỞI ĐIỂM");
         priceLabel.getStyleClass().add("meta-label");
-        Label priceValue = new Label(item.getPrice());
+        Label priceValue = new Label(String.valueOf(item.getStartPrice()));
         priceValue.getStyleClass().add("meta-value");
         priceBox.getChildren().addAll(priceLabel, priceValue);
 
