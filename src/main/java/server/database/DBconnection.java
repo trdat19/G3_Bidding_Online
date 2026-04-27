@@ -10,9 +10,9 @@ public class DBconnection {
     private static DBconnection instance;
     private final HikariDataSource dataSource;
 
-    private String url = "jdbc:mysql://localhost:3306/auction_system";
+    private String url = "jdbc:mysql://nozomi.proxy.rlwy.net:24310/railway?serverTimezone=UTC&useSSL=true&requireSSL=true";
     private String user = "root";
-    private String pass = "011007";
+    private String pass = "QMXMdCasKkgHnqOxFfAXwzouhwqMtqOR";
 
     private DBconnection() {
         HikariConfig config = new HikariConfig();

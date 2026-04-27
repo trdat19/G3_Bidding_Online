@@ -3,7 +3,6 @@ package server.dao;
 import server.database.DBconnection;
 import server.model.core.Auction;
 import shared.enums.AuctionStatus;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
