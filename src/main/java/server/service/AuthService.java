@@ -1,6 +1,6 @@
 package server.service;
 
-import server.dao.UserDao;
+import server.dao.UserDAO;
 import server.model.user.User;
 
 public class AuthService {
@@ -29,7 +29,7 @@ public class AuthService {
 //        return false;
 //    }
     public User login(String username, String password) {
-        UserDao userDao = new UserDao();
+        UserDAO userDao = new UserDAO();
         User user = userDao.findByUsername(username);
 
         if (user != null && user.getPassword().equals(password)) {

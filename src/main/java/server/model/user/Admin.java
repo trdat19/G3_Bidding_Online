@@ -6,14 +6,26 @@ import shared.enums.UserStatus;
 import java.sql.Timestamp;
 
 public class Admin extends User {
-    public Admin(){}
 
-    public Admin(String username, String password, String fullName, String email) {
-        super(username, password, fullName, email, UserRole.ADMIN, UserStatus.ACTIVE);
+    private static final long serialVersionUID = 1L;
+
+    public Admin() {}
+
+    public Admin(String username, String password, String fullname, String email) {
+        super(username, password, fullname, email);
+        this.role = UserRole.ADMIN;
     }
 
-    public Admin(Long id, String username, String password, String fullName, String email,
-                 UserStatus status, Timestamp createdAt) {
-        super(id, username, password, fullName, email, UserRole.ADMIN, status, createdAt);
+    public void suspendUser(String id) {
+        // lấy user từ database ra, đặt status = blocked;
+    }
+
+    public void viewReport() {
+        //xem report;
+    }
+
+    @Override
+    public String getInfo() {
+        return super.getInfo() + " | [ADMIN]";
     }
 }

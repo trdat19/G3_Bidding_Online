@@ -5,14 +5,16 @@ import server.model.item.Art;
 import server.model.item.Electronics;
 import server.model.item.Item;
 import server.model.item.Vehicle;
+
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
+
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemDao {
+public class ItemDAO {
 
     // thêm item mới
     public boolean insertItem(Item item) {
@@ -20,15 +22,16 @@ public class ItemDao {
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection con = DBconnection.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
+        {
             ps.setString(1, item.getNameItem());
             ps.setString(2, item.getCategory().name());
             ps.setString(3, item.getDescription());
             ps.setLong(4, item.getSellerId());
             ps.setBigDecimal(5, item.getPriceStart());
             ps.setString(6, item.getStatusItem().name());
-            int rowsAffected = ps.executeUpdate();
 
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
@@ -46,8 +49,10 @@ public class ItemDao {
     // tìm item theo id
     public Item findById(long id) {
         String sql = "SELECT * FROM Items WHERE id_item = ?";
+
         try (Connection con = DBconnection.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql))
+        {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -61,35 +66,41 @@ public class ItemDao {
     }
 
     // tìm item theo tên
-    public Item findByNameItem(String nameItem) {
-        String sql = "SELECT * FROM Items WHERE name_id = ?";
+    public Item findByName(String nameItem) {
+        String sql = "SELECT * FROM Items WHERE name_item = ?";
         try(Connection con = DBconnection.getInstance().getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)) {
+            PreparedStatement ps = con.prepareStatement(sql))
+        {
             ps.setString(1,nameItem);
             try(ResultSet rs = ps.executeQuery()) {
                 if(rs.next()) {
                     return mapResultSetToItem(rs);
                 }
             }
-        }catch (SQLException e) {
-            System.err.println("FindByname_item error: " + e.getMessage());
+
+        } catch (SQLException e) {
+            System.err.println("FindByName_item error: " + e.getMessage());
         }
         return null;
     }
 
     // lấy tất cả item
-    public List<Item> findAll() {
+    public List<Item> getAllItems() {
         String sql = "SELECT * FROM Items";
+
         List<Item> items = new ArrayList<>();
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             ResultSet rs = ps.executeQuery())
+        {
             while (rs.next()) {
                 items.add(mapResultSetToItem(rs));
             }
+
         } catch (SQLException e) {
-            System.err.println("findAll error: " + e.getMessage());
+            System.err.println("getAllItems error: " + e.getMessage());
         }
+
         return items;
     }
 
@@ -97,14 +108,17 @@ public class ItemDao {
     public List<Item> findBySellerId(long sellerId) {
         String sql = "SELECT * FROM Items WHERE id_seller = ?";
         List<Item> items = new ArrayList<>();
+
         try (Connection con = DBconnection.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql))
+        {
             ps.setLong(1, sellerId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     items.add(mapResultSetToItem(rs));
                 }
             }
+
         } catch (SQLException e) {
             System.err.println("findBySellerId error: " + e.getMessage());
         }
@@ -115,8 +129,10 @@ public class ItemDao {
     public boolean updateItem(Item item) {
         String sql = "UPDATE Items SET name_item = ?, category = ?, description = ?, " +
                 "id_seller = ?, price_start = ?, status_item = ? WHERE id_item = ?";
+
         try (Connection con = DBconnection.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql))
+        {
             ps.setString(1, item.getNameItem());
             ps.setString(2, item.getCategory().name());
             ps.setString(3, item.getDescription());
@@ -124,6 +140,7 @@ public class ItemDao {
             ps.setBigDecimal(5, item.getPriceStart());
             ps.setString(6, item.getStatusItem().name());
             ps.setLong(7, item.getId());
+
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -135,8 +152,10 @@ public class ItemDao {
     // đổi status item
     public boolean updateStatus(long idItem, ItemStatus status) {
         String sql = "UPDATE Items SET status_item = ? WHERE id_item = ?";
+
         try (Connection con = DBconnection.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql))
+        {
             ps.setString(1, status.name());
             ps.setLong(2, idItem);
             return ps.executeUpdate() > 0;
@@ -150,10 +169,12 @@ public class ItemDao {
     // xóa item
     public boolean deleteItem(long idItem) {
         String sql = "DELETE FROM Items WHERE id_item = ?";
+
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, idItem);
             return ps.executeUpdate() > 0;
+
         } catch (SQLException e) {
             System.err.println("deleteItem error: " + e.getMessage());
         }
@@ -169,15 +190,27 @@ public class ItemDao {
         long sellerId = rs.getLong("id_seller");
         BigDecimal priceStart = rs.getBigDecimal("price_start");
         ItemStatus statusItem = ItemStatus.valueOf(rs.getString("status_item"));
-        Timestamp createdAtItem = rs.getTimestamp("created_atItem");
+        Timestamp createdAtItem = rs.getTimestamp("created_at_item");
 
         switch (category) {
             case ART:
-                return new Art(id, nameItem, description, sellerId, priceStart, statusItem, createdAtItem);
+                Art art = new Art(nameItem, description, sellerId, priceStart, statusItem);
+                art.setId(id);
+                art.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                return art;
+
             case ELECTRONICS:
-                return new Electronics(id, nameItem, description, sellerId, priceStart, statusItem, createdAtItem);
+                Electronics electronics = new Electronics(nameItem, description, sellerId, priceStart, statusItem);
+                electronics.setId(id);
+                electronics.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                return electronics;
+
             case VEHICLE:
-                return new Vehicle(id, nameItem, description, sellerId, priceStart, statusItem, createdAtItem);
+                Vehicle vehicle = new Vehicle(nameItem, description, sellerId, priceStart, statusItem);
+                vehicle.setId(id);
+                vehicle.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                return vehicle;
+
             default:
                 throw new SQLException("Invalid item category: " + category);
         }

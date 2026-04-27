@@ -10,7 +10,7 @@ import java.util.List;
 
 public class TestUserDao {
     public static void main(String[] args) {
-        UserDao userDao = new UserDao();
+        UserDAO userDao = new UserDAO();
 
         System.out.println("===== TEST INSERT =====");
         User admin = new Admin("admin01", "123456", "System Admin", "admin01@gmail.com");
@@ -91,7 +91,7 @@ public class TestUserDao {
 
         System.out.println("\n===== TEST UPDATE PASSWORD =====");
         if (admin.getId() != null) {
-            boolean updatedPassword = userDao.UpdatePassword(admin.getId(), "999999");
+            boolean updatedPassword = userDao.updatePassword(admin.getId(), "999999");
             System.out.println("Update password admin: " + updatedPassword);
 
             User adminAfterPassword = userDao.findById(admin.getId());

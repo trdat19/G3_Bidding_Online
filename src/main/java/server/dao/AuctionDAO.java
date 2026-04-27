@@ -4,6 +4,7 @@ import server.database.DBconnection;
 import server.model.core.Auction;
 import shared.enums.AuctionStatus;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +12,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Locale;
 
-public class AuctionDao {
+public class AuctionDAO {
 
     // thêm auction mới vào bảng auctions
     public boolean insertAuction(Auction auction) {
@@ -23,14 +25,12 @@ public class AuctionDao {
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, auction.getItemId());
             ps.setLong(2, auction.getSellerId());
-            ps.setDouble(3, auction.getStartPrice());
-            ps.setDouble(4, auction.getMax_price());
-            ps.setDouble(5, auction.getMin_increment() > 0 ? auction.getMin_increment() : 1.0);
-            ps.setObject(6,
-                    auction.getBuy_now_price() > 0 ? auction.getBuy_now_price() : null,
-                    Types.DECIMAL);
-            ps.setTimestamp(7, auction.getStartTime());
-            ps.setTimestamp(8, auction.getEndTime());
+            ps.setBigDecimal(3, auction.getStartPrice());
+            ps.setBigDecimal(4, auction.getMaxPrice());
+            ps.setBigDecimal(5, auction.getMinIncrement());
+            ps.setBigDecimal(6, auction.getBuyNowPrice());
+            ps.setTimestamp(7, Timestamp.valueOf(auction.getStartTime()));
+            ps.setTimestamp(8, Timestamp.valueOf(auction.getEndTime()));
             ps.setString(9, auction.getStatus().name());
 
             int rowsAffected = ps.executeUpdate();
@@ -67,7 +67,7 @@ public class AuctionDao {
     }
 
     // lấy toàn bộ auction trong bảng
-    public List<Auction> findAll() {
+    public List<Auction> getAllAuctions() {
         String sql = "SELECT * FROM auctions";
         List<Auction> auctions = new ArrayList<>();
 
@@ -78,13 +78,13 @@ public class AuctionDao {
                 auctions.add(mapResultSetToAuction(rs));
             }
         } catch (SQLException e) {
-            System.err.println("findAll error: " + e.getMessage());
+            System.err.println("getAllAuctions error: " + e.getMessage());
         }
         return auctions;
     }
 
     // lấy tất cả auction của một seller
-    public List<Auction> findBySellerId(long sellerId) {
+    public List<Auction> getAllAuctionsBySellerId(long sellerId) {
         String sql = "SELECT * FROM auctions WHERE id_seller = ?";
         List<Auction> auctions = new ArrayList<>();
         try (Connection con = DBconnection.getInstance().getConnection();
@@ -96,14 +96,14 @@ public class AuctionDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("findBySellerId error: " + e.getMessage());
+            System.err.println("getAllAuctionsBySellerId error: " + e.getMessage());
         }
         return auctions;
     }
 
     // lấy tất cả auction của một item
     // dùng để xem lịch sử đấu giá của món hàng đó
-    public List<Auction> findByItemId(long itemId) {
+    public List<Auction> getAllAuctionsByItemId(long itemId) {
         String sql = "SELECT * FROM auctions WHERE id_item = ? ORDER BY id_auction DESC";
         List<Auction> auctions = new ArrayList<>();
 
@@ -116,13 +116,13 @@ public class AuctionDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("findByItemId error: " + e.getMessage());
+            System.err.println("getAllAuctionsByItemId error: " + e.getMessage());
         }
         return auctions;
     }
 
     // lấy auction theo trạng thái
-    public List<Auction> findByStatus(AuctionStatus status) {
+    public List<Auction> getAllAuctionsByStatus(AuctionStatus status) {
         String sql = "SELECT * FROM auctions WHERE status_auction = ?";
         List<Auction> auctions = new ArrayList<>();
 
@@ -135,14 +135,14 @@ public class AuctionDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("findByStatus error: " + e.getMessage());
+            System.err.println("getAllAuctionsByStatus error: " + e.getMessage());
         }
         return auctions;
     }
 
     // tìm auction đang OPEN của một item
     // dùng khi cần kiểm tra item này hiện có đang được đấu giá hay không
-    public Auction findOpenByItemId(long itemId) {
+    public Auction findOpeningAuctionsByItemId(long itemId) {
         String sql = "SELECT * FROM auctions WHERE id_item = ? AND status_auction = 'OPEN' LIMIT 1";
 
         try (Connection con = DBconnection.getInstance().getConnection();
@@ -156,7 +156,7 @@ public class AuctionDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("findOpenByItemId error: " + e.getMessage());
+            System.err.println("findOpeningAuctionsByItemId error: " + e.getMessage());
         }
         return null;
     }
@@ -173,17 +173,12 @@ public class AuctionDao {
 
             ps.setLong(1, auction.getItemId());
             ps.setLong(2, auction.getSellerId());
-            ps.setDouble(3, auction.getStartPrice());
-            ps.setDouble(4, auction.getMax_price());
-            ps.setDouble(5, auction.getMin_increment() > 0 ? auction.getMin_increment() : 1.0);
-            ps.setObject(6,
-                    auction.getBuy_now_price() > 0 ? auction.getBuy_now_price() : null,
-                    Types.DECIMAL);
-//            ps.setDouble(4, auction.getMaxPrice());
-//            ps.setDouble(5, auction.getMinIncrement());
-//            ps.setDouble(6, auction.getBuyNowPrice());
-            ps.setTimestamp(7, auction.getStartTime());
-            ps.setTimestamp(8, auction.getEndTime());
+            ps.setBigDecimal(3, auction.getStartPrice());
+            ps.setBigDecimal(4, auction.getMaxPrice());
+            ps.setBigDecimal(5, auction.getMinIncrement());
+            ps.setBigDecimal(6, auction.getBuyNowPrice());
+            ps.setTimestamp(7, Timestamp.valueOf(auction.getStartTime()));
+            ps.setTimestamp(8, Timestamp.valueOf(auction.getEndTime()));
             ps.setString(9, auction.getStatus().name());
             ps.setLong(10, auction.getId());
 
@@ -211,14 +206,16 @@ public class AuctionDao {
 
     // cập nhật riêng giá cao nhất hiện tại
     // dùng khi có người bid thành công
-    public boolean updateMaxPrice(long idAuction, double newMaxPrice) {
+    public boolean updateMaxPrice(long idAuction, BigDecimal newMaxPrice) {
         String sql = "UPDATE auctions SET max_price = ? WHERE id_auction = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setDouble(1, newMaxPrice);
+
+            ps.setBigDecimal(1, newMaxPrice);
             ps.setLong(2, idAuction);
             return ps.executeUpdate() > 0;
+
         } catch (SQLException e) {
             System.err.println("updateMaxPrice error: " + e.getMessage());
         }
@@ -241,7 +238,7 @@ public class AuctionDao {
     }
 
     // kiểm tra auction có tồn tại không
-    public boolean existsById(long idAuction) {
+    public boolean existsAuctionById(long idAuction) {
         String sql = "SELECT 1 FROM auctions WHERE id_auction = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
@@ -289,20 +286,23 @@ public class AuctionDao {
 
     // chuyển dữ liêu DB thành Object
     private Auction mapResultSetToAuction(ResultSet rs) throws SQLException {
-        Long id = rs.getLong("id_auction");
-        Long itemId = rs.getLong("id_item");
-        Long sellerId = rs.getLong("id_seller");
-        double startPrice = rs.getDouble("start_price");
-        Timestamp startTime = rs.getTimestamp("start_time");
-        Timestamp endTime = rs.getTimestamp("end_time");
-        Auction auction = new Auction(id, itemId, sellerId, startPrice, startTime, endTime);
-        auction.setStatus(AuctionStatus.valueOf(rs.getString("status_auction")));
-        auction.setMax_price(rs.getDouble("max_price"));
-        auction.setMin_increment(rs.getDouble("min_increment"));
+        Auction auction = new Auction();
 
-        double buyNowPrice = rs.getDouble("buy_now_price");
-        if (!rs.wasNull()) {
-            auction.setBuy_now_price(buyNowPrice);
+        auction.setId(rs.getLong("id_auction"));
+        auction.setItemId(rs.getLong("id_item"));
+        auction.setSellerId(rs.getLong("id_seller"));
+        auction.setStartPrice(rs.getBigDecimal("start_price"));
+        auction.setMaxPrice(rs.getBigDecimal("max_price"));
+        auction.setMinIncrement(rs.getBigDecimal("min_increment"));
+        auction.setBuyNowPrice(rs.getBigDecimal("buy_now_price"));
+        auction.setStatus(AuctionStatus.valueOf(rs.getString("status_auction")));
+        Timestamp startTs = rs.getTimestamp("start_time");
+        if (startTs != null) {
+            auction.setStartTime(startTs.toLocalDateTime());
+        }
+        Timestamp endTs = rs.getTimestamp("end_time");
+        if (endTs != null) {
+            auction.setStartTime(endTs.toLocalDateTime());
         }
         return auction;
     }

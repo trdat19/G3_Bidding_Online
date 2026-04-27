@@ -6,30 +6,35 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Art extends Item {
+
+    private static final long serialVersionUID = 1L;
+
     private String artist;
     private int year;
     private String material;
 
-    public Art() {
-        this.category = ItemCategory.ART;
-    }
+    public Art() {}
 
     public Art(String nameItem, String description, Long sellerId,
                BigDecimal priceStart, ItemStatus statusItem) {
-        super(nameItem, ItemCategory.ART, description, sellerId, priceStart, statusItem);
-
+        super(nameItem, description, sellerId, priceStart, statusItem);
+        this.category = ItemCategory.ART;
+        //set thuoc tinh rieng
     }
 
-    public Art(Long id, String nameItem, String description, Long sellerId,
-               BigDecimal priceStart, ItemStatus statusItem, Timestamp createdAtItem) {
-        super(id, nameItem, ItemCategory.ART, description, sellerId, priceStart, statusItem, createdAtItem);
-    }
+    //getter
+    public String getArtist() { return artist; }
+    public int getYear() { return year; }
+    public String getMaterial() { return material; }
+
+    //setter
+    public void setArtist(String artist) { this.artist = artist; }
+    public void setYear(int year) { this.year = year; }
+    public void setMaterial(String material) { this.material = material; }
 
     @Override
-    public void printInfo() {
-        System.out.println("Art: " + nameItem +
-                            "| Artist: " + artist +
-                            "| Year: " + year +
-                            "| Material: " + material);
+    public String getInfo() {
+        return String.format("Art: %s | Artist: %s | Year: %d | Material: %s ",
+                nameItem, artist, year, material);
     }
 }

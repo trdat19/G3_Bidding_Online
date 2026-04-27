@@ -1,6 +1,5 @@
 package server.model.core;
 
-import server.model.user.Bidder;
 import shared.enums.AuctionStatus;
 
 import java.util.*;
