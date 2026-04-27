@@ -13,9 +13,30 @@ import java.io.IOException;
 public class RegisterFormController {
     @FXML
     private TextField username;
+    private PasswordField password;
+    private PasswordField confirmPassword;
+
+    private void showAlert(String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText(msg);
+        alert.show();
+    }
 
     @FXML
     private void handleRegister() {
+        String user = username.getText();
+        String pass = password.getText();
+        String confirm = confirmPassword.getText();
+
+        if (user.isEmpty() || pass.isEmpty()) {
+            showAlert("Không được để trống!");
+        }
+
+        if (!pass.equals(confirm)) {
+            showAlert("Mật khẩu xác nhận không khớp!");
+        }
+
+        //bắt đầu gửi dl
 
     }
     @FXML
@@ -29,6 +50,7 @@ public class RegisterFormController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
 
     }
 
