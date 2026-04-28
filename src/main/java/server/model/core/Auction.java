@@ -79,5 +79,6 @@ public class Auction { //state 1 phiên đấu giá có cái gì
     public void setMin_increment(double min_increment) {
         this.min_increment = min_increment;
     }
+    public void set
 
 }
