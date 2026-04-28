@@ -9,14 +9,26 @@ import javafx.scene.Node;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
+import shared.enums.UserRole;
 public class RegisterFormController {
     @FXML
     private TextField username;
-
+    @FXML
+    private PasswordField password;
+    @FXML
+    private PasswordField confirmPassword;
+    @FXML
+    private ComboBox<UserRole> comboBox;
+    @FXML
+    public void initialize() {
+        comboBox.getItems().addAll(UserRole.values()); //Su dung enum trong share de tranh sai String
+        comboBox.setValue(UserRole.BIDDER); //gia tri mac dinh
+    }
     @FXML
     private void handleRegister() {
-
+        String usernameInput = username.getText();
+        String passwordInput = password.getText();
+        UserRole role = comboBox.getValue();
     }
     @FXML
     private void goToLogin() {
@@ -29,7 +41,5 @@ public class RegisterFormController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
 }

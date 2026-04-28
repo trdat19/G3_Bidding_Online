@@ -5,13 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/client/controller/BiddingViewController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/view/bidding-view.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AddProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AddProductController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AuctionDetailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AuctionDetailController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BidderDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BidderDashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/SellerDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/SellerDashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/model/Item.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/model/Item.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/auction-detail.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/auction-detail.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/auction-detail.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/auction-detail.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/bidding-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/bidding-view.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/view/register-form.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/register-form.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/view/register-form.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/register-form.fxml" afterDir="false" />
     </list>
@@ -19,6 +23,9 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="114" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -76,6 +83,7 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;vanh&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/UET/LTNC/javaFX/G3_BiddingOnline&quot;,
@@ -86,7 +94,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.17931035&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMConfigurable&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -155,10 +163,25 @@
       <workItem from="1776866941654" duration="6109000" />
       <workItem from="1776885173783" duration="2749000" />
       <workItem from="1776888284025" duration="1035000" />
+      <workItem from="1776904164110" duration="5547000" />
+      <workItem from="1777025848162" duration="1397000" />
+      <workItem from="1777138419663" duration="833000" />
+      <workItem from="1777197948274" duration="1092000" />
+      <workItem from="1777257381155" duration="3824000" />
+      <workItem from="1777308370994" duration="874000" />
+      <workItem from="1777309259229" duration="2292000" />
+      <workItem from="1777313392687" duration="82000" />
+      <workItem from="1777313505561" duration="443000" />
+      <workItem from="1777313978128" duration="422000" />
+      <workItem from="1777387666764" duration="3979000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

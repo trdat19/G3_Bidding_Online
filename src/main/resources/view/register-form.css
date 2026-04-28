@@ -33,3 +33,20 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.10), 18, 0.15, 0, 6);
     -fx-max-width: 420;
 }
+.combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 14;
+    -fx-padding: 8 12;
+    -fx-font-size: 14px;
+}
+
+.combo-box:focused {
+    -fx-border-color: #3b82f6;
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.2), 8, 0.2, 0, 0);
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
