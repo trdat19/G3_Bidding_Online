@@ -12,7 +12,7 @@ public class SocketSever {
 
     public void start() {
         try {
-            serverSocket = new ServerSocket(PORT); // Gán vào biến toàn cục
+            serverSocket = new ServerSocket(PORT);
             isRunning = true;
             System.out.println(">>> Server G3-Bidding đang chạy tại cổng: " + PORT);
 
@@ -20,7 +20,6 @@ public class SocketSever {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println(">>> Kết nối mới từ: " + clientSocket.getInetAddress());
 
-                // Chạy handler
                 new Thread(new ClientConnectionHandler(clientSocket)).start();
             }
         } catch (IOException e) {
@@ -35,7 +34,6 @@ public class SocketSever {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println(">>> Có kết nối mới từ: " + clientSocket.getInetAddress());
 
-                // Giao cho Handler chạy trong một Thread riêng
                 ClientConnectionHandler handler = new ClientConnectionHandler(clientSocket);
                 Thread thread = new Thread(handler);
                 thread.start();

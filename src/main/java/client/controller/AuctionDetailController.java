@@ -22,6 +22,7 @@ public class AuctionDetailController {
     @FXML private Label endTimeLabel;
     @FXML private Label statusLabel;
     @FXML private Label bidCountLabel;
+    private Item currentItem;
 
     public void setItemData(Item item) {
         productNameLabel.setText(item.getTitle());
@@ -34,11 +35,14 @@ public class AuctionDetailController {
         endTimeLabel.setText(item.getEndTime().toString());
         statusLabel.setText(item.getStatus());
         bidCountLabel.setText(item.getBidCount() + " bids");
+
+        this.currentItem = item;
     }
 
     private void loadScene(String fxmlPath, ActionEvent event) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
@@ -53,6 +57,20 @@ public class AuctionDetailController {
 
     @FXML
     private void handleJoinAuction(ActionEvent event) {
-        loadScene("/view/biding-view.fxml", event);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/bidding-view.fxml"));
+            Parent root = loader.load();
+
+//            BiddingViewController controller = loader.getController();
+//            controller.setItem(currentItem);
+
+            Stage stage = (Stage) productNameLabel.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
+

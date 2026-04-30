@@ -24,7 +24,7 @@
                     </padding>
 
                     <Label styleClass="section-title" text="Ảnh sản phẩm" />
-                    <ImageView fx:id="productImageView" fitHeight="260" fitWidth="360" preserveRatio="true" />
+                    <ImageView fx:id="productImageView" fitHeight="260" fitWidth="360" preserveRatio="true" styleClass="image-box" />
                     <Label styleClass="hint-text" text="(MacBook Pro M3 Max)" />
                 </VBox>
                 <VBox spacing="18.0" HBox.hgrow="ALWAYS">
@@ -33,13 +33,13 @@
                             <Insets bottom="22" left="22" right="22" top="22" />
                         </padding>
 
-                        <Label fx:id="productNameLabel" styleClass="product-title" text="MacBook Pro M3 Max" />
-                        <Label fx:id="categoryLabel" styleClass="category-text" text="Category: Electronics" />
+                        <Label fx:id="productNameLabel" styleClass="product-name" text="MacBook Pro M3 Max" />
+                        <Label fx:id="categoryLabel" styleClass="product-category" text="Category: Electronics" />
 
                         <Separator />
 
                         <Label styleClass="section-title" text="Mô tả sản phẩm" />
-                        <Label fx:id="descriptionLabel" styleClass="description-text" text="Sản phẩm còn mới, đầy đủ phụ kiện, bảo hành chính hãng. Đây là phần mô tả sản phẩm để người dùng xem thông tin chi tiết trước khi tham gia đấu giá." wrapText="true" />
+                        <Label fx:id="descriptionLabel" prefHeight="31.0" prefWidth="582.0" styleClass="product-description-title" wrapText="true" />
                     </VBox>
                     <VBox spacing="14.0" styleClass="info-card">
                         <padding>
@@ -49,42 +49,42 @@
                         <Label styleClass="section-title" text="Thông tin đấu giá" />
 
                         <HBox spacing="20">
-                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
-                                <Label styleClass="small-label" text="Giá khởi điểm" />
-                                <Label fx:id="startPriceLabel" styleClass="price-text" text="20,000,000 VND" />
+                            <VBox spacing="6" styleClass="current-price" HBox.hgrow="ALWAYS">
+                                <Label styleClass="current-price" text="Giá khởi điểm" />
+                                <Label fx:id="startPriceLabel" styleClass="current-price" text="20,000,000 VND" />
                             </VBox>
 
-                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
-                                <Label styleClass="small-label" text="Giá cao nhất hiện tại" />
-                                <Label fx:id="currentPriceLabel" styleClass="highlight-price" text="25,500,000 VND" />
+                            <VBox prefHeight="44.0" prefWidth="221.0" spacing="6" styleClass="price-value" HBox.hgrow="ALWAYS">
+                                <Label styleClass="current-price" text="Giá cao nhất hiện tại" />
+                                <Label fx:id="currentPriceLabel" prefHeight="31.0" prefWidth="202.0" styleClass="current-price" text="25,500,000 VND" />
                             </VBox>
                         </HBox>
 
                         <HBox spacing="20">
-                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
+                            <VBox spacing="6" styleClass="field-label" HBox.hgrow="ALWAYS">
                                 <Label styleClass="small-label" text="Người dẫn đầu" />
                                 <Label fx:id="leadingBidderLabel" styleClass="normal-value" text="user123" />
                             </VBox>
 
-                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
+                            <VBox prefHeight="18.0" prefWidth="118.0" spacing="6" styleClass="field-label" HBox.hgrow="ALWAYS">
                                 <Label prefHeight="17.0" prefWidth="101.0" styleClass="small-label" text="Bid Count" />
                                 <Label fx:id="bidCountLabel" styleClass="normal-value" text="12 bids" />
                             </VBox>
                         </HBox>
 
                         <HBox spacing="20">
-                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
+                            <VBox spacing="6" styleClass="field-label" HBox.hgrow="ALWAYS">
                                 <Label styleClass="small-label" text="Thời gian bắt đầu" />
                                 <Label fx:id="startTimeLabel" styleClass="normal-value" text="18/04/2026 19:00" />
                             </VBox>
 
-                            <VBox spacing="6" styleClass="small-info-box" HBox.hgrow="ALWAYS">
-                                <Label prefHeight="13.0" prefWidth="110.0" styleClass="small-label" text="Thời gian kết thúc" />
+                            <VBox spacing="6" styleClass="field-label" HBox.hgrow="ALWAYS">
+                                <Label prefHeight="18.0" prefWidth="130.0" styleClass="small-label" text="Thời gian kết thúc" />
                                 <Label fx:id="endTimeLabel" styleClass="normal-value" text="18/04/2026 20:00" />
                             </VBox>
                         </HBox>
 
-                        <VBox spacing="6" styleClass="small-info-box">
+                        <VBox spacing="6" styleClass="countdown-value">
                             <Label styleClass="small-label" text="Thời gian còn lại" />
                             <Label fx:id="countdownLabel" styleClass="countdown-text" text="00:42:18" />
                         </VBox>
@@ -92,8 +92,8 @@
 
                     <!-- Action buttons -->
                     <HBox alignment="CENTER_RIGHT" spacing="15">
-                        <Button fx:id="joinAuctionButton" onAction="#handleJoinAuction" styleClass="join-button" text="Join Auction" />
-                        <Button fx:id="backToListButton" onAction="#handleBack" styleClass="secondary-button" text="Back to List" />
+                        <Button fx:id="joinAuctionButton" onAction="#handleJoinAuction" styleClass="primary-button" text="Tham gia" />
+                        <Button fx:id="backToListButton" onAction="#handleBack" styleClass="secondary-button" text="Quay lại" />
                     </HBox>
 
                 </VBox>

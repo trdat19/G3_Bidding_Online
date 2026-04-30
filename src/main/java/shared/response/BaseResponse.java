@@ -10,20 +10,10 @@ public class BaseResponse implements Serializable {
     private Object data;
     private String message;
 
-    // Constructor 1: Đầy đủ tham số
-    public BaseResponse(boolean success, String action, String message, Object data) {
+    public BaseResponse(boolean success, String message, Object data) {
         this.success = success;
-        this.action = action;
+        this.data = data;
         this.message = message;
-        this.data = data;
-    }
-
-    // Constructor 2: Rút gọn (tự tạo message mặc định)
-    public BaseResponse(boolean success, String action, Object data) {
-        this.success = success;
-        this.action = action;
-        this.data = data;
-        this.message = success ? "Thành công" : "Thất bại";
     }
 
     // --- CÁC PHƯƠNG THỨC GETTER (Để lấy dữ liệu) ---

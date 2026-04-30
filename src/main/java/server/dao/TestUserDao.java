@@ -10,7 +10,7 @@ import java.util.List;
 
 public class TestUserDao {
     public static void main(String[] args) {
-        UserDAO userDao = new UserDAO();
+        UserDAO userDao = UserDAO.getInstance();
 
         System.out.println("===== TEST INSERT =====");
         User admin = new Admin("admin01", "123456", "System Admin", "admin01@gmail.com");

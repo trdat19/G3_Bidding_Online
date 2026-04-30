@@ -1,14 +1,15 @@
 package server.controller;
 
+import server.model.user.User;
 import server.network.ClientConnectionHandler;
 import server.network.RealtimePushServer;
 import server.service.AuthService;
+import shared.enums.UserRole;
 import shared.request.BaseRequest;
 import shared.response.BaseResponse;
 import java.util.Map;
 
 public class AuthServerController {
-    // 1. Singleton Instance
     private static AuthServerController instance;
     private AuthServerController() {}
 
@@ -17,17 +18,17 @@ public class AuthServerController {
         return instance;
     }
 
-    // 2. Xử lý Đăng nhập
     public BaseResponse login(BaseRequest request, ClientConnectionHandler handler) {
         try {
             Map<String, String> data = (Map<String, String>) request.getData();
             String username = data.get("username");
             String pass = data.get("password");
 
-            // 1. Gọi AuthService (Hàm này bạn đã sửa để trả về User thay vì boolean)
             server.model.user.User loggedInUser = AuthService.getInstance().login(username, pass);
 
             if (loggedInUser != null) {
+                // 1. Lưu thông tin user vào handler để quản lý Session
+                handler.setUsetr(loggedInUser);
                 // 2. Đăng ký Realtime bằng username
                 RealtimePushServer.registerUser(username, handler);
 
@@ -44,10 +45,29 @@ public class AuthServerController {
         }
     }
 
-    // 3. Xử lý Đăng ký
+    // Xử lý Đăng ký
     public BaseResponse register(BaseRequest request) {
-        // Logic gọi AuthService.register(...)
-        return new BaseResponse(true, "Đăng ký thành công!", null);
+        try {
+            // 1. Ép kiểu lấy Map dữ liệu từ request
+            Map<String, String> data = (Map<String, String>) request.getData();
+
+            // 2. Gọi AuthService để xử lý logic (hàm này có throws Exception)
+            User newUser = AuthService.getInstance().register(
+                    data.get("username"),
+                    data.get("password"),
+                    data.get("fullname"),
+                    data.get("email"),
+                    UserRole.valueOf(data.get("role"))
+            );
+
+            // 3. Nếu không có Exception nào bị ném ra, nghĩa là thành công
+            return new BaseResponse(true, "Đăng ký thành công!", newUser);
+
+        }
+        catch (Exception e)
+        {
+            return new BaseResponse(false, e.getMessage(), null);
+        }
     }
 
     // 4. Xử lý Đăng xuất

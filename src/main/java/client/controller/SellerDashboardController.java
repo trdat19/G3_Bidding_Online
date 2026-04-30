@@ -117,7 +117,7 @@ public class SellerDashboardController {
         VBox priceBox = new VBox(6);
         Label priceLabel = new Label("GIÁ KHỞI ĐIỂM");
         priceLabel.getStyleClass().add("meta-label");
-        Label priceValue = new Label(String.valueOf(item.getStartPrice()));
+        Label priceValue = new Label(String.valueOf(item.getStartPrice() + "$"));
         priceValue.getStyleClass().add("meta-value");
         priceBox.getChildren().addAll(priceLabel, priceValue);
 

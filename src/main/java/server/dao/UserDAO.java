@@ -12,7 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
-    // thêm user mới vào table
+    private static UserDAO instance;
+
+    private UserDAO() {
+    }
+    public static UserDAO getInstance() {
+        if (instance == null) {
+            instance = new UserDAO();
+        }
+        return instance;
+    }
     public boolean insertUser(User user) {
         String sql = "INSERT INTO users(username, password, full_name, email, role, status) " +
                      "VALUES (?, ?, ?, ?, ?, ?)";
