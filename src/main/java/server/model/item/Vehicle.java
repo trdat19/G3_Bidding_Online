@@ -6,27 +6,32 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Vehicle extends Item {
+
+    private static final long serialVersionUID = 1L;
+
     private String manufacturer;
     private int year;
 
-    public Vehicle() {
-        this.category = ItemCategory.VEHICLE;
-    }
+    public Vehicle() {}
 
     public Vehicle(String nameItem, String description, Long sellerId,
                    BigDecimal priceStart, ItemStatus statusItem) {
-        super(nameItem, ItemCategory.VEHICLE, description, sellerId, priceStart, statusItem);
+        super(nameItem, description, sellerId, priceStart, statusItem);
+        this.category = ItemCategory.VEHICLE;
+        //set thuoc tinh rieng
     }
 
-    public Vehicle(Long id, String nameItem, String description, Long sellerId,
-                   BigDecimal priceStart, ItemStatus statusItem, Timestamp createdAtItem) {
-        super(id, nameItem, ItemCategory.VEHICLE, description, sellerId, priceStart, statusItem, createdAtItem);
-    }
+    //getter
+    public String getManufacturer() { return manufacturer; }
+    public int getYear() { return year; }
+
+    //setter
+    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+    public void setYear(int year) { this.year = year; }
 
     @Override
-    public void printInfo() {
-        System.out.println("Vehicle: " + nameItem +
-                "| Manufacturer: " + manufacturer +
-                "| Year: " + year);
+    public String getInfo() {
+        return String.format("Vehicle: %s | Manufacturer: %s | Year: %d",
+                nameItem, manufacturer, year);
     }
 }

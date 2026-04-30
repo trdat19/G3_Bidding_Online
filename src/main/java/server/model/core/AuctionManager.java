@@ -1,13 +1,13 @@
 package server.model.core;
 
-import server.model.user.Bidder;
+import shared.enums.AuctionStatus;
 
 import java.util.*;
 
 //Singleton
 public class AuctionManager {
     private static volatile AuctionManager instance = null;
-    private Map<String, Auction> auctions;
+    private Map<Long, Auction> auctions;
 
     private AuctionManager() {
         auctions = new HashMap<>();
@@ -25,8 +25,11 @@ public class AuctionManager {
     }
 
     public void createAuction() {}
-    public void closeAuction() {}
-    public void removeAuction(String id) {
+    public void closeAuction(Long auctionId) {
+        Auction auction = auctions.get(auctionId);
+        auction.setStatus(AuctionStatus.CLOSED);
+    }
+    public void removeAuction(Long id) {
         auctions.remove(id);
     }
 

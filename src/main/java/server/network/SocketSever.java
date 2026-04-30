@@ -9,18 +9,21 @@ public class SocketSever {
     public boolean isRunning = false;
     public ServerSocket serverSocket;
 
-    private void start()
-    {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Server đang lắng nghe tại cổng: " + PORT);
-            while (true) {
-                Socket clientSocket = serverSocket.accept(); // Chấp nhận kết nối từ Client
-                // Chuyển kết nối cho Handler để xử lý đa luồng
+
+    public void start() {
+        try {
+            serverSocket = new ServerSocket(PORT);
+            isRunning = true;
+            System.out.println(">>> Server G3-Bidding đang chạy tại cổng: " + PORT);
+
+            while (isRunning) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println(">>> Kết nối mới từ: " + clientSocket.getInetAddress());
+
                 new Thread(new ClientConnectionHandler(clientSocket)).start();
             }
-        } catch (IOException e)
-        {
-            e.printStackTrace();
+        } catch (IOException e) {
+            if (isRunning) e.printStackTrace();
         }
     }
     private void acceptLoop()
@@ -31,7 +34,6 @@ public class SocketSever {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println(">>> Có kết nối mới từ: " + clientSocket.getInetAddress());
 
-                // Giao cho Handler chạy trong một Thread riêng
                 ClientConnectionHandler handler = new ClientConnectionHandler(clientSocket);
                 Thread thread = new Thread(handler);
                 thread.start();

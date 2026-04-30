@@ -1,43 +1,71 @@
 package server.model.core;
 
-import server.model.user.Bidder;
-import server.model.user.User;
+import server.model.Entity;
 
-import java.sql.Timestamp;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-public class Bid { //thông tin 1 lần đặt giá
+public class Bid extends Entity { //thông tin 1 lần đặt giá
+
+    private static final long serialVersionUID = 1L;
+
     private Long auctionId;
     private Long bidderId;
-    private double amount;
-    private Timestamp timestamp;
+    private BigDecimal amount;
+    private LocalDateTime timestamp;
+    //private boolean isAutoBid;
 
-    public Bid(Long bidderId, double amount) {
+    public Bid() {}
+
+    public Bid(Long auctionId, Long bidderId, BigDecimal amount) {
+        this.auctionId = auctionId;
         this.bidderId = bidderId;
         this.amount = amount;
     }
 
-    //dùng để tạo thông tin cho BidTransaction khi Bidder đặt lệnh Bid
-    public Bid(Long bidderId, double amount, Timestamp timestamp) {
-        this.bidderId = bidderId;
-        this.amount = amount;
-        this.timestamp = timestamp;
+    //getter
+    public Long getAuctionId() {
+        return auctionId;
     }
-
-    
-    public double getAmount() {
-        return amount;
-    }
-
     public Long getBidderId() {
         return bidderId;
     }
+    public BigDecimal getAmount() {
+        return amount;
+    }
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    //setter
+    public void setAuctionId(Long auctionId) {
+        this.auctionId = auctionId;
+    }
+    public void setBidderId(Long bidderId) {
+        this.bidderId = bidderId;
+    }
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    @Override
+    public String getInfo() {
+        return String.format("Bid[%s] by %d at %s",//%s",
+                amount, bidderId, timestamp /*isAutoBid ? " [AUTO]" : ""*/);
+    }
 
     public boolean isHigherThan(Bid other) {
-        if (this.amount == other.amount) {
-            int com = this.timestamp.compareTo(other.timestamp);
-            if (com <= 0)
-                return false;
-        }
-        return (this.amount > other.amount);
+        int cmp = this.amount.compareTo(other.amount);
+
+        if (cmp > 0) return true;
+        if (cmp < 0) return false;
+
+        // bằng tiền → so thời gian
+        return this.timestamp.isAfter(other.timestamp);
     }
+
+
 }
