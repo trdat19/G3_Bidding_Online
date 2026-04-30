@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +40,8 @@ public class BidderDashboardController {
                 2000,
                 2500,
                 "user123",
-                LocalDate.parse("2024-04-18"),
-                LocalDate.parse("2026-04-18"),
+                LocalDateTime.parse("2024-04-18T19:00"),
+                LocalDateTime.parse("2026-04-18T20:00"),
                 "OPEN",
                 12
         ));
@@ -52,8 +53,8 @@ public class BidderDashboardController {
                 300000,
                 400000,
                 "bidder02",
-                LocalDate.parse("2024-04-18"),
-                LocalDate.parse("2024-04-18"),
+                LocalDateTime.parse("2026-04-29T19:00"),
+                LocalDateTime.parse("2026-04-30T20:00"),
                 "OPEN",
                 8
         ));
@@ -65,8 +66,8 @@ public class BidderDashboardController {
                 500000,
                 510000,
                 "bidder07",
-                LocalDate.parse("2024-04-18"),
-                LocalDate.parse("2024-04-18"),
+                LocalDateTime.parse("2026-04-29T19:00"),
+                LocalDateTime.parse("2026-04-30T20:00"),
                 "FINISHED",
                 20
         ));

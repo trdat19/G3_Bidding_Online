@@ -1,6 +1,7 @@
 package client.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Item {
     private String title;
@@ -9,14 +10,15 @@ public class Item {
     private double startPrice;
     private double currentPrice;
     private String leader;
-    private LocalDate startTime;
-    private LocalDate endTime;
+    private String seller;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String status;
     private int bidCount;
 
     public Item(String title, String category, String description,
                 double startPrice, double currentPrice,
-                String leader, LocalDate startTime, LocalDate endTime,
+                String leader, LocalDateTime startTime, LocalDateTime endTime,
                 String status, int bidCount) {
         this.title = title;
         this.category = category;
@@ -54,11 +56,11 @@ public class Item {
         return leader;
     }
 
-    public LocalDate getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public LocalDate getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 

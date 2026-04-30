@@ -1,0 +1,143 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom right, #e0e7ff, #f8fafc);
+    -fx-font-family: "Segoe UI", "Arial";
+}
+/* Khung form chính */
+.form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 18px;
+    -fx-padding: 36px 44px 36px 44px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.18), 24, 0.2, 0, 8);
+}
+
+/* Tiêu đề */
+.form-title {
+    -fx-font-size: 34px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+/* Label */
+.label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #1e293b;
+    -fx-font-weight: 500;
+}
+
+/* Ô nhập */
+.text-field,
+.text-area,
+.date-picker,
+.combo-box,
+.choice-box {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 10px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1.2px;
+    -fx-font-size: 15px;
+    -fx-text-fill: #0f172a;
+}
+
+/* TextField / ComboBox chiều cao */
+.text-field,
+.combo-box,
+.choice-box,
+.date-picker {
+    -fx-pref-height: 42px;
+}
+
+/* TextArea */
+.text-area {
+    -fx-pref-height: 110px;
+}
+
+.text-area .content {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 10px;
+}
+
+/* Placeholder */
+.text-field .prompt-text,
+.text-area .prompt-text {
+    -fx-fill: #94a3b8;
+}
+
+/* Khi focus */
+.text-field:focused,
+.text-area:focused,
+.date-picker:focused,
+.combo-box:focused,
+.choice-box:focused {
+    -fx-border-color: #4f46e5;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(79, 70, 229, 0.25), 8, 0.2, 0, 0);
+}
+
+/* DatePicker */
+.date-picker .arrow-button {
+    -fx-background-color: #eef2ff;
+    -fx-background-radius: 0 10px 10px 0;
+}
+
+.date-picker .arrow-button:hover {
+    -fx-background-color: #ddd6fe;
+}
+
+/* ComboBox / ChoiceBox */
+.combo-box .arrow-button,
+.choice-box .open-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 10px;
+}
+
+.combo-box-popup .list-cell {
+    -fx-font-size: 14px;
+    -fx-padding: 8px 12px;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #eef2ff;
+}
+
+/* Dòng chọn ngày + giờ */
+.time-row {
+    -fx-spacing: 14px;
+    -fx-alignment: center-left;
+}
+
+/* Nút lưu */
+.save-button {
+    -fx-background-color: #4f46e5;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px 22px;
+    -fx-cursor: hand;
+}
+
+.save-button:hover {
+    -fx-background-color: #4338ca;
+}
+
+/* Nút hủy */
+.cancel-button {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #1e293b;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px 22px;
+    -fx-cursor: hand;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #cbd5e1;
+}

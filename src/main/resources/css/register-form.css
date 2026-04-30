@@ -50,3 +50,17 @@
 .combo-box .arrow-button {
     -fx-background-color: transparent;
 }
+.register-button {
+    -fx-pref-width: 280;
+    -fx-pref-height: 44;
+    -fx-background-color: #4f46e5;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
+
+.register-button:hover {
+    -fx-background-color: #4338ca;
+}

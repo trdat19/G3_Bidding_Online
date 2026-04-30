@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1100.0" stylesheets="@auction-detail.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AuctionDetailController">
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" stylesheets="@../css/auction-detail.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AuctionDetailController">
     <children>
         <VBox prefHeight="700.0" prefWidth="1100.0" spacing="20.0" styleClass="root-container" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <padding>
@@ -86,7 +86,7 @@
 
                         <VBox spacing="6" styleClass="countdown-value">
                             <Label styleClass="small-label" text="Thời gian còn lại" />
-                            <Label fx:id="countdownLabel" styleClass="countdown-text" text="00:42:18" />
+                            <Label fx:id="timeLeftLabel" styleClass="countdown-text" text="00:42:18" />
                         </VBox>
                     </VBox>
 

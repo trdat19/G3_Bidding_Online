@@ -17,7 +17,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +41,8 @@ public class SellerDashboardController {
                 2000,
                 2500,
                 "user123",
-                LocalDate.parse("2024-04-18"),
-                LocalDate.parse("2026-04-18"),
+                LocalDateTime.parse("2024-04-18T19:00"),
+                LocalDateTime.parse("2026-04-18T20:00"),
                 "OPEN",
                 12
         ));
@@ -54,8 +54,8 @@ public class SellerDashboardController {
                 30000000,
                 40000000,
                 "bidder02",
-                LocalDate.parse("2024-04-18"),
-                LocalDate.parse("2024-04-18"),
+                LocalDateTime.parse("2024-04-18T19:00"),
+                LocalDateTime.parse("2026-04-18T20:00"),
                 "OPEN",
                 8
         ));
@@ -67,8 +67,8 @@ public class SellerDashboardController {
                 50000000,
                 51000000,
                 "bidder07",
-                LocalDate.parse("2024-04-18"),
-                LocalDate.parse("2024-04-18"),
+                LocalDateTime.parse("2024-04-18T19:00"),
+                LocalDateTime.parse("2026-04-18T20:00"),
                 "FINISHED",
                 20
         ));
