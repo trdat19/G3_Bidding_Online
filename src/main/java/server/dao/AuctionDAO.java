@@ -12,7 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Locale;
+
 
 public class AuctionDAO {
 
@@ -302,7 +302,7 @@ public class AuctionDAO {
         }
         Timestamp endTs = rs.getTimestamp("end_time");
         if (endTs != null) {
-            auction.setStartTime(endTs.toLocalDateTime());
+            auction.setEndTime(endTs.toLocalDateTime());
         }
         return auction;
     }

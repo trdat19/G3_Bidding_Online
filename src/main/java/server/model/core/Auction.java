@@ -74,6 +74,9 @@ public class Auction extends Entity { //state 1 phiên đấu giá có cái gì
     public List<Bid> getAllBids() {
         return new ArrayList<>(bids);
     }
+    public Bid getHighestBid() {
+        return highestBid;
+    }
 
     //setter
     public void setItemId(Long itemId) { this.itemId = itemId; }

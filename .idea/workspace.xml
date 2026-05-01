@@ -5,9 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/shared/request/RegisterRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/shared/exception/AuctionNotFoundException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/shared/exception/BidExceededLimitException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/shared/exception/BidTooLowException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/shared/exception/InsufficientBalanceException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/shared/exception/InvalidAuctionTimeException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/Auction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/Auction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/BidTransaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/BidTransaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/user/Bidder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/user/Bidder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/exception/AuctionClosedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/exception/AuctionClosedException.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,8 +54,24 @@
     </option>
   </component>
   <component name="McpProjectServerCommands">
-    <commands />
-    <urls />
+    <McpServerCommand sourceId="UserConfigurationSource">
+      <option name="allowedToolsNames" />
+      <option name="enabled" value="true" />
+      <option name="name" value="" />
+      <option name="programPath" value="" />
+      <option name="arguments" value="" />
+      <option name="workingDirectory" value="" />
+      <envs />
+    </McpServerCommand>
+    <McpServerCommand sourceId="UserConfigurationSource">
+      <option name="allowedToolsNames" />
+      <option name="enabled" value="true" />
+      <option name="name" value="" />
+      <option name="programPath" value="" />
+      <option name="arguments" value="" />
+      <option name="workingDirectory" value="" />
+      <envs />
+    </McpServerCommand>
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -59,32 +85,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.MainApplication.executor": "Run",
-    "Application.SocketSever.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "trdat",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/UET/LTNC/javaFX/G3_BiddingOnline",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.17931035",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.MainApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.SocketSever.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;trdat&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/UET/LTNC/javaFX/G3_BiddingOnline&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.17931035&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMConfigurable&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Application.MainApplication">
     <configuration name="MainApplication" type="Application" factoryName="Application" singleton="false">
       <option name="MAIN_CLASS_NAME" value="client.MainApplication" />
@@ -126,14 +152,6 @@
         <item itemvalue="Application.SocketSever" />
       </list>
     </recent_temporary>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.31033.145" />
-      </set>
-    </attachedChunks>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
