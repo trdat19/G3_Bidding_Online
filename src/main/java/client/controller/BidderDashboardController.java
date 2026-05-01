@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +40,8 @@ public class BidderDashboardController {
                 2000,
                 2500,
                 "user123",
-                LocalDate.parse("2024-04-18"),
-                LocalDate.parse("2026-04-18"),
+                LocalDateTime.parse("2024-04-18T19:00"),
+                LocalDateTime.parse("2026-04-18T20:00"),
                 "OPEN",
                 12
         ));
@@ -49,11 +50,11 @@ public class BidderDashboardController {
                 "Bức tranh Hoa hướng dương",
                 "Art",
                 "Tác phẩm nghệ thuật phong cách cổ điển",
-                30000000,
-                40000000,
+                300000,
+                400000,
                 "bidder02",
-                LocalDate.parse("2024-04-18"),
-                LocalDate.parse("2024-04-18"),
+                LocalDateTime.parse("2026-04-29T19:00"),
+                LocalDateTime.parse("2026-04-30T20:00"),
                 "OPEN",
                 8
         ));
@@ -62,11 +63,11 @@ public class BidderDashboardController {
                 "Ferrari 250 GTO 1962",
                 "Hypercar",
                 "Mẫu siêu xe sưu tầm phiên bản hiếm",
-                50000000,
-                51000000,
+                500000,
+                510000,
                 "bidder07",
-                LocalDate.parse("2024-04-18"),
-                LocalDate.parse("2024-04-18"),
+                LocalDateTime.parse("2026-04-29T19:00"),
+                LocalDateTime.parse("2026-04-30T20:00"),
                 "FINISHED",
                 20
         ));
@@ -120,7 +121,7 @@ public class BidderDashboardController {
         Label priceText = new Label("GIÁ HIỆN TẠI");
         priceText.getStyleClass().add("meta-label");
 
-        Label priceValue = new Label(String.valueOf(item.getStartPrice()));
+        Label priceValue = new Label(String.valueOf(item.getStartPrice()) + "$");
         priceValue.setFont(new Font(22));
 
         priceBox.getChildren().addAll(priceText, priceValue);

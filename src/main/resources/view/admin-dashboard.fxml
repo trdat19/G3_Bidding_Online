@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="700" prefWidth="1200" styleClass="root-pane" stylesheets="@admin-dashboard.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="client.controller.AdminDashboardController">
+<BorderPane prefHeight="700" prefWidth="1200" styleClass="root-pane" stylesheets="@../css/admin-dashboard.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="client.controller.AdminDashboardController">
 
     <top>
         <HBox alignment="CENTER_LEFT" spacing="15" styleClass="top-bar">

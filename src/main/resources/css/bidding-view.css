@@ -1,0 +1,203 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom right, #f1f5f9, #e2e8f0);
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* ===== HEADER ===== */
+.top-bar {
+    -fx-background-color: transparent;
+}
+
+.title {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+.back-button {
+    -fx-background-color: white;
+    -fx-text-fill: #334155;
+    -fx-font-weight: 700;
+    -fx-background-radius: 12;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 12;
+    -fx-padding: 8 16;
+}
+
+.back-button:hover {
+    -fx-background-color: #f8fafc;
+}
+
+/* ===== STATUS ===== */
+.status-running {
+    -fx-background-color: #dbeafe;
+    -fx-text-fill: #1d4ed8;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-padding: 8 18;
+    -fx-background-radius: 999;
+}
+
+/* ===== IMAGE ===== */
+.image-card {
+    -fx-background-color: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: #cbd5e1;
+    -fx-border-style: dashed;
+    -fx-border-width: 2;
+}
+
+.image-placeholder {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+}
+
+/* ===== CARD ===== */
+.info-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 16, 0.2, 0, 4);
+}
+
+.info-card-small {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 14;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0.2, 0, 3);
+}
+
+/* ===== TEXT ===== */
+.product-name {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+.muted-text {
+    -fx-text-fill: #64748b;
+}
+
+.section-label {
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1e293b;
+}
+
+.description-text {
+    -fx-text-fill: #475569;
+    -fx-font-size: 14px;
+}
+
+.stat-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 13px;
+}
+
+.stat-value {
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f172a;
+}
+
+/* ===== PRICE ===== */
+.main-price {
+    -fx-font-size: 32px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #2563eb;
+}
+
+.countdown {
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #7c3aed;
+}
+
+/* ===== STAT CARD ===== */
+.stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 12, 0.2, 0, 3);
+}
+
+/* ===== BID ===== */
+.bid-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 14, 0.2, 0, 3);
+}
+
+.card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+.bid-input {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10 14;
+    -fx-font-size: 14px;
+}
+
+.bid-input:focused {
+    -fx-border-color: #4f46e5;
+    -fx-border-width: 2;
+}
+
+.currency-label {
+    -fx-text-fill: #64748b;
+    -fx-font-weight: 600;
+}
+
+/* ===== BUTTON ===== */
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #4f46e5, #4338ca);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+    -fx-background-radius: 12;
+    -fx-padding: 10 18;
+}
+
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to right, #4338ca, #3730a3);
+}
+
+/* ===== MESSAGE ===== */
+.message-label {
+    -fx-text-fill: #ef4444;
+    -fx-font-weight: 600;
+}
+
+/* ===== TABLE ===== */
+.history-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 14, 0.2, 0, 3);
+}
+
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #f1f5f9;
+}
+
+.table-view .column-header {
+    -fx-font-weight: 700;
+}
+
+.separator .line {
+    -fx-border-color: #e2e8f0;
+}
