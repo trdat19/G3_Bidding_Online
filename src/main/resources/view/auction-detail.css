@@ -1,0 +1,220 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom right, #f8fbff, #eef4ff);
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+.main-container {
+    -fx-background-color: transparent;
+}
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f172a;
+}
+
+.section-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f172a;
+}
+
+.sub-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1e293b;
+}
+
+/* tên sản phẩm */
+.product-name {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+.product-category {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #64748b;
+}
+
+.product-description-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1e293b;
+}
+
+.product-description {
+    -fx-font-size: 6px;
+    -fx-text-fill: #475569;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 2px;
+}
+.product-category {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #64748b;
+}
+
+.product-description-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1e293b;
+}
+
+.product-description {
+    -fx-font-size: 15px;
+    -fx-text-fill: #475569;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 2px;
+}
+.info-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 18, 0.2, 0, 4);
+    -fx-padding: 24;
+}
+.image-box {
+    -fx-background-color: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
+    -fx-background-radius: 20;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 20;
+    -fx-border-style: dashed;
+    -fx-border-width: 2;
+}
+.image-placeholder {
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #94a3b8;
+}
+
+/* label tiêu đề từng dòng */
+.field-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #64748b;
+}
+
+/* value thường */
+.field-value {
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f172a;
+}
+
+/* value nhỏ hơn */
+.field-value-small {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1e293b;
+}
+
+/* giá nổi bật */
+.price-value {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+/* current price */
+.current-price {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #2563eb;
+}
+
+/* trạng thái */
+.status-open {
+    -fx-background-color: #dcfce7;
+    -fx-text-fill: #166534;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 999;
+}
+
+.status-running {
+    -fx-background-color: #dbeafe;
+    -fx-text-fill: #1d4ed8;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 999;
+}
+
+.status-finished {
+    -fx-background-color: #fee2e2;
+    -fx-text-fill: #b91c1c;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 999;
+}
+
+/* nút back */
+.back-button {
+    -fx-background-color: white;
+    -fx-text-fill: #334155;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 12;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 10 18 10 18;
+    -fx-cursor: hand;
+}
+
+.back-button:hover {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #94a3b8;
+}
+
+/* nút chính */
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #4f46e5, #4338ca);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: 800;
+    -fx-background-radius: 14;
+    -fx-padding: 12 24 12 24;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(79, 70, 229, 0.25), 12, 0.2, 0, 3);
+}
+
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to right, #4338ca, #3730a3);
+}
+
+/* nút phụ */
+.secondary-button {
+    -fx-background-color: white;
+    -fx-text-fill: #0f172a;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 14;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+    -fx-padding: 12 24 12 24;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #94a3b8;
+}
+
+/* separator */
+.separator .line {
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1;
+}
+
+/* countdown nổi bật */
+.countdown-value {
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #7c3aed;
+}

@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" prefHeight="669.0" prefWidth="629.0" spacing="15" styleClass="register-container" stylesheets="@../css/register-form.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.RegisterFormController">
+<VBox alignment="CENTER" prefHeight="669.0" prefWidth="629.0" spacing="15" styleClass="register-container" stylesheets="@register-form.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.RegisterFormController">
 
     <Label style="-fx-font-size: 24px;" styleClass="title-label" text="Tạo tài khoản mới" />
 
@@ -21,8 +21,33 @@
     <Label text="You will be participating in the following role :" />
     <ComboBox fx:id="comboBox" prefWidth="400.0" styleClass="combo-box" />
 
-    <Button onAction="#handleRegister" prefWidth="200.0" styleClass="register-button" stylesheets="@../css/register-form.css" text="Sign up" />
+    <Button onAction="#handleRegister" prefWidth="200.0" text="Sign up" />
 
     <Hyperlink onAction="#goToLogin" styleClass="subtitle-label" text="Have an account already?" />
 
 </VBox>
+
+
+
+
+        <!--Code cua VANH-->
+
+        <!--<?xml version="1.0" encoding="UTF-8"?>-->
+
+        <!--<?import javafx.scene.control.*?>-->
+        <!--<?import javafx.scene.layout.*?>-->
+
+        <!--<VBox alignment="CENTER" prefHeight="669.0" prefWidth="629.0" spacing="15" styleClass="register-container" stylesheets="@register-form.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.RegisterFormController">-->
+
+        <!--    <Label style="-fx-font-size: 24px;" styleClass="title-label" text="Register" />-->
+        <!--    <TextField fx:id="role" layoutX="50.0" layoutY="237.0" promptText="Role" />-->
+
+        <!--    <TextField fx:id="username" promptText="Username" />-->
+        <!--    <PasswordField fx:id="password" promptText="Password" />-->
+        <!--    <PasswordField fx:id="confirmPassword" promptText="Confirm Password" />-->
+
+        <!--    <Button onAction="#handleRegister" text="Register" />-->
+
+        <!--    <Hyperlink onAction="#goToLogin" styleClass="subtitle-label" text="Already have account? Login" />-->
+
+        <!--</VBox>-->

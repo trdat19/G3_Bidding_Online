@@ -9,15 +9,15 @@ public class ClientConnectionHandler implements Runnable {
     private Socket clientSocket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
+    private server.model.user.User user;
 
     public ClientConnectionHandler(Socket socket) {
-        this.clientSocket = socket; // QUAN TRỌNG: Phải gán socket vào biến class
+        this.clientSocket = socket;
         try {
-            // Khởi tạo stream MỘT LẦN DUY NHẤT ở đây
             this.out = new ObjectOutputStream(clientSocket.getOutputStream());
             this.out.flush();
             this.in = new ObjectInputStream(clientSocket.getInputStream());
-            System.out.println(">>> Đã thiết lập Stream cho: " + clientSocket.getInetAddress());
+            System.out.println("Đã thiết lập Stream cho: " + clientSocket.getInetAddress());
         } catch (IOException e) {
             System.err.println("Lỗi khởi tạo Stream: " + e.getMessage());
         }
@@ -26,9 +26,7 @@ public class ClientConnectionHandler implements Runnable {
     @Override
     public void run() {
         try {
-            // KHÔNG khởi tạo lại out/in ở đây nữa!
 
-            // Đăng ký tạm thời (Sẽ được cập nhật lại khi Login thành công)
             RealtimePushServer.registerUser(clientSocket.getInetAddress().toString(), this);
 
             while (!clientSocket.isClosed()) {
@@ -73,4 +71,15 @@ public class ClientConnectionHandler implements Runnable {
             e.printStackTrace();
         }
     }
+
+    public server.model.user.User getUser()
+    {
+        return user;
+    }
+
+    public void setUsetr(server.model.user.User user)
+    {
+        this.user = user;
+    }
+
 }
