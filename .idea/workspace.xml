@@ -5,34 +5,44 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0e7f65e5-2a61-4cda-9220-ed231cc103b7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/test/java/server/dao/TestDBconection.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/server/dao/UserDaoTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/ItemDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/ItemDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/database/DBconnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/database/DBconnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/response/BaseResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/response/BaseResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/TestUserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/TestUserDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/UserDao.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "DatDang01102007"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;DatDang01102007&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/trdat19/G3_Bidding_Online.git",
-    "accountId": "520d6bf0-3a1f-4ecf-99c1-a25f39cddb84"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/trdat19/G3_Bidding_Online.git&quot;,
+    &quot;accountId&quot;: &quot;520d6bf0-3a1f-4ecf-99c1-a25f39cddb84&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 4
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="3CidmgANWbGkSafqhKYI6lAbpOi" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -45,11 +55,16 @@
   "keyToString": {
     "Application.MainApplication.executor": "Run",
     "Application.TestConection.executor": "Run",
+    "JUnit.UserDaoTest.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "masterdat",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Testnhom/G3_Bidding_Online"
+    "last_opened_file_path": "D:/Testnhom/G3_Bidding_Online",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0"
   },
   "keyToStringList": {
     "DatabaseDriversLRU": [
@@ -57,6 +72,11 @@
     ]
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="server.dao" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

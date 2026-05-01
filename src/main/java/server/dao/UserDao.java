@@ -12,6 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDao {
+
+    private Connection connection;
+
+    public UserDao(Connection connection) {
+        this.connection = connection;
+    }
+    public UserDao() {};
     // thêm user mới vào table
     public boolean insertUser(User user) {
         String sql = "INSERT INTO users(username, password, full_name, email, role, status) " +
@@ -254,4 +261,5 @@ public class UserDao {
         }
         return users;
     }
+
 }

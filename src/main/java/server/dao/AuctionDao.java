@@ -14,8 +14,7 @@ public class AuctionDao {
         String sql = "INSERT INTO auctions(id_item, id_seller, start_price, max_price, min_increment, " +
                 "buy_now_price, start_time, end_time, status_auction) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = DBconnection.getInstance().getConnection(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, auction.getItemId());
             ps.setLong(2, auction.getSellerId());
             ps.setDouble(3, auction.getStartPrice());
