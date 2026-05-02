@@ -1,5 +1,6 @@
 package client;
 
+import client.service.ClientNetworkService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -25,5 +26,10 @@ public class MainApplication extends Application {
         primaryStage.getIcons().add(icon);
         primaryStage.setMaximized(true);
         primaryStage.show();
+    }
+    @Override
+    public void stop() {
+        ClientNetworkService.getInstance().closeConnection();
+        System.exit(0);
     }
 }

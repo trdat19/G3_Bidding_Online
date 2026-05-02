@@ -24,12 +24,12 @@ public class ItemFactory {
     public static Item createItemFromDb(Long id, ItemCategory category, String name, String description,
                                         Long sellerId, BigDecimal price, ItemStatus status,
                                         Timestamp createdAt) {
-        return switch (category) {
-            case ART -> new Art(id, name, description, sellerId, price, status, createdAt);
-            case ELECTRONICS -> new Electronics(id, name, description, sellerId, price, status, createdAt);
-            case VEHICLE -> new Vehicle(id, name, description, sellerId, price, status, createdAt);
-            default -> throw new IllegalArgumentException("Unknown item category: " + category);
-        };
+        Item item = createItem(category, name, description, sellerId, price, status);
+        item.setId(id);
+        if (createdAt != null) {
+            item.setCreatedAtItem(createdAt.toLocalDateTime());
+        }
+        return item;
     }
 
 
