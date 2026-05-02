@@ -8,11 +8,6 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 
 public class AuctionDAO {
 
@@ -302,7 +297,7 @@ public class AuctionDAO {
         }
         Timestamp endTs = rs.getTimestamp("end_time");
         if (endTs != null) {
-            auction.setEndTime(endTs.toLocalDateTime());
+            auction.setStartTime(endTs.toLocalDateTime());
         }
         return auction;
     }
