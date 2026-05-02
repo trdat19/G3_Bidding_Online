@@ -40,9 +40,6 @@ public class BiddingViewController {
         leaderLabel.setText(item.getLeader());
         bidCountLabel.setText(String.valueOf(item.getBidCount()));
         startCountDown(item.getEndTime());
-
-
-
     }
     private void startCountDown(LocalDateTime endTime) {
         if (countdownTimeLine != null) {

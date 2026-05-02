@@ -31,55 +31,32 @@ public class LoginController {
     @FXML
     private void handleLogin(ActionEvent event) {
 
-        // CODE CUA VANH
-//        String user = username.getText();
-//        String pass = password.getText();
-//
-//        if(user.equals("bidder") && pass.equals("bidder123")) {
-//            loadScene("/view/bidder-dashboard.fxml", event);
-//        }
-//        else if(user.equals("seller") && pass.equals("seller123")) {
-//            loadScene("/view/seller-dashboard.fxml", event);
-//        }
-//        else if(user.equals("admin") && pass.equals("admin123"))  {
-//            loadScene("/view/admin-dashboard.fxml", event);
-//        }
-//        else {
-//            errorLabel.setText("Wrong password or username");
-//        }
-
-        // CODE CUA DUONG
         String user = username.getText();
         String pass = password.getText();
-        Map<String, String > loginData = new HashMap<>();
-        loginData.put("username" , user);
-        loginData.put("password" , pass);
+        Map<String, String> loginData = new HashMap<>();
+        loginData.put("username", user);
+        loginData.put("password", pass);
         BaseRequest request = new BaseRequest("LOGIN", loginData);
         shared.response.BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
-        if(response != null && response.isSuccess())
-        {
+        if (response != null && response.isSuccess()) {
             User LogginUser = (User) response.getData();
-            UserRole role =  LogginUser.getRole();
-            if(role == UserRole.BIDDER) {
+            UserRole role = LogginUser.getRole();
+            if (role == UserRole.BIDDER) {
                 loadScene("/view/bidder-dashboard.fxml", event);
             }
             else if(role == UserRole.SELLER) {
                 loadScene("/view/seller-dashboard.fxml", event);
             }
-            else if(role == UserRole.ADMIN) {
-                loadScene("/view/admin-dashboard.fxml", event);
+            else if(role == UserRole.ADMIN)  {
+                loadScene("/view/admin/admin-dashboard.fxml", event);
             }
         }
-        else
-        {
-            response.getMessage();
-             errorLabel.setText("Sai tài khoản/mật khẩu");
+        else {
+            //Sửa dòng đầu Dương nhé tại nếu server chưa chạy thì code cũ sẽ bị crash
+            String message = response != null ? response.getMessage() : "Không kết nối được server";
+            errorLabel.setText(message);
         }
-
-
-
-
     }
     private void loadScene(String fxmlPath, ActionEvent event) {
         try {
@@ -103,7 +80,5 @@ public class LoginController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 }

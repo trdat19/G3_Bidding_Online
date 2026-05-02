@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" spacing="18" styleClass="page">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Admin Settings" styleClass="page-title"/>
+
+    <GridPane hgap="16" vgap="16">
+        <Label text="Admin username:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField text="admin" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Display name:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField text="System Admin" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Current password:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <PasswordField GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="New password:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <PasswordField GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <Separator/>
+
+    <Button text="Save Changes" styleClass="primary-btn" prefWidth="140"/>
+</VBox>
