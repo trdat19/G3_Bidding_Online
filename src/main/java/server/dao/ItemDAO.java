@@ -181,7 +181,7 @@ public class ItemDAO {
         return false;
     }
 
-    // map 1 dòng DB -> object item
+    // chuyển dữ liệu DB thành Object
     private Item mapResultSetToItem(ResultSet rs) throws SQLException {
         long id = rs.getLong("id_item");
         String nameItem = rs.getString("name_item");

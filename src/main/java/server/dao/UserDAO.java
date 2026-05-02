@@ -68,8 +68,8 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace(); // dùng khi viết logging
             System.err.println("findById error: " + e.getMessage());
+            return null;
         }
-        return null;
     }
 
     // tìm user theo username
@@ -89,8 +89,8 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             System.err.println("findByUsername error: " + e.getMessage());
+            return null;
         }
-        return null;
     }
 
     // lấy tất cả users
@@ -155,8 +155,8 @@ public class UserDAO {
 
         } catch (SQLException e) {
             System.out.println("updatePassword error: " + e.getMessage());
+            return false;
         }
-        return false ;
     }
 
     // đổi username
@@ -166,7 +166,6 @@ public class UserDAO {
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
         {
-
             ps.setString(1, newUsername);
             ps.setLong(2, id);
 
@@ -174,8 +173,8 @@ public class UserDAO {
 
         } catch (SQLException e) {
             System.err.println("updateUsername error: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
     // đổi trạng thái
@@ -192,8 +191,8 @@ public class UserDAO {
 
         } catch (SQLException e) {
             System.err.println("Update status error: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
     // xoá user
@@ -209,10 +208,9 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             System.err.println("deleteUser error: " + e.getMessage());
+            return false;
         }
-        return false;
     }
-
     // kiểm tra xem username tồn tại chưa
     public boolean existsByUsername(String username) {
         String sql = "SELECT 1 FROM users WHERE username = ?";
@@ -226,8 +224,8 @@ public class UserDAO {
 
         } catch (SQLException e) {
             System.err.println("existsByUsername error: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
     // kiểm tra email đã tồn tại hay chưa
@@ -243,8 +241,8 @@ public class UserDAO {
             }
         } catch (SQLException e) {
             System.err.println("existsByEmail error: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
     // ánh xạ map chuyển đổi dữ liệu DB thành object
