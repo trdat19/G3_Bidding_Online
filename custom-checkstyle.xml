@@ -51,7 +51,7 @@ vào File -> Settings -> Editor -> Code Style -> bỏ tích Use tab character ->
         <module name="UnusedImports"/>
 
         <!-- Không cho import * -->
-        <module name="AvoidStarImport"/>
+        <!--module name="AvoidStarImport"/-->
 
         <!-- Require dấu {} -->
         <module name="NeedBraces"/>
