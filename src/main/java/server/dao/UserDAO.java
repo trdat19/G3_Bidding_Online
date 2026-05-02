@@ -68,8 +68,8 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace(); // dùng khi viết logging
             System.err.println("findById error: " + e.getMessage());
-            return null;
         }
+        return null;
     }
 
     // tìm user theo username
@@ -89,8 +89,8 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             System.err.println("findByUsername error: " + e.getMessage());
-            return null;
         }
+        return null;
     }
 
     // lấy tất cả users

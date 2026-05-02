@@ -44,8 +44,8 @@ public class AuctionDAO {
             }
         } catch (SQLException e) {
             System.err.println("insertAuction error: " + e.getMessage());
-            return false;
         }
+        return false;
     }
 
     // tìm auction theo id_auction
@@ -62,8 +62,8 @@ public class AuctionDAO {
             }
         } catch (SQLException e) {
             System.err.println("findById error: " + e.getMessage());
-            return null;
         }
+        return null;
     }
 
     // lấy toàn bộ auction trong bảng
@@ -79,8 +79,8 @@ public class AuctionDAO {
             }
         } catch (SQLException e) {
             System.err.println("getAllAuctions error: " + e.getMessage());
-            return auctions;
         }
+        return auctions;
     }
 
     // lấy tất cả auction của một seller
@@ -97,8 +97,8 @@ public class AuctionDAO {
             }
         } catch (SQLException e) {
             System.err.println("getAllAuctionsBySellerId error: " + e.getMessage());
-            return auctions;
         }
+        return auctions;
     }
 
     // lấy tất cả auction của một item
@@ -117,8 +117,8 @@ public class AuctionDAO {
             }
         } catch (SQLException e) {
             System.err.println("getAllAuctionsByItemId error: " + e.getMessage());
-            return auctions;
         }
+        return auctions;
     }
 
     // lấy auction theo trạng thái
@@ -136,8 +136,8 @@ public class AuctionDAO {
             }
         } catch (SQLException e) {
             System.err.println("getAllAuctionsByStatus error: " + e.getMessage());
-            return auctions;
         }
+        return auctions;
     }
 
     // tìm auction đang OPEN của một item
@@ -157,8 +157,8 @@ public class AuctionDAO {
             }
         } catch (SQLException e) {
             System.err.println("findOpeningAuctionsByItemId error: " + e.getMessage());
-            return null;
         }
+        return null;
     }
 
     // cập nhật toàn bộ thông tin của auction
