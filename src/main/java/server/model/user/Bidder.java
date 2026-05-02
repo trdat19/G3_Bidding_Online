@@ -1,6 +1,5 @@
 package server.model.user;
 
-import server.model.core.AuctionManager;
 import shared.enums.UserRole;
 
 import java.math.BigDecimal;

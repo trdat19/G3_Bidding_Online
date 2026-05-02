@@ -5,19 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/shared/exception/AuctionNotFoundException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/shared/exception/BidExceededLimitException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/shared/exception/BidTooLowException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/shared/exception/InsufficientBalanceException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/shared/exception/InvalidAuctionTimeException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/UserDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/UserDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/Auction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/Auction.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/BidTransaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/BidTransaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Art.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Art.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Electronics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Electronics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Vehicle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Vehicle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/user/Admin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/user/Admin.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/model/user/Bidder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/user/Bidder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/exception/AuctionClosedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/exception/AuctionClosedException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/user/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/user/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/G3_Bidding_Online/client/.idea/workspace.xml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,6 +90,7 @@
   &quot;keyToString&quot;: {
     &quot;Application.MainApplication.executor&quot;: &quot;Run&quot;,
     &quot;Application.SocketSever.executor&quot;: &quot;Run&quot;,
+    &quot;Application.client.MainApplication.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -96,6 +98,7 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;trdat&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/UET/LTNC/javaFX/G3_BiddingOnline&quot;,
@@ -111,9 +114,16 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.MainApplication">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\UET\LTNC\javaFX\G3_BiddingOnline\src\main\resources\css" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.client.MainApplication">
     <configuration name="MainApplication" type="Application" factoryName="Application" singleton="false">
-      <option name="MAIN_CLASS_NAME" value="client.MainApplication" />
+      <option name="ALTERNATIVE_JRE_PATH" value="25" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="MainApplication" />
       <module name="G3_BiddingOnline" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -125,6 +135,19 @@
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="server.network.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="client.MainApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="client.MainApplication" />
+      <module name="G3_BiddingOnline" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="client.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -146,9 +169,11 @@
     <list>
       <item itemvalue="Application.MainApplication" />
       <item itemvalue="Application.SocketSever" />
+      <item itemvalue="Application.client.MainApplication" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.client.MainApplication" />
         <item itemvalue="Application.SocketSever" />
       </list>
     </recent_temporary>

@@ -7,11 +7,14 @@ import server.model.user.User;
 import shared.enums.AuctionStatus;
 import shared.exception.AuctionClosedException;
 import shared.exception.BidTooLowException;
-import shared.exception.InsufficientBalanceException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 //Singleton
 public class AuctionManager {
@@ -72,24 +75,24 @@ public class AuctionManager {
             throw new BidTooLowException(minBid);
         }
 
-        UserDAO userDao = new UserDAO();
-        User user = userDao.findById(bidderId);
-
-        if (!(user instanceof Bidder)) {
-            throw new IllegalArgumentException("bidderId truyền vào không phải là Bidder");
-        }
-
-        user = (Bidder) user;
-        if (!((Bidder) user).canAfford(amount)) {
-            throw new InsufficientBalanceException(((Bidder) user).getBalance());
-        }
-
-        BidDAO bidDao = new BidDAO();
-        Bid bid = new Bid(auctionId, bidderId, amount);
-        bid.setTimestamp(LocalDateTime.now());
-
-        BidTransaction transaction = new BidTransaction(bid);
-        transaction.execute(auction);
+//        UserDAO userDao = new UserDAO();
+//        User user = userDao.findById(bidderId);
+//
+//        if (!(user instanceof Bidder)) {
+//            throw new IllegalArgumentException("bidderId truyền vào không phải là Bidder");
+//        }
+//
+//        user = (Bidder) user;
+//        if (!((Bidder) user).canAfford(amount)) {
+//            throw new InsufficientBalanceException(((Bidder) user).getBalance());
+//        }
+//
+//        BidDAO bidDao = new BidDAO();
+//        Bid bid = new Bid(auctionId, bidderId, amount);
+//        bid.setTimestamp(LocalDateTime.now());
+//
+//        BidTransaction transaction = new BidTransaction(bid);
+//        transaction.execute(auction);
 
 
     }
