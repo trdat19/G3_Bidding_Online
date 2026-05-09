@@ -9,6 +9,13 @@ import shared.enums.UserRole;
 import shared.enums.UserStatus;
 
 public class AuthService {
+    private UserDAO userDAO;
+
+    // Constructor cho test
+    public AuthService(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
+
     // 1. Singleton: Đảm bảo duy nhất 1 thực thể quản lý User online
     private static AuthService instance;
 

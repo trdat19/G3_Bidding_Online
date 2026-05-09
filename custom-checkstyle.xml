@@ -5,18 +5,27 @@
 
 <!-- LEVEL TOÀN FILE -->
 <module name="Checker">
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" value="module-info\.java"/>
+    </module>
 
     <!-- Cho phép file UTF-8 tránh lỗi Tiếng Việt bị vỡ chữ -->
     <property name="charset" value="UTF-8"/>
+
+    <!-- Quy định thụt lề là space:
+vào File -> Settings -> Editor -> Code Style -> bỏ tích Use tab character -> set tab size và indent là 4 -->
+    <module name="FileTabCharacter"/>
+
+    <!-- Độ dài dòng 140 thoáng hơn-->
+    <module name="LineLength">
+        <property name="max" value="140"/>
+        <property name="ignorePattern" value="^import|^package"/>
+    </module>
 
     <!-- Cho phép line dài hơn Google -->
     <module name="TreeWalker"> <!-- LEVEL TỪNG DÒNG -->
 
         <!-- ===== BASIC RULES ===== -->
-
-	<!-- Quy định thụt lề là space: 
-vào File -> Settings -> Editor -> Code Style -> bỏ tích Use tab character -> set tab size và indent là 4 -->
-        <module name="FileTabCharacter"/>
         
         <!-- Indentation: thụt lề 4 spaces -->
         <module name="Indentation">
@@ -24,17 +33,12 @@ vào File -> Settings -> Editor -> Code Style -> bỏ tích Use tab character ->
             <property name="lineWrappingIndentation" value="8"/>
         </module>
 
-        <!-- Độ dài dòng 140 thoáng hơn-->
-        <module name="LineLength">
-            <property name="max" value="140"/>
-            <property name="ignorePattern" value="^import|^package"/>
-        </module>
-
         <!-- Naming conventions (giữ lại vì quan trọng) -->
-        <module name="MethodName"/>	<!-- camelCase -->
-        <module name="VariableName"/>	<!-- camelCase -->
-        <module name="ParameterName"/>	<!-- camelCase -->
-        <module name="ClassName"/>	<!-- PasalCase -->
+        <module name="TypeName"/>
+        <module name="MethodName"/>
+        <module name="ParameterName"/>
+        <module name="LocalVariableName"/>
+        <module name="MemberName"/>
 
         <!-- ===== OPTIONAL (nới lỏng) ===== -->
 
@@ -51,7 +55,7 @@ vào File -> Settings -> Editor -> Code Style -> bỏ tích Use tab character ->
         <module name="UnusedImports"/>
 
         <!-- Không cho import * -->
-        <!--module name="AvoidStarImport"/-->
+        <!-- <module name="AvoidStarImport"/> -->
 
         <!-- Require dấu {} -->
         <module name="NeedBraces"/>
@@ -71,6 +75,7 @@ vào File -> Settings -> Editor -> Code Style -> bỏ tích Use tab character ->
 
         <!-- Không ép xuống dòng quá gắt như Google -->
         <!-- <module name="NoLineWrap"/> -->
+
 
     </module>
 </module>
