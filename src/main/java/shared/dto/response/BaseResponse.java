@@ -1,4 +1,4 @@
-package shared.response;
+package shared.dto.response;
 
 import java.io.Serializable;
 // gói phản hồi chung gửi từ server về client

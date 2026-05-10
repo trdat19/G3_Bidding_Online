@@ -1,7 +1,7 @@
 package server.service;
 
 import server.network.RealtimePushServer;
-import shared.response.BaseResponse;
+import shared.dto.response.BaseResponse;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package server.network;
 
 
-import shared.response.BaseResponse;
+import shared.dto.response.BaseResponse;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

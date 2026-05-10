@@ -1,4 +1,4 @@
-package shared.request;
+package shared.dto.request;
 
 public class RegisterRequest {
 }

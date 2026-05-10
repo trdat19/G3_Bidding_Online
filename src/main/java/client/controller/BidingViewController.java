@@ -5,8 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import shared.request.BaseRequest;
-import shared.response.BaseResponse;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 

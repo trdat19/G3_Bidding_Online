@@ -15,19 +15,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-//Singleton
+/**
+ * AuctionManager quản lý runtime, schedule,... hay nói đơn giản là sẽ gọi AuctionService để xử lý logic
+ */
 public class AuctionManager {
     private static volatile AuctionManager instance = null;
-    private Map<Long, Auction> auctions;
 
-    private AuctionManager() {
-        auctions = new HashMap<>();
-    }
+    private AuctionManager() {}
 
+    /**
+     * double-check locking cho Singleton
+     */
     public static AuctionManager getInstance() {
-        if (instance == null) { //lazy init
+        //check lần 1
+        if (instance == null) {
+
             synchronized (AuctionManager.class) {
+                //check lần 2
                 if (instance == null) {
                     instance = new AuctionManager();
                 }
@@ -36,7 +40,7 @@ public class AuctionManager {
         return instance;
     }
 
-    public void createAuction() {}
+
     public void closeAuction(Long auctionId) {
         Auction auction = auctions.get(auctionId);
         auction.setStatus(AuctionStatus.CLOSED);
@@ -45,12 +49,8 @@ public class AuctionManager {
         auctions.remove(id);
     }
 
-    public Auction getAuction(Long id) {
-        return auctions.get(id);
-    }
-    public List<Auction> getAllAuctions() {
-        return new ArrayList<>(auctions.values());
-    }
+
+
 
     public void placeBid(Long bidderId, Long auctionId, BigDecimal amount) {
         Auction auction = auctions.get(auctionId);

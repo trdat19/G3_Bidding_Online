@@ -2,9 +2,8 @@ package server.network;
 
 import server.controller.AuthServerController;
 import server.controller.BidServerController;
-import server.controller.AuctionServerController;
-import shared.request.BaseRequest;
-import shared.response.BaseResponse;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
 
 public class RequestRouter {
 

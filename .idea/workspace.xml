@@ -5,18 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/shared/enums/Event.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/server/service/AuthServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/shared/dto/request/CreateAuctionRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/custom-checkstyle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/custom-checkstyle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/UserDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/UserDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/AuctionDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/AuctionDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/ItemDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/ItemDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/UserDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/enums/AuctionStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/enums/AuctionStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/server/dao/UserDaoTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/dao/UserDAOTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/service/ClientNetworkService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/service/ClientNetworkService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/ClientConnectionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/ClientConnectionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RealtimePushServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RealtimePushServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/AuctionDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/common/AuctionDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/BidDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/common/BidDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/common/UserDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/request/BaseRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/request/BaseRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/request/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/request/RegisterRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/response/BaseResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/response/BaseResponse.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,6 +125,11 @@
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\UET\LTNC\javaFX\G3_BiddingOnline\src\main\resources\css" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="shared.dto.request" />
+      <recent name="shared.dto.response" />
+      <recent name="shared.dto.common" />
     </key>
   </component>
   <component name="RunManager">

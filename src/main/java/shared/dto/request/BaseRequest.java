@@ -1,4 +1,4 @@
-package shared.request;
+package shared.dto.request;
 import java.io.Serializable;
 
 public class BaseRequest implements Serializable {

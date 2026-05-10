@@ -1,4 +1,4 @@
-package shared.dto;
+package shared.dto.common;
 
 import shared.enums.AuctionStatus;
 

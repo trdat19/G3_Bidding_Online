@@ -1,7 +1,7 @@
 package server.network;
 
-import shared.request.BaseRequest;
-import shared.response.BaseResponse;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
 import java.io.*;
 import java.net.Socket;
 

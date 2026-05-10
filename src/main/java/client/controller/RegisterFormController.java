@@ -7,8 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import shared.enums.UserRole;
-import shared.request.BaseRequest;
-import shared.response.BaseResponse;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
 
 import java.util.HashMap;
 import java.util.Map;

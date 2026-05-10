@@ -5,8 +5,8 @@ import server.network.ClientConnectionHandler;
 import server.network.RealtimePushServer;
 import server.service.AuthService;
 import shared.enums.UserRole;
-import shared.request.BaseRequest;
-import shared.response.BaseResponse;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
 import java.util.Map;
 
 public class AuthServerController {
