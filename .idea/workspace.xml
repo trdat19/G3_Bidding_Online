@@ -5,27 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/shared/dto/request/CreateAuctionRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/client/controller/AdminUsersController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/service/ClientNetworkService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/service/ClientNetworkService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/ClientConnectionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/ClientConnectionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RealtimePushServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RealtimePushServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/AuctionDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/common/AuctionDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/BidDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/common/BidDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/common/UserDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/request/BaseRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/request/BaseRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/request/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/request/RegisterRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/response/BaseResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/response/BaseResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/admin/admin-users.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-users.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +21,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="FxmlFile" />
         <option value="Class" />
       </list>
     </option>

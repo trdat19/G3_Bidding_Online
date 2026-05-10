@@ -1,5 +1,6 @@
 package server.model.core;
 
+import server.dao.AuctionDAO;
 import server.dao.BidDAO;
 import server.dao.UserDAO;
 import server.model.user.Bidder;
@@ -19,6 +20,9 @@ import java.util.Map;
  * AuctionManager quản lý runtime, schedule,... hay nói đơn giản là sẽ gọi AuctionService để xử lý logic
  */
 public class AuctionManager {
+
+    private AuctionDAO auctionDAO = new AuctionDAO();
+
     private static volatile AuctionManager instance = null;
 
     private AuctionManager() {}
@@ -41,19 +45,19 @@ public class AuctionManager {
     }
 
 
-    public void closeAuction(Long auctionId) {
-        Auction auction = auctions.get(auctionId);
-        auction.setStatus(AuctionStatus.CLOSED);
-    }
-    public void removeAuction(Long id) {
-        auctions.remove(id);
-    }
+//    public void closeAuction(Long auctionId) {
+//        Auction auction = auctions.get(auctionId);
+//        auction.setStatus(AuctionStatus.CLOSED);
+//    }
+//    public void removeAuction(Long id) {
+//        auctions.remove(id);
+//    }
 
 
 
 
     public void placeBid(Long bidderId, Long auctionId, BigDecimal amount) {
-        Auction auction = auctions.get(auctionId);
+        Auction auction = auctionDAO.findById(auctionId);
 
         if (auction == null) {
             throw new IllegalArgumentException("Không tìm thấy Auction!");

@@ -2,8 +2,11 @@ package server.network;
 
 import server.controller.AuthServerController;
 import server.controller.BidServerController;
+import server.controller.AuctionServerController;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
+import server.controller.AdminServerController;
+import shared.enums.UserRole;
 
 public class RequestRouter {
 
@@ -46,12 +49,19 @@ public class RequestRouter {
                     } catch (NumberFormatException e) {
                         return new BaseResponse(false, "ID phiên đấu giá phải là số nguyên", null);
                     }
-
+                    //CODE VANH THEM
+                case "ADMIN_GET_USERS":
+                    //4. Kiểm tra quyền, chỉ Admin mới được xem dsach users
+                    if (handler.getUser() == null || handler.getUser().getRole() != UserRole.ADMIN) {
+                        return new BaseResponse(false, "Role không hợp lệ", null);
+                    }
+                    return AdminServerController.getInstance().getAllUsers();
+                //CODE VANH
                 default:
                     return new BaseResponse(false, "Hành động '" + action + "' không tồn tại trên hệ thống", null);
             }
         } catch (Exception e) {
-           e.printStackTrace();
+            e.printStackTrace();
             return new BaseResponse(false, "Lỗi Server: " + e.getMessage(), null);
         }
     }
