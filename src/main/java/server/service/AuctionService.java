@@ -8,6 +8,7 @@ import server.model.core.Auction;
 import server.model.core.Bid;
 import server.model.item.Item;
 import server.model.user.User;
+import server.network.RealtimePushServer;
 import shared.dto.common.AuctionDTO;
 import shared.dto.request.CreateAuctionRequest;
 import shared.enums.AuctionStatus;
@@ -29,7 +30,7 @@ public class AuctionService {
 
     private final AuctionDAO auctionDAO = new AuctionDAO();
     private final ItemDAO itemDAO = new ItemDAO();
-    private final UserDAO userDAO = UserDAO.getInstance();
+    private final UserDAO userDAO = new UserDAO();
     private final BidDAO bidDAO = new BidDAO();
 
     private AuctionService() {}
@@ -158,7 +159,7 @@ public class AuctionService {
             //push thông báo cho tất cả client đang xem
             BaseResponse event = new BaseResponse(true, "AUCTION_STARTED",
                     "Phiên đấu giá #" + auctionId + " đã bắt đầu!");
-            //RealtimePushServer.pushToAuctionSubscribers(auctionId.intValue(), event);
+            RealtimePushServer.pushToAuctionSubscribers(auctionId.longValue(), event);
         }
         return checkOpenAuction;
 

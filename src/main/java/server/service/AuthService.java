@@ -20,7 +20,9 @@ public class AuthService {
     private static AuthService instance;
 
     // Khóa constructor để không ai 'new' lung tung
-    private AuthService() {}
+    private AuthService() {
+        userDAO = new UserDAO();
+    }
 
     public static synchronized AuthService getInstance() {
         if (instance == null) {
@@ -41,8 +43,7 @@ public class AuthService {
 //        return false;
 //    }
     public User login(String username, String password) {
-        UserDAO userDao = UserDAO.getInstance();
-        User user = userDao.findByUsername(username);
+        User user = userDAO.findByUsername(username);
 
         if (user != null && user.getPassword().equals(password)) {
             System.out.println(">>> [AuthService] Đăng nhập thành công: " + username);
@@ -55,7 +56,6 @@ public class AuthService {
 
     public User register(String username, String password, String fullName, String email, UserRole role ) throws Exception
     {
-        UserDAO userDAO = UserDAO.getInstance();
         if (userDAO.existsByUsername(username)) {
             throw new Exception("USERNAME_EXISTS");
 

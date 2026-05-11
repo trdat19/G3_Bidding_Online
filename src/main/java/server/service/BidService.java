@@ -20,7 +20,7 @@ public class BidService {
     }
 
     // Đặt giá
-    public synchronized void placeBid(int auctionId, String userId, double bidAmount) {
+    public synchronized void placeBid(Long auctionId, String userId, double bidAmount) {
         // Kiểm tra xem giá có hợp lệ không
         if (validateBid(auctionId, bidAmount)) {
 
@@ -59,14 +59,14 @@ public class BidService {
 
 
 // Tạm thời cưa có DataBase
-    private static final Map<Integer, Double> currentPrices = new HashMap<>(); // Lưu giá cao nhất tạm thời
+    private static final Map<Long, Double> currentPrices = new HashMap<>(); // Lưu giá cao nhất tạm thời
 
-    public boolean validateBid(int auctionId, double bidAmount) {
+    public boolean validateBid(Long auctionId, double bidAmount) {
         double currentMax = currentPrices.getOrDefault(auctionId, 0.0);
         return bidAmount > currentMax; // Chỉ cho phép đặt nếu giá mới cao hơn giá cũ
     }
 
-    public void updateLeader(int auctionId, String userId, double bidAmount) {
+    public void updateLeader(Long auctionId, String userId, double bidAmount) {
         currentPrices.put(auctionId, bidAmount); // Cập nhật giá mới vào "Database ảo"
     }
 }

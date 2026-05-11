@@ -4,10 +4,19 @@ import server.model.user.User;
 import server.network.ClientConnectionHandler;
 import server.network.RealtimePushServer;
 import server.service.AuthService;
+import shared.dto.request.LoginRequest;
 import shared.enums.UserRole;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import java.util.Map;
+
+/**
+ * Quản lý xác thực người dùng khi gửi yêu cầu đăng kí
+ * đăng nhập, đăng xuất vào server
+ *
+ * Singleton đảm bảo không bị lost dữ liệu - nhiều máy đăng kí username password giống nhau
+ *                                            đăng nhập cùng lúc ở nhiều nơi, ....
+ */
 
 public class AuthServerController {
     private static AuthServerController instance;
@@ -18,19 +27,19 @@ public class AuthServerController {
         return instance;
     }
 
-    public BaseResponse login(BaseRequest request, ClientConnectionHandler handler) {
+    public BaseResponse login(LoginRequest request, ClientConnectionHandler handler) {
         try {
-            Map<String, String> data = (Map<String, String>) request.getData();
-            String username = data.get("username");
-            String pass = data.get("password");
+            String username = request.getUsername();
+            String password = request.getPassword();
 
-            server.model.user.User loggedInUser = AuthService.getInstance().login(username, pass);
+            User loggedInUser = AuthService.getInstance().login(username, password);
 
             if (loggedInUser != null) {
                 // 1. Lưu thông tin user vào handler để quản lý Session
                 handler.setUsetr(loggedInUser);
+
                 // 2. Đăng ký Realtime bằng username
-                RealtimePushServer.registerUser(username, handler);
+                RealtimePushServer.registerUser(loggedInUser.getId(), handler);
 
                 System.out.println(">>> [Auth] User " + username + " đã online.");
 

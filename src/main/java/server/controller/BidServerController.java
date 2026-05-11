@@ -30,7 +30,7 @@ public class BidServerController {
 //        String userId = "User01";
 //        double amount = 500.0;
         Map<String, Object> data = (Map<String, Object>) request.getData();
-        int auctionId = Integer.parseInt(data.get("auctionId").toString());
+        long auctionId = Long.parseLong(data.get("auctionId").toString());
         String userId = data.get("userId").toString();
         double amount = Double.parseDouble(data.get("amount").toString());
 
