@@ -43,7 +43,7 @@ public class RequestRouter {
                         return new BaseResponse(false, "Thiếu ID phiên đấu giá", null);
                     }
                     try {
-                        int auctionId = Integer.parseInt(data.toString());
+                        Long auctionId = Long.parseLong(data.toString());
                         RealtimePushServer.subscribeToAuction(auctionId, handler);
                         return new BaseResponse(true, "Đã tham gia phòng đấu giá #" + auctionId, null);
                     } catch (NumberFormatException e) {

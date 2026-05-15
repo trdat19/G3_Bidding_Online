@@ -27,7 +27,7 @@ public class ClientConnectionHandler implements Runnable {
     public void run() {
         try {
 
-            RealtimePushServer.registerUser(clientSocket.getInetAddress().toString(), this);
+            //RealtimePushServer.registerUser(clientSocket.getInetAddress().toString(), this);
 
             while (!clientSocket.isClosed()) {
                 Object obj = in.readObject(); // Đọc trực tiếp ở đây hoặc dùng readRequest

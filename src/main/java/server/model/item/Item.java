@@ -56,6 +56,7 @@ public abstract class Item extends Entity {
     public LocalDateTime getCreatedAtItem() {
         return createdAtItem;
     }
+    public String getImageUrl() { return imageUrl; }
 
     // setter
     public void setNameItem(String nameItem) {
@@ -75,6 +76,7 @@ public abstract class Item extends Entity {
     public void setCreatedAtItem(LocalDateTime createdAtItem) {
         this.createdAtItem = createdAtItem;
     }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     @Override
     public String getInfo() {

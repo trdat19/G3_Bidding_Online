@@ -1,21 +1,28 @@
-## Phân chia công việc
-Tổng quát có: GUI, Database, Backend
+# HỆ THỐNG ĐẤU GIÁ TRỰC TUYẾN - BIDZONE
+## Nhóm 3 - 2526II_UET.CS2043_3
 
-1. Việt Anh: Phụ trách Giao diện GUI , controller, logic Client
+---
 
-• JavaFX: Kéo thả thiết kế toàn bộ màn hình bằng Scene Builder.
+## 1. Giới thiệu hệ thống
+Hệ thống đấu giá trực tuyến được xây dựng theo mô hình Client-Server bằng Java Socket Programming.
+Người dùng có thể đăng nhập, tham gia đấu giá sản phẩm theo thời gian thực và nhận cập nhật giá ngay lập tức.
 
-• Logic UI: Viết các class Controller để xử lý sự kiện bấm nút, nhập text và logic chuyễn cảnh (Scene Switching).
+Hệ thống gồm 3 vai trò chính:
+- **Admin**: Quản lý sản phẩm, người dùng, phiên đấu giá.
+- **Seller**: Đăng bán sản phẩm, quản lý sản phẩm của mình.
+- **Bidder**: Tham gia đấu giá, đặt giá thầu.
 
-2. Thái Dương: Phụ trách Mạng (Socket) & Logic Dữ liệu chung
+Phạm vi chức năng:
+- Đăng nhập/đăng ký người dùng.
+- Quản lý sản phẩm (thêm/sửa/xóa).
+- Tham gia đấu giá, đặt giá thầu.
+- Cập nhật giá thầu theo thời gian thực.
+- Thông báo kết quả đấu giá.
+- Quản lý phiên đấu giá (bắt đầu/kết thúc).
 
-• Socket: Viết code khởi tạo kết nối mạng (Socket ở Client và ServerSocket ở Server) khởi động server, kết nối database
+## 2. Cấu trúc hệ thống
+- **Server**: Xử lý logic chính, quản lý kết nối, lưu trữ dữ liệu.
+- **Client**: Giao diện người dùng, gửi yêu cầu đến server, nhận phản hồi và hiển thị thông tin.
+- **Database**: Lưu trữ thông tin người dùng, sản phẩm, phiên đấu giá, lịch sử đấu giá.
 
-• Logic đóng gói: Thiết kế bộ khung giao tiếp giữa 2 bên gồm các class Request, Response.
-
-3. Tiến Đạt: Phụ trách Máy chủ (Server) & Cơ sở dữ liệu (Database)
-
-• Database: Kết nổi và thao tác với Cơ sở dữ liệu (lưu tài khoản, lích sử đặt giá, kết quả phiên đầu giá).
-
-4. Thành Đạt (Nhóm trưởng): Hỗ trợ logic, merge code, cấu trúc dữ liệu
-• T: đóng góp ý tưởng và xây dựng các hàm logic nền tảng trong giai đoạn khởi tạo dự án.
+## 3. Công nghệ sử dụng

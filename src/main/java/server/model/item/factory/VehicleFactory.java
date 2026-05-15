@@ -1,12 +1,12 @@
 package server.model.item.factory;
 
-import server.model.item.Art;
 import server.model.item.Item;
+import server.model.item.Vehicle;
 
-public class ArtFactory implements ItemFactory{
+public class VehicleFactory implements ItemFactory {
 
     @Override
     public Item createItem() {
-        return new Art();
+        return new Vehicle();
     }
 }

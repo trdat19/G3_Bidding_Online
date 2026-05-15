@@ -24,9 +24,12 @@ public class AuthService {
         userDAO = new UserDAO();
     }
 
-    public static synchronized AuthService getInstance() {
+    public static AuthService getInstance() {
         if (instance == null) {
-            instance = new AuthService();
+
+            synchronized (AuthService.class) {
+                instance = new AuthService();
+            }
         }
         return instance;
     }
@@ -54,7 +57,8 @@ public class AuthService {
 
     }
 
-    public User register(String username, String password, String fullName, String email, UserRole role ) throws Exception
+    public User register(String username, String password, String fullName,
+                         String email, UserRole role ) throws Exception
     {
         if (userDAO.existsByUsername(username)) {
             throw new Exception("USERNAME_EXISTS");

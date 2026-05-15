@@ -56,6 +56,7 @@ public class AuctionDTO implements Serializable {
 
     public AuctionDTO() {}
 
+    /** Constructor đầy đủ */
     public AuctionDTO(Long id, Long itemId, String itemName,
                       Long sellerId, String sellerName,
                       BigDecimal startPrice, BigDecimal currentPrice,

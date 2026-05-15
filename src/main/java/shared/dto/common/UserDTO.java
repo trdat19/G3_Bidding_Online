@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
  * UserDTO – dữ liệu người dùng truyền giữa client và server.
  *
  * KHÔNG chứa password để đảm bảo bảo mật.
+ *
  * Dùng khi:
  *   - Server trả về thông tin user sau khi login thành công
  *   - Admin xem danh sách người dùng
