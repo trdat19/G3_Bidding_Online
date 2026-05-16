@@ -188,3 +188,22 @@
     -fx-font-size: 45px;
     -fx-cursor: hand;
 }
+.wallet-box {
+    -fx-background-color: #ecfdf5;
+    -fx-border-color: #bbf7d0;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 10 18;
+}
+
+.wallet-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #64748b;
+}
+
+.wallet-balance {
+    -fx-font-size: 20px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #16a34a;
+}

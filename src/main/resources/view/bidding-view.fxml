@@ -1,108 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="client.controller.BiddingViewController"
-            stylesheets="@bidding-view.css"
-            styleClass="root">
+<BorderPane styleClass="root" stylesheets="@../css/bidding-view.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="client.controller.BiddingViewController">
 
     <top>
         <HBox alignment="CENTER_LEFT" spacing="18" styleClass="top-bar">
             <padding>
-                <Insets top="18" right="28" bottom="18" left="28"/>
+                <Insets bottom="18" left="28" right="28" top="18" />
             </padding>
 
-            <Button text="← Back" onAction="#handleBack" styleClass="back-button"/>
-            <Label text="Đấu giá trực tiếp" styleClass="title"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="statusLabel" text="RUNNING" styleClass="status-running"/>
+            <Button onAction="#handleBack" styleClass="back-button" text="← Back" />
+            <Label styleClass="title" text="Đấu giá trực tiếp" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="statusLabel" styleClass="status-running" text="RUNNING" />
         </HBox>
     </top>
 
     <center>
-        <HBox spacing="28" alignment="TOP_CENTER">
+        <HBox alignment="TOP_CENTER" spacing="28">
             <padding>
-                <Insets top="28" right="42" bottom="36" left="42"/>
+                <Insets bottom="36" left="42" right="42" top="28" />
             </padding>
 
             <!-- LEFT PANEL -->
-            <VBox spacing="18" prefWidth="430" maxWidth="430">
+            <VBox maxWidth="430" prefWidth="430" spacing="18">
 
                 <StackPane prefHeight="330" styleClass="image-card">
-                    <Label text="Ảnh sản phẩm" styleClass="image-placeholder"/>
+                    <Label styleClass="image-placeholder" text="Ảnh sản phẩm" />
                 </StackPane>
 
                 <VBox spacing="10" styleClass="info-card">
-                    <Label fx:id="nameLabel" text="Product Name" styleClass="product-name"/>
-                    <Label fx:id="categoryLabel" text="Category" styleClass="muted-text"/>
-                    <Separator/>
-                    <Label text="Mô tả sản phẩm" styleClass="section-label"/>
-                    <Label fx:id="descriptionLabel"
-                           text="Description"
-                           wrapText="true"
-                           styleClass="description-text"/>
+                    <Label fx:id="nameLabel" styleClass="product-name" text="Product Name" />
+                    <Label fx:id="categoryLabel" styleClass="muted-text" text="Category" />
+                    <Separator />
+                    <Label styleClass="section-label" text="Mô tả sản phẩm" />
+                    <Label fx:id="descriptionLabel" styleClass="description-text" text="Description" wrapText="true" />
                 </VBox>
 
             </VBox>
 
             <!-- RIGHT PANEL -->
-            <VBox spacing="18" prefWidth="760" maxWidth="760">
+            <VBox maxWidth="760" prefWidth="760" spacing="18" stylesheets="@../css/bidding-view.css">
 
                 <HBox spacing="18">
-                    <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="stat-card">
-                        <Label text="Giá hiện tại" styleClass="stat-label"/>
-                        <Label fx:id="currentPriceLabel" text="0" styleClass="main-price"/>
+                    <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                        <Label styleClass="stat-label" text="Giá hiện tại" />
+                        <Label fx:id="currentPriceLabel" styleClass="main-price" text="0" />
                     </VBox>
 
-                    <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="stat-card">
-                        <Label text="Thời gian còn lại" styleClass="stat-label"/>
-                        <Label fx:id="timeLeftLabel" text="00:00:00" styleClass="countdown"/>
+                    <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                        <Label styleClass="stat-label" text="Thời gian còn lại" />
+                        <Label fx:id="timeLeftLabel" styleClass="countdown" text="00:00:00" />
                     </VBox>
 
-                    <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="stat-card">
-                        <Label text="Số lượt bid" styleClass="stat-label"/>
-                        <Label fx:id="bidCountLabel" text="0 bids" styleClass="stat-value"/>
+                    <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                        <Label styleClass="stat-label" text="Số lượt bid" />
+                        <Label fx:id="bidCountLabel" styleClass="stat-value" text="0 bids" />
                     </VBox>
                 </HBox>
 
                 <HBox spacing="18">
-                    <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="info-card-small">
-                        <Label text="Người dẫn đầu" styleClass="stat-label"/>
-                        <Label fx:id="leaderLabel" text="None" styleClass="stat-value"/>
+                    <VBox spacing="8" styleClass="info-card-small" HBox.hgrow="ALWAYS">
+                        <Label styleClass="stat-label" text="Người dẫn đầu" />
+                        <Label fx:id="leaderLabel" styleClass="stat-value" text="None" />
                     </VBox>
 
-                    <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="info-card-small">
-                        <Label text="Trạng thái phiên" styleClass="stat-label"/>
-                        <Label fx:id="statusTextLabel" text="RUNNING" styleClass="stat-value"/>
+                    <VBox spacing="8" styleClass="info-card-small" HBox.hgrow="ALWAYS">
+                        <Label styleClass="stat-label" text="Trạng thái phiên" />
+                        <Label fx:id="statusTextLabel" styleClass="stat-value" text="RUNNING" />
                     </VBox>
                 </HBox>
 
                 <VBox spacing="14" styleClass="bid-card">
-                    <Label text="Đặt giá của bạn" styleClass="card-title"/>
+                    <Label styleClass="card-title" text="Đặt giá của bạn" />
 
-                    <HBox spacing="12" alignment="CENTER_LEFT">
-                        <TextField fx:id="bidAmountField"
-                                   promptText="Nhập giá cao hơn giá hiện tại"
-                                   prefWidth="360"
-                                   styleClass="bid-input"/>
-                        <Label text="VND" styleClass="currency-label"/>
-                        <Button text="Đặt giá" onAction="#handlePlaceBid" styleClass="primary-button"/>
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <TextField fx:id="bidAmountField" prefWidth="360" promptText="Nhập giá cao hơn giá hiện tại" styleClass="bid-input" />
+                        <Label styleClass="currency-label" text="VND" />
+                        <Button onAction="#handlePlaceBid" styleClass="primary-button" text="Đặt giá" />
                     </HBox>
 
-                    <Label fx:id="messageLabel" text="" styleClass="message-label"/>
+                    <Label fx:id="messageLabel" styleClass="message-label" text="" />
                 </VBox>
 
-                <VBox spacing="12" VBox.vgrow="ALWAYS" styleClass="history-card">
-                    <Label text="Lịch sử đấu giá" styleClass="card-title"/>
+                <VBox spacing="12" styleClass="history-card" VBox.vgrow="ALWAYS">
+                    <Label styleClass="card-title" text="Lịch sử đấu giá" />
 
                     <TableView fx:id="bidTable" prefHeight="270" VBox.vgrow="ALWAYS">
                         <columns>
-                            <TableColumn text="Người đấu" prefWidth="220"/>
-                            <TableColumn text="Giá đấu" prefWidth="220"/>
-                            <TableColumn text="Thời gian" prefWidth="260"/>
+                            <TableColumn prefWidth="220" text="Người đấu" />
+                            <TableColumn prefWidth="220" text="Giá đấu" />
+                            <TableColumn prefWidth="260" text="Thời gian" />
                         </columns>
                     </TableView>
                 </VBox>

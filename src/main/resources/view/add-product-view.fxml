@@ -24,18 +24,14 @@
             <Label fx:id="messageLabel" />
          </children>
       </HBox>
-      <HBox fx:id="startMinuteBox" spacing="20.0" styleClass="time-row">
-         <children>
-              <DatePicker fx:id="startDatePicker" />
-            <ComboBox fx:id="startHourBox" prefWidth="150.0" styleClass="time-row" />
-            <Label text=":">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Label>
-            <ComboBox prefWidth="150.0" />
-         </children>
-      </HBox>
+        <HBox spacing="20.0" styleClass="time-row">
+            <children>
+                <DatePicker fx:id="startDatePicker" />
+                <ComboBox fx:id="startHourBox" prefWidth="150.0" />
+                <Label text=":" />
+                <ComboBox fx:id="startMinuteBox" prefWidth="150.0" />
+            </children>
+        </HBox>
 
         <Label text="Ngày kết thúc" />
       <HBox spacing="20.0" styleClass="time-row">
