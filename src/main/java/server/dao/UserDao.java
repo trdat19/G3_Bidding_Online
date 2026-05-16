@@ -12,16 +12,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
-    private static UserDAO instance;
 
-    private UserDAO() {
-    }
-    public static UserDAO getInstance() {
-        if (instance == null) {
-            instance = new UserDAO();
-        }
-        return instance;
-    }
+//    private Connection connection = null;
+//
+//    // 🔥 inject connection từ ngoài
+//    public UserDAO(Connection connection) {
+//        this.connection = connection;
+//    }
+//
+//    private static UserDAO instance;
+//
+//    private UserDAO() {
+//    }
+//    public static UserDAO getInstance() {
+//        if (instance == null) {
+//            instance = new UserDAO();
+//        }
+//        return instance;
+//    }
+
     public boolean insertUser(User user) {
         String sql = "INSERT INTO users(username, password, full_name, email, role, status) " +
                      "VALUES (?, ?, ?, ?, ?, ?)";

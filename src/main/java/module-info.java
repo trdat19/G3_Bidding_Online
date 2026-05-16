@@ -4,6 +4,8 @@ module client {
     requires java.sql;
     requires java.desktop;
     requires com.zaxxer.hikari;
+    requires mysql.connector.j;
+    //requires client;
 
     opens client to javafx.graphics;
     // Phải mở package chứa Controller thì JavaFX mới không báo lỗi IllegalAccessException

@@ -1,7 +1,7 @@
 package client.service;
 
-import shared.request.BaseRequest;
-import shared.response.BaseResponse; // Sửa lại đúng class phản hồi
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse; // Sửa lại đúng class phản hồi
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -72,4 +72,3 @@ public class ClientNetworkService {
         }
     }
 }
-

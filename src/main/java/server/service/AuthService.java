@@ -5,37 +5,38 @@ import server.model.user.Admin;
 import server.model.user.Bidder;
 import server.model.user.Seller;
 import server.model.user.User;
+import server.network.ClientConnectionHandler;
 import shared.enums.UserRole;
 import shared.enums.UserStatus;
 
 public class AuthService {
+    private UserDAO userDAO;
+
+    // Constructor cho test
+    public AuthService(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
+
     // 1. Singleton: Đảm bảo duy nhất 1 thực thể quản lý User online
     private static AuthService instance;
 
     // Khóa constructor để không ai 'new' lung tung
-    private AuthService() {}
+    private AuthService() {
+        userDAO = new UserDAO();
+    }
 
-    public static synchronized AuthService getInstance() {
+    public static AuthService getInstance() {
         if (instance == null) {
-            instance = new AuthService();
+
+            synchronized (AuthService.class) {
+                instance = new AuthService();
+            }
         }
         return instance;
     }
 
-    // 2. Logic kiểm tra đăng nhập
-//    public boolean login(String username, String password) {
-//        // Tạm thời cho phép 2 tài khoản này để test Realtime
-//        if ((username.equals("user1") && password.equals("123")) ||
-//                (username.equals("user2") && password.equals("123"))) {
-//
-//            System.out.println(">>> [AuthService] Xác thực thành công: " + username);
-//            return true;
-//        }
-//        return false;
-//    }
     public User login(String username, String password) {
-        UserDAO userDao = UserDAO.getInstance();
-        User user = userDao.findByUsername(username);
+        User user = userDAO.findByUsername(username);
 
         if (user != null && user.getPassword().equals(password)) {
             System.out.println(">>> [AuthService] Đăng nhập thành công: " + username);
@@ -46,9 +47,9 @@ public class AuthService {
 
     }
 
-    public User register(String username, String password, String fullName, String email, UserRole role ) throws Exception
+    public User register(String username, String password, String fullName,
+                         String email, UserRole role ) throws Exception
     {
-        UserDAO userDAO = UserDAO.getInstance();
         if (userDAO.existsByUsername(username)) {
             throw new Exception("USERNAME_EXISTS");
 
@@ -84,12 +85,16 @@ public class AuthService {
             System.out.println(">>> [AuthService] Đăng ký thành công: " + username);
             return newUser;
         } else {
-            throw new Exception("DATABASE_ERROR");
+            throw new Exception("Có lỗi xảy ra khi đăng kí!");
         }
     }
 
-    public void logout() {
-        // Xử lý logic đăng xuất nếu cần
+    public void logout(ClientConnectionHandler handler) {
+        User user = handler.getUser();
+        if (user != null) {
+            System.out.println(">>> [AuthService] User " + user.getUsername() + " đã offline.");
+            handler.setUser(null); // Xóa thông tin user khỏi handler
+        }
     }
 
     public void verifySession() {

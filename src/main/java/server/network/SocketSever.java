@@ -1,5 +1,7 @@
 package server.network;
 
+import server.scheduler.AuctionScheduler;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,14 +18,23 @@ public class SocketSever {
             isRunning = true;
             System.out.println(">>> Server G3-Bidding đang chạy tại cổng: " + PORT);
 
+            // Khởi động AuctionScheduler
+            AuctionScheduler.getInstance().start();
+
             while (isRunning) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println(">>> Kết nối mới từ: " + clientSocket.getInetAddress());
 
                 new Thread(new ClientConnectionHandler(clientSocket)).start();
             }
-        } catch (IOException e) {
-            if (isRunning) e.printStackTrace();
+        }
+        catch (IOException e) {
+            if (isRunning) {
+                e.printStackTrace();
+            }
+        }
+        finally {
+            AuctionScheduler.getInstance().stop();
         }
     }
     private void acceptLoop()
@@ -54,8 +65,7 @@ public class SocketSever {
             }
             System.out.println("Server đã dừng.");
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             e.printStackTrace();
         }
     }

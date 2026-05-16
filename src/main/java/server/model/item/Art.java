@@ -3,7 +3,6 @@ package server.model.item;
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 public class Art extends Item {
 
@@ -16,9 +15,8 @@ public class Art extends Item {
     public Art() {}
 
     public Art(String nameItem, String description, Long sellerId,
-               BigDecimal priceStart, ItemStatus statusItem) {
-        super(nameItem, description, sellerId, priceStart, statusItem);
-        this.category = ItemCategory.ART;
+               ItemStatus statusItem) {
+        super(nameItem, description, sellerId, ItemCategory.ART, statusItem);
         //set thuoc tinh rieng
     }
 

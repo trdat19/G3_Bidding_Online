@@ -8,11 +8,6 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Locale;
 
 public class AuctionDAO {
 
@@ -220,21 +215,6 @@ public class AuctionDAO {
             System.err.println("updateMaxPrice error: " + e.getMessage());
         }
         return false;
-    }
-
-    // mở auction
-    public boolean openAuction(long idAuction) {
-        return updateStatus(idAuction, AuctionStatus.OPEN);
-    }
-
-    // đóng auction
-    public boolean closeAuction(long idAuction) {
-        return updateStatus(idAuction, AuctionStatus.CLOSED);
-    }
-
-    // hủy auction
-    public boolean cancelAuction(long idAuction) {
-        return updateStatus(idAuction, AuctionStatus.CANCELLED);
     }
 
     // kiểm tra auction có tồn tại không

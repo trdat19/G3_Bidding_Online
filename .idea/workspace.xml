@@ -5,41 +5,123 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-auctions.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-home.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-products.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-reports.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-settings.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-users.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/MainApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/MainApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AdminDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AdminDashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BiddingViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BiddingViewController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/ItemDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/ItemDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/UserDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuctionServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuctionServerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/SellerServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/SellerServerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/ItemDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/ItemDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Art.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Art.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Electronics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Electronics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Item.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Item.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/ItemFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/ItemFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/css/admin-dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/css/admin-dashboard.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/admin-dashboard.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-dashboard.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Vehicle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Vehicle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/ClientConnectionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/ClientConnectionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RealtimePushServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RealtimePushServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/ItemService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/ItemService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CopilotChats">
+    <option name="panelChat">
+      <chat>
+        <option name="activeSessionId" value="1d20d766-8086-4dbc-b77a-01dd874d886c" />
+        <option name="sessions">
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="b0b890bc-a5d2-427c-a766-2f65c2c52d88" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="gpt-4o" />
+            <option name="status" value="Completed" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="0023d124-b52d-4706-bc78-06bcc9adb0e4" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="c1a7682a-dd9f-445f-ad1b-13c2e94148af" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="gpt-4o" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="204c470b-89de-43cb-a272-fe2c1f133a0b" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="gpt-4o" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="1ffd982a-42b0-4297-bef7-023c10b5135f" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="gpt-4o" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="1d20d766-8086-4dbc-b77a-01dd874d886c" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="gpt-4o" />
+            <option name="status" value="Completed" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+        </option>
+        <option name="type" value="PANEL" />
+      </chat>
+    </option>
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_D:/UET/LTNC/javaFX/G3_BiddingOnline" value="3CfCJrYpUewYWR28PzbpCOw4LaV" />
+    </persistenceIdMap>
+  </component>
+  <component name="CopilotUserSelectedModel">
+    <selectedModels>
+      <entry key="agent-panel" value="GPT-4o" />
+      <entry key="chat-panel" value="GPT-4o" />
+    </selectedModels>
+  </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="130" />
+    <option name="cachedIndexableFilesCount" value="159" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="FxmlFile" />
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="new_trdat" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -72,47 +154,100 @@
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
+  <component name="ProjectSessionTemplates">
+    <option name="panelTemplate">
+      <template>
+        <option name="modeId" value="Agent" />
+        <option name="model">
+          <model>
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="gpt-4o" />
+          </model>
+        </option>
+        <option name="targetType" value="LOCAL" />
+      </template>
+    </option>
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.MainApplication.executor": "Run",
-    "Application.SocketSever.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "vanh",
-    "ignore.virus.scanning.warn.message": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/UET/LTNC/javaFX/G3_BiddingOnline",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.17931035",
-    "settings.editor.selected.configurable": "Errors",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.MainApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.SocketSever.executor&quot;: &quot;Run&quot;,
+    &quot;Application.client.MainApplication.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;trdat&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/UET/LTNC/javaFX/G3_BiddingOnline&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.17931035&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;two.files.diff.last.used.file&quot;: &quot;C:/Users/truon/Downloads/G3_Bidding_Online-trdat/G3_Bidding_Online-trdat/src/main/resources/view/add-product-view.fxml&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\JAVACODE\G3_Bidding_Online\src\main\resources\view\admin" />
-      <recent name="D:\JAVACODE\G3_Bidding_Online\src\main\resources\css" />
+      <recent name="D:\UET\LTNC\javaFX\G3_BiddingOnline\src\main\resources\css" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="shared.dto.common" />
+      <recent name="shared.dto.request" />
+      <recent name="shared.dto.response" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.SocketSever">
-    <configuration name="MainApplication" type="Application" factoryName="Application" singleton="false">
+  <component name="RunManager" selected="Application.MainApplication">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="G3_Bidding_Online" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="G3_Bidding_Online" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <configuration name="MainApplication" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="client.MainApplication" />
       <module name="G3_BiddingOnline" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MainApplication" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="client.MainApplication" />
+      <module name="G3_BiddingOnline" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SocketSever" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="server.network.SocketSever" />
+      <module name="G3_BiddingOnline" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="server.network.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -151,14 +286,6 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.31033.145" />
-      </set>
-    </attachedChunks>
-  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="" />
@@ -173,34 +300,36 @@
       <workItem from="1776866941654" duration="6109000" />
       <workItem from="1776885173783" duration="2749000" />
       <workItem from="1776888284025" duration="1035000" />
-      <workItem from="1776904164110" duration="5547000" />
-      <workItem from="1777025848162" duration="1397000" />
-      <workItem from="1777138419663" duration="833000" />
-      <workItem from="1777197948274" duration="1092000" />
-      <workItem from="1777257381155" duration="3824000" />
-      <workItem from="1777308370994" duration="874000" />
-      <workItem from="1777309259229" duration="2292000" />
-      <workItem from="1777313392687" duration="82000" />
-      <workItem from="1777313505561" duration="443000" />
-      <workItem from="1777313978128" duration="422000" />
-      <workItem from="1777387666764" duration="6787000" />
-      <workItem from="1777397528147" duration="620000" />
-      <workItem from="1777398473166" duration="1568000" />
-      <workItem from="1777400078150" duration="1374000" />
-      <workItem from="1777437699431" duration="2394000" />
-      <workItem from="1777445892860" duration="17967000" />
-      <workItem from="1777484278426" duration="661000" />
-      <workItem from="1777539900543" duration="2691000" />
-      <workItem from="1777609467820" duration="1216000" />
-      <workItem from="1777611374429" duration="8933000" />
+      <workItem from="1778758657084" duration="15145000" />
+      <workItem from="1778807348066" duration="2813000" />
+      <workItem from="1778814443467" duration="2829000" />
+      <workItem from="1778817726256" duration="5292000" />
+      <workItem from="1778829527228" duration="14691000" />
+      <workItem from="1778860602667" duration="7021000" />
+      <workItem from="1778892665560" duration="4002000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
-    <select />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

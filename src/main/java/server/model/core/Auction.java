@@ -4,8 +4,10 @@ import server.model.Entity;
 import shared.enums.AuctionStatus;
 
 import java.math.BigDecimal;
-import java.time.*;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Auction extends Entity { //state 1 phiên đấu giá có cái gì
 
@@ -73,6 +75,9 @@ public class Auction extends Entity { //state 1 phiên đấu giá có cái gì
     public LocalDateTime getEndTime() { return endTime; }
     public List<Bid> getAllBids() {
         return new ArrayList<>(bids);
+    }
+    public Bid getHighestBid() {
+        return highestBid;
     }
 
     //setter

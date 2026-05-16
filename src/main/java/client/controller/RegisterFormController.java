@@ -7,28 +7,24 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import shared.enums.UserRole;
-import shared.request.BaseRequest;
-import shared.response.BaseResponse;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
 
 import java.util.HashMap;
 import java.util.Map;
-public class RegisterFormController {
-    @FXML
-    private TextField username;
-    @FXML
-    private TextField fullname; // Thêm mới
-    @FXML
-    private TextField email;    // Thêm mới
-    @FXML
-    private PasswordField password;
-    @FXML
-    private PasswordField confirmPassword;
-    @FXML
-    private ComboBox<UserRole> comboBox;
 
+public class RegisterFormController {
+    @FXML private TextField username;
+    @FXML private TextField fullname; // Thêm mới
+    @FXML private TextField email;    // Thêm mới
+    @FXML private PasswordField password;
+    @FXML private PasswordField confirmPassword;
+    @FXML private ComboBox<UserRole> comboBox;
+
+    @FXML
     public void initialize() {
-        comboBox.getItems().addAll(UserRole.values()); //Su dung enum trong share de tranh sai String
-        comboBox.setValue(UserRole.BIDDER); //gia tri mac dinh
+        comboBox.getItems().addAll(UserRole.values());
+        comboBox.setValue(UserRole.BIDDER);
     }
 
     @FXML
@@ -64,14 +60,19 @@ public class RegisterFormController {
         data.put("fullname", name);
         data.put("email", mail);
         data.put("role", role.name());
-        try {
+
+        try
+        {
             BaseRequest request = new BaseRequest("REGISTER", data);
             BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
-            if (response != null && response.isSuccess()) {
+            if(response != null && response.isSuccess())
+            {
                 showAlert("Thành công", "Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.");
                 goToLogin();
-            } else {
+            }
+            else
+            {
                 // Lấy message từ server gửi về
                 String msgFromServer = (response != null) ? response.getMessage() : "Lỗi kết nối server";
 
@@ -88,9 +89,12 @@ public class RegisterFormController {
                 showAlert("Lỗi đăng ký", finalShowMsg);
             }
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             showAlert("Lỗi", "Có lỗi xảy ra: " + e.getMessage());
         }
+
     }
 
     private void showAlert(String title, String content) {
@@ -105,12 +109,60 @@ public class RegisterFormController {
     private void goToLogin() {
         try {
             Stage stage = (Stage) username.getScene().getWindow();
-            Scene scene = new Scene(
-                    FXMLLoader.load(getClass().getResource("/view/login.fxml"))
-            );
+            Scene scene = new Scene(FXMLLoader.load(getClass().getResource("/view/login.fxml")));
             stage.setScene(scene);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
 }
+
+
+//CODE CUA VANH
+//package client.controller;
+//import javafx.fxml.FXML;
+//import javafx.scene.control.*;
+//import javafx.event.ActionEvent;
+//import javafx.fxml.FXMLLoader;
+//import javafx.scene.Parent;
+//import javafx.scene.Scene;
+//import javafx.scene.Node;
+//import javafx.stage.Stage;
+//
+//import java.io.IOException;
+//import shared.enums.UserRole;
+//public class RegisterFormController {
+//    @FXML
+//    private TextField username;
+//    @FXML
+//    private PasswordField password;
+//    @FXML
+//    private PasswordField confirmPassword;
+//    @FXML
+//    private ComboBox<UserRole> comboBox;
+//    @FXML
+//    public void initialize() {
+//        comboBox.getItems().addAll(UserRole.values()); //Su dung enum trong share de tranh sai String
+//        comboBox.setValue(UserRole.BIDDER); //gia tri mac dinh
+//    }
+//    @FXML
+//    private void handleRegister() {
+//        String usernameInput = username.getText();
+//        String passwordInput = password.getText();
+//        UserRole role = comboBox.getValue();
+//    }
+//    @FXML
+//    private void goToLogin() {
+//        try {
+//            Stage stage = (Stage) username.getScene().getWindow();
+//            Scene scene = new Scene(
+//                    FXMLLoader.load(getClass().getResource("/view/login.fxml"))
+//            );
+//            stage.setScene(scene);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//}

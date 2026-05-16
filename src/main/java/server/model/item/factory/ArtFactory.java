@@ -5,8 +5,8 @@ import server.model.item.Item;
 
 public class ArtFactory implements ItemFactory{
 
+    @Override
     public Item createItem() {
-        Art art = new Art();
-        return art;
+        return new Art();
     }
 }
