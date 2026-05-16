@@ -10,9 +10,9 @@ public class DBconnection {
     private static DBconnection instance;
     private final HikariDataSource dataSource;
 
-    private String url = "jdbc:mysql://nozomi.proxy.rlwy.net:24310/railway?serverTimezone=UTC&useSSL=true&requireSSL=true";
+    private String url = "jdbc:mysql://127.0.0.1:3306/local_railway";
     private String user = "root";
-    private String pass = "QMXMdCasKkgHnqOxFfAXwzouhwqMtqOR";
+    private String pass = "mysql2007";
 
     private DBconnection() {
         HikariConfig config = new HikariConfig();

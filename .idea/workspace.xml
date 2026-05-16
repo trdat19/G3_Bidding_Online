@@ -6,25 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuctionServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuctionServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/SellerServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/SellerServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/ItemDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/ItemDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Art.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Art.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Electronics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Electronics.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Item.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Item.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/ItemFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/ItemFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/item/Vehicle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/item/Vehicle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/ClientConnectionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/ClientConnectionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RealtimePushServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RealtimePushServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/ItemService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/ItemService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/database/DBconnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/database/DBconnection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/request/BaseRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/request/BaseRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/enums/Action.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/enums/Action.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -213,7 +198,7 @@
       <recent name="shared.dto.response" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.MainApplication">
+  <component name="RunManager" selected="Application.SocketSever">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="G3_Bidding_Online" />
       <method v="2">
@@ -306,7 +291,9 @@
       <workItem from="1778817726256" duration="5292000" />
       <workItem from="1778829527228" duration="14691000" />
       <workItem from="1778860602667" duration="7021000" />
-      <workItem from="1778892665560" duration="4002000" />
+      <workItem from="1778892665560" duration="13632000" />
+      <workItem from="1778928642097" duration="1428000" />
+      <workItem from="1778947386863" duration="4466000" />
     </task>
     <servers />
   </component>
