@@ -11,8 +11,6 @@ import server.model.user.User;
 import server.network.RealtimePushServer;
 import shared.dto.common.AuctionDTO;
 import shared.dto.common.BidDTO;
-import shared.dto.request.BaseRequest;
-import shared.dto.request.CreateAuctionRequest;
 import shared.enums.AuctionStatus;
 import shared.dto.response.BaseResponse;
 import shared.enums.ItemStatus;
@@ -20,6 +18,7 @@ import shared.enums.ItemStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,7 +74,10 @@ public class AuctionService {
         dto.setSellerName(userDAO.findById(item.getSellerId()).getFullName());
 
         dto.setStartTime(auction.getStartTime());
-        dto.setCurrentPrice(auction.getMaxPrice() != null ? auction.getMaxPrice() : auction.getStartPrice());
+        dto.setCurrentPrice(auction.getMaxPrice() != null
+                            ? auction.getMaxPrice()
+                            : auction.getStartPrice()
+        );
         dto.setMinIncrement(auction.getMinIncrement());
         dto.setBuyNowPrice(auction.getBuyNowPrice());
 
@@ -90,76 +92,64 @@ public class AuctionService {
     /**
      * tạo phiên đấu giá từ dữ liệu được gửi lên
      */
-    public BaseResponse createAuction(Map<String, Object> data)
-    {
-        try {
-            Long itemId = (Long) data.get("itemId");
-            Long sellerId = (Long) data.get("sellerId");
-            BigDecimal startPrice = (BigDecimal) data.get("startPrice");
-            BigDecimal minIncrement = (BigDecimal) data.get("minIncrement");
-            BigDecimal buyNowPrice = (BigDecimal) data.get("buyNowPrice");
-            LocalDateTime startTime = (LocalDateTime) data.get("startTime");
-            LocalDateTime endTime = (LocalDateTime) data.get("endTime");
+    public AuctionDTO createAuction(Map<String, Object> data) {
+        Long itemId = (Long) data.get("itemId");
+        Long sellerId = (Long) data.get("sellerId");
 
-            //kiểm tra xem item có tồn tại không?
-            Item item = itemDAO.findById(itemId);
-            if (item == null) {
-                return new BaseResponse(false, "Sản phẩm không tồn tại!", null);
-            }
+        BigDecimal startPrice = (BigDecimal) data.get("startPrice");
+        BigDecimal minIncrement = (BigDecimal) data.get("minIncrement");
+        BigDecimal buyNowPrice = (BigDecimal) data.get("buyNowPrice");
 
-            //kiểm tra rằng item chưa ở phiên đấu giá nào khác
-            if (auctionDAO.existsOpenAuctionByItemId(itemId)) {
-                return new BaseResponse(false, "Sản phẩm đang nằm ở phiên đấu giá khác!", null);
-            }
+        LocalDateTime startTime = (LocalDateTime) data.get("startTime");
+        LocalDateTime endTime = (LocalDateTime) data.get("endTime");
 
-            //kiểm tra logic thời gian start < end
-            if (!endTime.isAfter(startTime)) {
-                return new BaseResponse(false,
-                                        "Thời gian kết thúc phải sau thời gian bắt đầu",
-                                        null);
-            }
-            
-            Auction auction = new Auction(itemId, sellerId, startPrice, null,
-                                            minIncrement, buyNowPrice, startTime, endTime);
-
-            boolean checkInsertAuction = auctionDAO.insertAuction(auction);
-            if (!checkInsertAuction) {
-                return new BaseResponse(false, "Lỗi lưu phiên đấu giá vào hệ thống", null);
-            }
-
-            //Chuển trạng thái của item trong Dao
-            itemDAO.updateStatus(itemId, ItemStatus.ACTIVE);
-            System.out.println(">>> [AuctionService] Tạo auction #" + auction.getId() + " cho item #" + itemId);
-
-            return new BaseResponse(true, "Tạo phiên đấu giá thành công", toDTO(auction, item));
+        //kiểm tra xem item có tồn tại không?
+        Item item = itemDAO.findById(itemId);
+        if (item == null) {
+            throw new RuntimeException("Sản phẩm không tồn tại!");
         }
-        catch (Exception e) {
-            //e.printStackTrace();
-            return new BaseResponse(false, "Lỗi tạo phiên: " + e.getMessage(), null);
+
+        //kiểm tra rằng item chưa ở phiên đấu giá nào khác
+        if (auctionDAO.existsOpenAuctionByItemId(itemId)) {
+            throw new RuntimeException("Sản phẩm đang nằm ở phiên đấu giá khác!");
         }
+
+        //kiểm tra logic thời gian start < end
+        if (!endTime.isAfter(startTime)) {
+            throw new RuntimeException("Thời gian kết thúc phải sau thời gian bắt đầu");
+        }
+
+        Auction auction = new Auction(itemId, sellerId, startPrice, null,
+                                        minIncrement, buyNowPrice, startTime, endTime);
+
+        boolean checkInsertAuction = auctionDAO.insertAuction(auction);
+        if (!checkInsertAuction) {
+            throw new RuntimeException("Lỗi lưu phiên đấu giá vào hệ thống");
+        }
+
+        //Chuển trạng thái của item trong Dao
+        itemDAO.updateStatus(itemId, ItemStatus.ACTIVE);
+        System.out.println(">>> [AuctionService] Tạo auction #" + auction.getId() + " cho item #" + itemId);
+
+        return toDTO(auction, item);
     }
 
     //----------------CANCEL------------------
     public boolean cancelAuction(Long auctionId) {
-        boolean ok = auctionDAO.cancelAuction(auctionId);
-        if (ok) {
-            Auction auction = auctionDAO.findById(auctionId);
-            if (auction != null) {
-                itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
-            }
+        Auction auction = auctionDAO.findById(auctionId);
+
+        if (auction != null) {
+            auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELLED);
+            itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
 
             BaseResponse event = new BaseResponse(true,
                     String.format("Phiên đấu giá #%d đã bị huỷ!", auctionId),
                     null);
-
             RealtimePushServer.pushToAuctionSubscribers(auctionId, event);
-            return new BaseResponse(true,
-                    String.format("Đã hủy phiên #%d", auctionId),
-                    null);
+            return true;
         }
-        return new BaseResponse(false,
-                String.format("Không thể hủy phiên #%d", auctionId),
-                null);
+
+        return false;
     }
 
     //-------------------START-------------------
@@ -179,7 +169,9 @@ public class AuctionService {
             return false;
         }
 
-        boolean checkOpenAuction = auctionDAO.openAuction(auctionId);
+        auction.setStatus(AuctionStatus.OPEN);
+
+        boolean checkOpenAuction = auctionDAO.updateStatus(auctionId, AuctionStatus.OPEN);
         if (checkOpenAuction) {
             System.out.println(">>> [AuctionService] Đã mở auction #" + auctionId);
 
@@ -189,7 +181,6 @@ public class AuctionService {
             RealtimePushServer.pushToAuctionSubscribers(auctionId, event);
         }
         return checkOpenAuction;
-
     }
 
     //--------------FINISH------------------
@@ -197,17 +188,18 @@ public class AuctionService {
      * kết thúc phiên đấu giá, chuyển trạng thái sang FINISHED
      * xác định người chiến thắng và trả thông tin
      */
-    public synchronized BaseResponse finishAuction(Long auctionId)
-    {
+    public synchronized Map<String, Object> finishAuction(Long auctionId) {
+        Map<String, Object> data = new HashMap<>();
+
         Auction auction = auctionDAO.findById(auctionId);
         if (auction == null) {
-            return new BaseResponse(false, "Phiên đấu giá không tồn tại!", null);
+            return null;
         }
 
         //check trạng thái
         if (auction.getStatus() == AuctionStatus.FINISHED ||
             auction.getStatus() == AuctionStatus.CANCELLED) {
-                return new BaseResponse(false, "Phiên đấu giá đã kết thúc trước đó!", null);
+                return null;
         }
 
         //cập nhật
@@ -241,8 +233,9 @@ public class AuctionService {
         BaseResponse finishEvent = new BaseResponse(true, "AUCTION_FINISHED", winnerMsg);
         RealtimePushServer.pushToAuctionSubscribers(auctionId, finishEvent);
 
-        return new BaseResponse(true, winnerMsg, highestBid);
-
+        data.put("message", winnerMsg);
+        data.put("highestBid", highestBid);
+        return data;
     }
 
 // ─── EXTEND (Anti-sniping) ────────────────────────────────────────────────
@@ -273,72 +266,54 @@ public class AuctionService {
 
     //---------------GET--------------
     /** Lấy tất cả phiên đang OPEN */
-    public BaseResponse getOpenAuctions() {
-        try {
-            List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN);
-            List<AuctionDTO> dtos = new ArrayList<>();
-            for (Auction a : auctions) {
-                Item item = itemDAO.findById(a.getItemId());
-                dtos.add(toDTO(a, item));
-            }
-            return new BaseResponse(true,
-                            "Lấy danh sách phiên đấu giá đang mở thành công",
-                                    dtos);
+    public List<AuctionDTO> getOpenAuctions() {
+        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN);
+        List<AuctionDTO> dtos = new ArrayList<>();
+        for (Auction a : auctions) {
+            Item item = itemDAO.findById(a.getItemId());
+            dtos.add(toDTO(a, item));
         }
-        catch (Exception e) {
-            return new BaseResponse(false,
-                            String.format("Lỗi lấy danh sách: " + e.getMessage()),
-                        null);
-        }
+
+        return dtos;
     }
 
     /** Lấy tất cả phiên (dành cho Admin) */
-    public BaseResponse getAllAuctions() {
-        try {
-            List<Auction> auctions = auctionDAO.getAllAuctions();
-            List<AuctionDTO> dtos = new ArrayList<>();
-            for (Auction a : auctions) {
-                Item item = itemDAO.findById(a.getItemId());
-                dtos.add(toDTO(a, item));
-            }
-            return new BaseResponse(true,
-                            "Lấy danh sách tất cả phiên thành công!",
-                                    dtos);
+    public List<AuctionDTO> getAllAuctions() {
+        List<Auction> auctions = auctionDAO.getAllAuctions();
+        List<AuctionDTO> dtos = new ArrayList<>();
+        for (Auction a : auctions) {
+            Item item = itemDAO.findById(a.getItemId());
+            dtos.add(toDTO(a, item));
         }
-        catch (Exception e) {
-            return new BaseResponse(false,
-                            String.format("Lỗi lấy danh sách: %s", e.getMessage()),
-                        null);
-        }
+
+        return dtos;
+    }
+    public long countAllAuctions() {
+        return auctionDAO.getAllAuctions().size();
     }
 
     /** Lấy chi tiết 1 phiên */
-    public BaseResponse getAuctionDetail(Long auctionId) {
+    public AuctionDTO getAuctionDetail(Long auctionId) {
         Auction auction = auctionDAO.findById(auctionId);
         if (auction == null) {
-            return new BaseResponse(false,
-                        String.format("Không tìm thấy phiên #%d", auctionId),
-                    null);
+            return null;
         }
 
         Item item = itemDAO.findById(auction.getItemId());
-        return new BaseResponse(true, "Lấy chi tiết phiên thành công!", toDTO(auction, item));
+        return toDTO(auction, item);
     }
 
     /** Lấy lịch sử bid của 1 phiên */
-    public BaseResponse getBidHistory(Long auctionId) {
-        try {
-            List<Bid> bids = bidDAO.getAllBidsInAuctionId(auctionId);
-            List<BidDTO> dtos = new ArrayList<>();
-            for (Bid b : bids) {
-                User bidder = userDAO.findById(b.getBidderId());
-                String name = (bidder != null) ? bidder.getFullName() : "Ẩn danh";
-                dtos.add(new BidDTO(b.getId(), b.getAuctionId(), b.getBidderId(),
-                        name, b.getAmount(), b.getTimestamp()));
-            }
-            return new BaseResponse(true, "OK", dtos);
-        } catch (Exception e) {
-            return new BaseResponse(false, "Lỗi lấy lịch sử bid: " + e.getMessage(), null);
+    public List<BidDTO> getBidHistory(Long auctionId) {
+        List<Bid> bids = bidDAO.getAllBidsInAuctionId(auctionId);
+        List<BidDTO> dtos = new ArrayList<>();
+        for (Bid b : bids) {
+            User bidder = userDAO.findById(b.getBidderId());
+            String name = (bidder != null) ? bidder.getFullName() : "Ẩn danh";
+            dtos.add(new BidDTO(b.getId(), b.getAuctionId(), b.getBidderId(),
+                    name, b.getAmount(), b.getTimestamp()));
         }
+
+        return dtos;
     }
 }

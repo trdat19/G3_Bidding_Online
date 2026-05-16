@@ -74,7 +74,7 @@ public class RealtimePushServer {
     }
 
 
-    // Gửi tin nhắn cho cả phòng
+    // Gửi tin nhắn cho cả phiên
     /**
      * Gửi thông báo sự kiện tới tất cả người đang xem một phiên đấu giá.
      * Dùng cho: bid mới, gia hạn phiên, phiên kết thúc.

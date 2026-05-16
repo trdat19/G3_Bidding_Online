@@ -4,12 +4,14 @@ import server.dao.ItemDAO;
 import server.model.item.Item;
 import server.model.item.ItemFactory;
 import server.network.ClientConnectionHandler;
+import server.service.ItemService;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,7 +27,8 @@ import java.util.Map;
 public class SellerServerController {
 
     private static SellerServerController instance;
-    private ItemDAO itemDAO = new ItemDAO();
+
+    private final ItemService itemService = ItemService.getInstance();
 
     private SellerServerController() {}
 
@@ -45,23 +48,13 @@ public class SellerServerController {
     //------------------CREATE-----------------
     public BaseResponse createItem(BaseRequest request, ClientConnectionHandler handler){
         try {
-            // request.getData() là Map<String, Object> chứa {name, category, description, startingPrice}
-            // 1. Bóc tách dữ liệu
-            Map<String, Object> data = (Map<String, Object>) request.getData();
+            Long sellerId = handler.getUser().getId(); // Id lấy từ session
+            // request.getData() là Map<String, Object> chứa {name, category, description}
 
-            String name        = data.get("name").toString();
-            String description = data.get("description").toString();
-            Long sellerId      = handler.getUser().getId(); // lấy từ session
-            BigDecimal priceStart   = new BigDecimal(data.get("priceStart").toString());
-            ItemCategory category   = ItemCategory.valueOf(data.get("category").toString());
+            Item item = itemService.createItem(sellerId, (Map<String, Object>) request.getData());
 
-            // 2. Tạo item mới và lưu vào DB, trả kết quả về client
-            //static factory
-            Item item = ItemFactory.createItem(category, name, description, sellerId, priceStart, ItemStatus.PENDING);
-            boolean ok = itemDAO.insertItem(item);
-
-            if (ok) {
-                System.out.println(">>> [SellerController] Thêm item #" + item.getId() + ": " + name);
+            if (item != null) {
+                System.out.println(">>> [SellerController] Thêm item #" + item.getId() + ": " + item.getNameItem());
                 return new BaseResponse(true, "Thêm sản phẩm thành công!", item);
             }
 
@@ -79,39 +72,13 @@ public class SellerServerController {
     public BaseResponse updateItem(BaseRequest request) {
         //Không cần truyền Handler sản phẩm được sửa đã tồn tại, đã biết sellerId ở trong
         try {
-            // request.getData() là Map<String, Object> chứa {itemId, name?, category?, description?, priceStart?}
-            // 1. Lấy id kiểm tra trước xem có tồn tại sp không?
-            Map<String, Object> data = (Map<String, Object>) request.getData();
-            Long itemId = Long.parseLong(data.get("itemId").toString());
+            Map<String, Object> updateData = (Map<String, Object>) request.getData();
 
-            Item item = itemDAO.findById(itemId);
-            if (item == null) {
-                return new BaseResponse(false, "Sản phẩm không tồn tại!", null);
-            }
-
-            // 2. Bóc tách dữ liệu (có thể có trường nào cần sửa, trường nào không)
-
-            String name        = data.containsKey("name") ? data.get("name").toString() : null;
-            String description = data.containsKey("description") ? data.get("description").toString() : null;
-            BigDecimal priceStart   = data.containsKey("priceStart")
-                                        ? new BigDecimal(data.get("priceStart").toString())
-                                        : null;
-            ItemCategory category   = data.containsKey("category")
-                                        ? ItemCategory.valueOf(data.get("category").toString())
-                                        : null;
-            String imageUrl = data.containsKey("imageUrl") ? data.get("imageUrl").toString() : null;
-
-            if (name != null) { item.setNameItem(name); }
-            if (description != null) { item.setDescription(description); }
-            if (priceStart != null) { item.setPriceStart(priceStart); }
-            if (category != null) { item.setCategory(category); }
-            if (imageUrl != null) { item.setImageUrl(imageUrl); }
-
-            // 3. Kiểm tra
-            boolean ok = itemDAO.updateItem(item);
-            if (ok) {
-                System.out.println(">>> [SellerController] Cập nhật item #" + item.getId() + ": " + name);
-                return new BaseResponse(true, "Cập nhật sản phẩm thành công!", item);
+            Item updatedItem = itemService.updateItem(updateData);
+            if (updatedItem != null) {
+                System.out.println(">>> [SellerController] Cập nhật item #"
+                        + updatedItem.getId() + ": " + updatedItem.getNameItem());
+                return new BaseResponse(true, "Cập nhật sản phẩm thành công!", updatedItem);
             }
 
             return new BaseResponse(false, "Lỗi cập nhật sản phẩm vào database!", null);
@@ -127,12 +94,8 @@ public class SellerServerController {
     //khi sp chưa vào phiên thì mới có thể xoá
     public BaseResponse deleteItem(Long itemId) {
         try {
-            Item item = itemDAO.findById(itemId);
-            if (item == null) {
-                return new BaseResponse(false, "Sản phẩm không tồn tại!", null);
-            }
+            boolean ok = itemService.deleteItem(itemId);
 
-            boolean ok = itemDAO.deleteItem(itemId);
             if (ok) {
                 System.out.println(">>> [SellerController] Xóa item #" + itemId);
                 return new BaseResponse(true, "Xóa sản phẩm thành công!", null);
@@ -140,10 +103,24 @@ public class SellerServerController {
 
             return new BaseResponse(false, "Lỗi xóa sản phẩm khỏi database!", null);
 
+        } catch (IllegalArgumentException e) {
+            return new BaseResponse(false, e.getMessage(), null);
         } catch (Exception e) {
-            return new BaseResponse(false,
-                    String.format("Lỗi xóa sản phẩm: %s", e.getMessage()),
-                    null);
+            return new BaseResponse(false, "Lỗi xóa sản phẩm: " + e.getMessage(), null);
+        }
+    }
+
+    // ---------------------- GET ALL BY SELLER ----------------------
+
+    public BaseResponse getItemsBySeller(ClientConnectionHandler handler) {
+        try {
+            Long sellerId = handler.getUser().getId();
+
+            List<Item> items = itemService.findBySeller(sellerId);
+            return new BaseResponse(true, "Lấy danh sách sản phẩm thành công!", items);
+
+        } catch (Exception e) {
+            return new BaseResponse(false, "Lỗi lấy danh sách sản phẩm: " + e.getMessage(), null);
         }
     }
 }

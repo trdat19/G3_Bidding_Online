@@ -28,7 +28,7 @@ public class ItemDAO {
             ps.setString(2, item.getCategory().name());
             ps.setString(3, item.getDescription());
             ps.setLong(4, item.getSellerId());
-            ps.setBigDecimal(5, item.getPriceStart());
+            //ps.setBigDecimal(5, item.getPriceStart());
             ps.setString(6, item.getStatusItem().name());
 
             int rowsAffected = ps.executeUpdate();
@@ -137,7 +137,7 @@ public class ItemDAO {
             ps.setString(2, item.getCategory().name());
             ps.setString(3, item.getDescription());
             ps.setLong(4, item.getSellerId());
-            ps.setBigDecimal(5, item.getPriceStart());
+            //ps.setBigDecimal(5, item.getPriceStart());
             ps.setString(6, item.getStatusItem().name());
             ps.setLong(7, item.getId());
 
@@ -194,19 +194,19 @@ public class ItemDAO {
 
         switch (category) {
             case ART:
-                Art art = new Art(nameItem, description, sellerId, priceStart, statusItem);
+                Art art = new Art(nameItem, description, sellerId, statusItem);
                 art.setId(id);
                 art.setCreatedAtItem(createdAtItem.toLocalDateTime());
                 return art;
 
             case ELECTRONICS:
-                Electronics electronics = new Electronics(nameItem, description, sellerId, priceStart, statusItem);
+                Electronics electronics = new Electronics(nameItem, description, sellerId, statusItem);
                 electronics.setId(id);
                 electronics.setCreatedAtItem(createdAtItem.toLocalDateTime());
                 return electronics;
 
             case VEHICLE:
-                Vehicle vehicle = new Vehicle(nameItem, description, sellerId, priceStart, statusItem);
+                Vehicle vehicle = new Vehicle(nameItem, description, sellerId, statusItem);
                 vehicle.setId(id);
                 vehicle.setCreatedAtItem(createdAtItem.toLocalDateTime());
                 return vehicle;

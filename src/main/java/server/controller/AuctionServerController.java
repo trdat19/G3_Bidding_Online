@@ -1,9 +1,13 @@
 package server.controller;
 
 import server.service.AuctionService;
+import shared.dto.common.AuctionDTO;
+import shared.dto.common.BidDTO;
 import shared.dto.request.BaseRequest;
+import shared.dto.request.CreateAuctionRequest;
 import shared.dto.response.BaseResponse;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,19 +35,39 @@ public class AuctionServerController {
 
     /** getAuctions – lấy danh sách phiên đang OPEN */
     public BaseResponse getAuctions() {
-        return auctionService.getOpenAuctions();
+        List<AuctionDTO> auctions = auctionService.getOpenAuctions();
+
+        if (auctions.isEmpty()) {
+            return new BaseResponse(false, "Không có phiên đấu giá nào đang mở!", null);
+        }
+
+        return new BaseResponse(true, "Danh sách phiên đấu giá đang mở:", auctions);
     }
 
     /** getAllAuctions – Admin lấy tất cả phiên */
     public BaseResponse getAllAuctions() {
-        return auctionService.getAllAuctions();
+        List<AuctionDTO> auctions = auctionService.getAllAuctions();
+
+        if (auctions.isEmpty()) {
+            return new BaseResponse(false, "Không có phiên đấu giá nào!", null);
+        }
+
+        return new BaseResponse(true, "Danh sách tất cả phiên đấu giá:", auctions);
     }
 
     /** getAuctionDetail - lấy chi tiết thông tin của 1 phiên đấu giá */
     public BaseResponse getAuctionDetail(BaseRequest request) {
         try {
             Long auctionId = Long.parseLong(request.getData().toString());
-            return auctionService.getAuctionDetail(auctionId);
+            AuctionDTO auction = auctionService.getAuctionDetail(auctionId);
+
+            if (auction == null) {
+                return new BaseResponse(false,
+                        String.format("Không tìm thấy phiên đấu giá #%d", auctionId),
+                        null);
+            }
+
+            return new BaseResponse(true, "Chi tiết phiên đấu giá:", auction);
         }
         catch (Exception e) {
             return new BaseResponse(false,
@@ -56,8 +80,24 @@ public class AuctionServerController {
     public BaseResponse createAuction(BaseRequest request) {
         try {
             Map<String, Object> data = (Map<String, Object>) request.getData();
-            return auctionService.createAuction(data);
-        } catch (ClassCastException e) {
+
+            if (!(data.containsKey("startPrice")
+                    && data.containsKey("minIncrement")
+                    && data.containsKey("buyNowPrice")
+                    && data.containsKey("startTime")
+                    && data.containsKey("endTime")
+                    && data.containsKey("itemId")
+                    && data.containsKey("sellerId")))
+            {
+                return new BaseResponse(false,
+                        "Thiếu thông tin cần thiết để tạo phiên đấu giá!", null);
+            }
+
+            return new BaseResponse(true,
+                    "Tạo phiên đấu giá thành công!",
+                            auctionService.createAuction(data));
+
+        } catch (Exception e) {
             return new BaseResponse(false, "Dữ liệu phiên không hợp lệ!", null);
         }
     }
@@ -65,8 +105,17 @@ public class AuctionServerController {
     /** closeAuction – kết thúc phiên (Admin hoặc hết giờ) */
     public BaseResponse closeAuction(BaseRequest request) {
         try {
+            if (request.getData() == null) {
+                return new BaseResponse(false, "Thiếu auctionId để đóng phiên đấu giá!", null);
+            }
+
             Long auctionId = Long.parseLong(request.getData().toString());
-            return auctionService.finishAuction(auctionId);
+            Map<String, Object> data = auctionService.finishAuction(auctionId);
+
+            return new BaseResponse(true,
+                    String.format("Đã đóng phiên đấu giá #%d", auctionId),
+                    data);
+
         } catch (Exception e) {
             return new BaseResponse(false,
                     String.format("Lỗi đóng phiên: %s", e.getMessage()),
@@ -77,8 +126,17 @@ public class AuctionServerController {
     /** getBidHistory – lịch sử bid của 1 phiên */
     public BaseResponse getBidHistory(BaseRequest request) {
         try {
+            if (request.getData() == null) {
+                return new BaseResponse(false, "Thiếu auctionId để lấy lịch sử đấu giá!", null);
+            }
+
             Long auctionId = Long.parseLong(request.getData().toString());
-            return auctionService.getBidHistory(auctionId);
+            List<BidDTO> bids = auctionService.getBidHistory(auctionId);
+
+            return new BaseResponse(true,
+                    String.format("Lịch sử đấu giá của phiên #%d", auctionId),
+                    bids);
+
         } catch (Exception e) {
             return new BaseResponse(false,
                     String.format("Lỗi lấy lịch sử: %s", e.getMessage()),

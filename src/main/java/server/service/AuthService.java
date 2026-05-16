@@ -5,6 +5,7 @@ import server.model.user.Admin;
 import server.model.user.Bidder;
 import server.model.user.Seller;
 import server.model.user.User;
+import server.network.ClientConnectionHandler;
 import shared.enums.UserRole;
 import shared.enums.UserStatus;
 
@@ -34,17 +35,6 @@ public class AuthService {
         return instance;
     }
 
-    // 2. Logic kiểm tra đăng nhập
-//    public boolean login(String username, String password) {
-//        // Tạm thời cho phép 2 tài khoản này để test Realtime
-//        if ((username.equals("user1") && password.equals("123")) ||
-//                (username.equals("user2") && password.equals("123"))) {
-//
-//            System.out.println(">>> [AuthService] Xác thực thành công: " + username);
-//            return true;
-//        }
-//        return false;
-//    }
     public User login(String username, String password) {
         User user = userDAO.findByUsername(username);
 
@@ -95,12 +85,16 @@ public class AuthService {
             System.out.println(">>> [AuthService] Đăng ký thành công: " + username);
             return newUser;
         } else {
-            throw new Exception("DATABASE_ERROR");
+            throw new Exception("Có lỗi xảy ra khi đăng kí!");
         }
     }
 
-    public void logout() {
-        // Xử lý logic đăng xuất nếu cần
+    public void logout(ClientConnectionHandler handler) {
+        User user = handler.getUser();
+        if (user != null) {
+            System.out.println(">>> [AuthService] User " + user.getUsername() + " đã offline.");
+            handler.setUser(null); // Xóa thông tin user khỏi handler
+        }
     }
 
     public void verifySession() {

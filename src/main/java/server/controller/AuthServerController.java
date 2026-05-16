@@ -40,6 +40,10 @@ public class AuthServerController {
         try {
             Map<String, String> data = (Map<String, String>) request.getData();
 
+            if (!(data.containsKey("username") && data.containsKey("password"))) {
+                return new BaseResponse(false, "Thiếu username hoặc password", null);
+            }
+
             String username = data.get("username");
             String password = data.get("password");
 
@@ -47,7 +51,7 @@ public class AuthServerController {
 
             if (loggedInUser != null) {
                 // 1. Lưu thông tin user vào handler để quản lý Session
-                handler.setUsetr(loggedInUser);
+                handler.setUser(loggedInUser);
 
                 // 2. Đăng ký Realtime bằng userId
                 RealtimePushServer.registerUser(loggedInUser.getId(), handler);
@@ -75,6 +79,16 @@ public class AuthServerController {
             // 1. Ép kiểu lấy Map dữ liệu từ request
             Map<String, String> data = (Map<String, String>) request.getData();
 
+            if (!data.containsKey("username")
+                    || !data.containsKey("password")
+                    || !data.containsKey("fullname")
+                    || !data.containsKey("email")
+                    || !data.containsKey("role"))
+            {
+                return new BaseResponse(false,
+                        "Thiếu thông tin đăng ký cần thiết!", null);
+            }
+
             // 2. Gọi AuthService để xử lý logic (hàm này có throws Exception)
             User newUser = AuthService.getInstance().register(
                     data.get("username"),
@@ -98,7 +112,7 @@ public class AuthServerController {
 
     // 3.Đăng xuất
     public BaseResponse logout(ClientConnectionHandler handler) {
-        // Hủy đăng ký trên Realtime Server khi thoát
+        AuthService.getInstance().logout(handler);
         RealtimePushServer.removeConnection(handler);
         return new BaseResponse(true, "Đã đăng xuất", null);
     }

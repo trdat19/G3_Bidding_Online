@@ -28,7 +28,6 @@ public class ItemFactory {
      * @param name      tên item
      * @param description mô tả
      * @param sellerId  id seller
-     * @param price     giá khởi điểm (phải > 0)
      * @param status    trạng thái item
      * @return Item con phù hợp với category
      */
@@ -36,12 +35,11 @@ public class ItemFactory {
                                   String name,
                                   String description,
                                   Long sellerId,
-                                  BigDecimal price,
                                   ItemStatus status) {
         return switch (category) {
-            case ART         -> new Art(name, description, sellerId, price, status);
-            case ELECTRONICS -> new Electronics(name, description, sellerId, price, status);
-            case VEHICLE     -> new Vehicle(name, description, sellerId, price, status);
+            case ART         -> new Art(name, description, sellerId, status);
+            case ELECTRONICS -> new Electronics(name, description, sellerId, status);
+            case VEHICLE     -> new Vehicle(name, description, sellerId, status);
         };
     }
 
@@ -58,10 +56,9 @@ public class ItemFactory {
                                         String name,
                                         String description,
                                         Long sellerId,
-                                        BigDecimal price,
                                         ItemStatus status,
                                         Timestamp createdAt) {
-        Item item = createItem(category, name, description, sellerId, price, status);
+        Item item = createItem(category, name, description, sellerId, status);
         item.setId(id);
         if (createdAt != null) {
             item.setCreatedAtItem(createdAt.toLocalDateTime());
@@ -75,9 +72,9 @@ public class ItemFactory {
 
     /** Tạo Art item và set ngay các thuộc tính riêng. */
     public static Art createArt(String name, String description, Long sellerId,
-                                BigDecimal price, ItemStatus status,
+                                ItemStatus status,
                                 String artist, int year, String material) {
-        Art art = new Art(name, description, sellerId, price, status);
+        Art art = new Art(name, description, sellerId, status);
         art.setArtist(artist);
         art.setYear(year);
         art.setMaterial(material);
@@ -86,10 +83,10 @@ public class ItemFactory {
 
     /** Tạo Electronics item và set ngay các thuộc tính riêng. */
     public static Electronics createElectronics(String name, String description, Long sellerId,
-                                                BigDecimal price, ItemStatus status,
+                                                ItemStatus status,
                                                 String brand, String model,
                                                 int year, int warrantyMonth) {
-        Electronics e = new Electronics(name, description, sellerId, price, status);
+        Electronics e = new Electronics(name, description, sellerId, status);
         e.setBrand(brand);
         e.setModel(model);
         e.setYear(year);
@@ -99,9 +96,9 @@ public class ItemFactory {
 
     /** Tạo Vehicle item và set ngay các thuộc tính riêng. */
     public static Vehicle createVehicle(String name, String description, Long sellerId,
-                                        BigDecimal price, ItemStatus status,
+                                        ItemStatus status,
                                         String manufacturer, int year) {
-        Vehicle v = new Vehicle(name, description, sellerId, price, status);
+        Vehicle v = new Vehicle(name, description, sellerId, status);
         v.setManufacturer(manufacturer);
         v.setYear(year);
         return v;

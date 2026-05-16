@@ -217,21 +217,6 @@ public class AuctionDAO {
         return false;
     }
 
-    // mở auction
-    public boolean openAuction(long idAuction) {
-        return updateStatus(idAuction, AuctionStatus.OPEN);
-    }
-
-    // đóng auction
-    public boolean closeAuction(long idAuction) {
-        return updateStatus(idAuction, AuctionStatus.CLOSED);
-    }
-
-    // hủy auction
-    public boolean cancelAuction(long idAuction) {
-        return updateStatus(idAuction, AuctionStatus.CANCELLED);
-    }
-
     // kiểm tra auction có tồn tại không
     public boolean existsAuctionById(long idAuction) {
         String sql = "SELECT 1 FROM auctions WHERE id_auction = ?";

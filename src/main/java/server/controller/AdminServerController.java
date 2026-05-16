@@ -22,7 +22,7 @@ import java.util.Map;
 public class AdminServerController {
     private static AdminServerController instance;
 
-    private final UserSerivce userSerivce = UserService.getInstance();
+    private final UserService userService = UserService.getInstance();
     private final AuctionService auctionService = AuctionService.getInstance();
 
     private AdminServerController() {}
@@ -39,35 +39,55 @@ public class AdminServerController {
         return instance;
     }
 
+    //----------------HELPER---------------------
+    private UserDTO toDTO(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setFullname(user.getFullName());
+        dto.setEmail(user.getEmail());
+        dto.setStatus(user.getStatus());
+        dto.setRole(user.getRole());
+        dto.setCreatedAt(user.getCreatedAt());
+        return dto;
+    }
+
     //--------------USER MANAGEMENT-------------------------
     public BaseResponse getAllUsers() {
-        List<User> userList = userDAO.getAllUsers();
-        List<UserDTO> users = new ArrayList<>();
-        for (User user : userList) {
-            UserDTO dto = toDTO(user);
-            users.add(dto);
+        try {
+            List<User> userList = userService.findAllUsers();
+
+            List<UserDTO> users = new ArrayList<>();
+            for (User user : userList) {
+                users.add(toDTO(user));
+            }
+
+            return new BaseResponse(true, "Lấy danh sách người dùng thành công!", users);
+
+        } catch (Exception e) {
+            return new BaseResponse(false, "Lỗi lấy danh sách người dùng: " + e.getMessage(), null);
         }
-        return new BaseResponse(true, "Load Users Succesfully", users);
     }
+
     /** EnableUser – mở khóa tài khoản người dùng
      * @param request chứa userId của người dùng cần mở khóa
      */
     public BaseResponse enableUser(BaseRequest request) {
         try {
             Long userId = Long.parseLong(request.getData().toString());
-            boolean ok = userDAO.updateStatus(userId, UserStatus.ACTIVE);
+
+            boolean ok = userService.changeStatus(userId, UserStatus.ACTIVE);
+
             return ok
                     ? new BaseResponse(true,
-                                        String.format("Đã mở khóa tài khoản #%d", userId),
-                                    null)
+                                String.format("Đã mở khóa tài khoản #%d", userId), null)
                     : new BaseResponse(false,
-                                        String.format("Không tìm thấy người dùng #%d", userId),
-                                    null);
-        }
-        catch (Exception e) {
-            return new BaseResponse(false,
-                            String.format("Lỗi mở khóa: %s ", e.getMessage()),
-                    null);
+                                String.format("Không thể mở khóa tài khoản #%d", userId), null);
+
+        } catch (IllegalArgumentException e) {
+            return new BaseResponse(false, e.getMessage(), null);
+        } catch (Exception e) {
+            return new BaseResponse(false, "Lỗi mở khóa: " + e.getMessage(), null);
         }
     }
     /**
@@ -76,52 +96,20 @@ public class AdminServerController {
      */
     public BaseResponse disableUser(BaseRequest request) {
         try {
-
             Long userId = Long.parseLong(request.getData().toString());
-            boolean ok = userDAO.updateStatus(userId, UserStatus.BLOCKED);
+
+            boolean ok = userService.changeStatus(userId, UserStatus.BLOCKED);
 
             return ok
                     ? new BaseResponse(true,
-                                    String.format("Đã khoá tài khoản #%d", userId),
-                                    null)
+                                String.format("Đã khóa tài khoản #%d", userId), null)
                     : new BaseResponse(false,
-                                    String.format("Không thể khoá tài khoản #%d", userId),
-                                    null);
-        }
-        catch (Exception e) {
-            return new BaseResponse(false,
-                            String.format("Lỗi khoá tài khoản: %s ", e.getMessage()),
-                        null);
-        }
-    }
+                                String.format("Không thể khóa tài khoản #%d", userId), null);
 
-    //--------------AUCTION MANAGEMENT--------------------------
-    /**
-     * createAuction - tạo phiên đấu giá mới
-     *
-     */
-
-    /**
-     * cancelAuction - admin huỷ phiên đấu giá
-     * @param request chứa auctionId của phiên đấu giá cần huỷ
-     */
-    public BaseResponse cancelAuction(BaseRequest request) {
-        try {
-            Long auctionId = Long.parseLong(request.getData().toString());
-
-            boolean ok = auctionDAO.cancelAuction(auctionId);
-            return ok
-                    ? new BaseResponse(true,
-                                        String.format("Đã huỷ phiên đấu giá #%d", auctionId),
-                                    null)
-                    : new BaseResponse(false,
-                                        String.format("Không tìm thấy phiên đấu giá #%d", auctionId),
-                                    null);
-        }
-        catch (Exception e) {
-            return new BaseResponse(false,
-                            String.format("Lỗi huỷ phiên đấu giá: %s ", e.getMessage()),
-                    null);
+        } catch (IllegalArgumentException e) {
+            return new BaseResponse(false, e.getMessage(), null);
+        } catch (Exception e) {
+            return new BaseResponse(false, "Lỗi khóa tài khoản: " + e.getMessage(), null);
         }
     }
 
@@ -133,16 +121,13 @@ public class AdminServerController {
     public BaseResponse getAuditData(BaseRequest request) {
         try {
             Map<String, Object> data = new HashMap<>();
-            data.put("totalUsers", userDAO.getAllUsers().size());
-            data.put("totalAuctions", auctionDAO.getAllAuctions().size());
-            // Có thể thêm các thống kê khác
+            data.put("totalUsers",    userService.countAllUsers());
+            data.put("totalAuctions", auctionService.countAllAuctions());
 
-            return new BaseResponse(true, "Lấy dữ liệu thành công!", data);
-        }
-        catch (Exception e) {
-            return new BaseResponse(false,
-                            String.format("Lỗi lấy dữ liệu: %s ", e.getMessage()),
-                             null);
+            return new BaseResponse(true, "Lấy dữ liệu thống kê thành công!", data);
+
+        } catch (Exception e) {
+            return new BaseResponse(false, "Lỗi lấy dữ liệu thống kê: " + e.getMessage(), null);
         }
     }
 }

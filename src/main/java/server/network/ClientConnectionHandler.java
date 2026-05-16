@@ -1,15 +1,20 @@
 package server.network;
 
+import server.model.user.User;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
-import java.io.*;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ClientConnectionHandler implements Runnable {
     private Socket clientSocket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private server.model.user.User user;
+    private User user;
 
     public ClientConnectionHandler(Socket socket) {
         this.clientSocket = socket;
@@ -65,6 +70,8 @@ public class ClientConnectionHandler implements Runnable {
     private void closeConnection() {
         try {
             RealtimePushServer.removeConnection(this);
+            if (in != null) in.close();
+            if (out != null) out.close();
             if (clientSocket != null) clientSocket.close();
             System.out.println(">>> Đã đóng kết nối.");
         } catch (IOException e) {
@@ -72,14 +79,11 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
-    public server.model.user.User getUser()
+    public User getUser()
     {
         return user;
     }
 
-    public void setUsetr(server.model.user.User user)
-    {
-        this.user = user;
-    }
+    public void setUser(User user) {this.user = user; }
 
 }
