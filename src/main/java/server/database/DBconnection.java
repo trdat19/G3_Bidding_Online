@@ -10,9 +10,9 @@ public class DBconnection {
     private static DBconnection instance;
     private final HikariDataSource dataSource;
 
-    private String url = "jdbc:mysql://nozomi.proxy.rlwy.net:24310/railway?serverTimezone=UTC&useSSL=true&requireSSL=true";
-    private String user = "root";
-    private String pass = "QMXMdCasKkgHnqOxFfAXwzouhwqMtqOR";
+    private String url = "jdbc:postgresql://db.gprbefncnxjtgigvuntl.supabase.co:5432/postgres?sslmode=require";
+    private String user = "postgres";
+    private String pass = "GD3_2026@123";
 
     private DBconnection() {
         HikariConfig config = new HikariConfig();
