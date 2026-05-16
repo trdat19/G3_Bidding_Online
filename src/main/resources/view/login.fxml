@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane styleClass="root" stylesheets="@../css/login.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.LoginController">
+   <children>
+      <HBox alignment="CENTER" prefWidth="1200.0">
+         <children>
+            <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="600.0" spacing="20.0" styleClass="brand-title" stylesheets="@../css/login.css">
+               <children>
+                  <StackPane styleClass="icon-circle">
+                     <children>
+                        <Label maxWidth="1.7976931348623157E308" text="⚖" textAlignment="CENTER">
+                           <font>
+                              <Font size="36.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="brand-icon" />
+                              <String fx:value="icon-circle" />
+                           </styleClass>
+                        </Label>
+                     </children>
+                  </StackPane>
+               
+                   <Label text="BIDZONE" textAlignment="CENTER">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                  </Label>
+                  <Label text="Hệ thống đấu giá trực tuyến" textAlignment="CENTER" />
+               </children>
+               <padding>
+                  <Insets bottom="160.0" left="80.0" right="40.0" />
+               </padding>
+            </VBox>
+            <StackPane>
+               <children>
+                  <VBox alignment="CENTER" prefHeight="242.0" prefWidth="500.0" spacing="15.0" stylesheets="@../css/login.css">
+                  
+                      <TextField fx:id="username" promptText="Username" />
+                      <PasswordField fx:id="password" promptText="Password" />
+                  
+                      <Button onAction="#handleLogin" text="Login">
+                        <styleClass>
+                           <String fx:value="login-button" />
+                           <String fx:value="login-title" />
+                        </styleClass></Button>
+                     <Label layoutX="500.0" layoutY="300.0" textFill="#f90909" />
+                     <Label fx:id="errorLabel" textFill="#e00909" />
+                     <Hyperlink onAction="#handleRegister" text="Don't have a account? Register" />
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  
+                  </VBox>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
+   </children>
+</StackPane>

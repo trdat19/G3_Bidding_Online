@@ -1,0 +1,155 @@
+.root-container {
+    -fx-background-color: linear-gradient(to bottom, #f8fbff, #eaf2ff);
+    -fx-font-family: "Segoe UI";
+}
+.scroll-pane,
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+.header {
+    -fx-padding: 20 28 20 28;
+    -fx-background-color: white;
+    -fx-border-color: #e9ecf2;
+    -fx-border-width: 0 0 1 0;
+}
+
+.logo-icon {
+    -fx-background-color: #5b4cf0;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 10;
+    -fx-background-radius: 14;
+    -fx-alignment: center;
+    -fx-min-width: 24;
+    -fx-min-height: 24;
+}
+
+.logo-text {
+    -fx-font-size: 20px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f172a;
+}
+
+.user-name {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #111827;
+}
+
+.user-role {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #94a3b8;
+}
+
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 45px;
+    -fx-cursor: hand;
+}
+
+.main-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.main-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.content-wrapper {
+    -fx-padding: 28 32 32 32;
+}
+
+.page-title {
+    -fx-font-size: 34px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0b132b;
+}
+
+.page-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+}
+
+.card-container {
+    -fx-padding: 10 0 20 0;
+}
+
+.auction-card {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-border-radius: 24;
+    -fx-border-color: #e8ebf2;
+    -fx-padding: 20;
+}
+
+.auction-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 18, 0.2, 0, 4);
+}
+
+.image-box {
+    -fx-background-color: #eef2f7;
+    -fx-background-radius: 20;
+    -fx-pref-height: 210;
+    -fx-padding: 14;
+}
+
+.category-badge {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-padding: 6 14 6 14;
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #475569;
+}
+
+.image-placeholder {
+    -fx-font-size: 56px;
+    -fx-text-fill: #cbd5e1;
+}
+
+.item-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #172033;
+}
+
+.item-desc {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+}
+
+.meta-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #94a3b8;
+}
+
+.price-label {
+    -fx-font-size: 22px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #5b4cf0;
+}
+
+.time-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1e293b;
+}
+
+.detail-button {
+    -fx-background-color: #0f172a;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-padding: 12 20 12 20;
+    -fx-background-radius: 14;
+    -fx-cursor: hand;
+}
+
+.detail-button:hover {
+    -fx-background-color: #1e293b;
+}

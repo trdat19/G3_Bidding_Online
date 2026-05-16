@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" spacing="20" styleClass="page">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <HBox spacing="20">
+        <VBox styleClass="stat-card" prefWidth="180">
+            <Label text="120" styleClass="stat-number"/>
+            <Label text="Total Users"/>
+        </VBox>
+
+        <VBox styleClass="stat-card" prefWidth="180">
+            <Label text="18" styleClass="stat-number"/>
+            <Label text="Active Auctions"/>
+        </VBox>
+
+        <VBox styleClass="stat-card" prefWidth="180">
+            <Label text="54" styleClass="stat-number"/>
+            <Label text="Finished Auctions"/>
+        </VBox>
+
+        <VBox styleClass="stat-card" prefWidth="180">
+            <Label text="73" styleClass="stat-number"/>
+            <Label text="Products"/>
+        </VBox>
+    </HBox>
+
+    <Label text="Recent Auctions" styleClass="section-title"/>
+
+    <TableView fx:id="recentAuctionTable" prefHeight="250">
+        <columns>
+            <TableColumn text="Auction ID" prefWidth="120"/>
+            <TableColumn text="Product" prefWidth="220"/>
+            <TableColumn text="Seller" prefWidth="150"/>
+            <TableColumn text="Current Price" prefWidth="150"/>
+            <TableColumn text="Status" prefWidth="120"/>
+            <TableColumn text="End Time" prefWidth="180"/>
+        </columns>
+    </TableView>
+
+    <Label text="System Alerts" styleClass="section-title"/>
+
+    <ListView fx:id="alertList" prefHeight="150"/>
+</VBox>

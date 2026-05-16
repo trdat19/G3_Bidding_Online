@@ -1,0 +1,273 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom right, #f8fbff, #eef4ff);
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+/* ===== TOP BAR ===== */
+
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+/* ===== BUTTONS ===== */
+
+.back-button {
+    -fx-background-color: white;
+    -fx-text-fill: #334155;
+
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1;
+
+    -fx-padding: 10 18;
+
+    -fx-cursor: hand;
+}
+
+.back-button:hover {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #94a3b8;
+}
+
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #4f46e5, #4338ca);
+
+    -fx-text-fill: white;
+
+    -fx-font-size: 15px;
+    -fx-font-weight: 800;
+
+    -fx-background-radius: 16;
+
+    -fx-padding: 12 24;
+
+    -fx-cursor: hand;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(79,70,229,0.25),
+            12,
+            0.2,
+            0,
+            3
+    );
+}
+
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to right, #4338ca, #3730a3);
+}
+
+.secondary-button {
+    -fx-background-color: white;
+
+    -fx-text-fill: #0f172a;
+
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1;
+
+    -fx-padding: 12 24;
+
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #f8fafc;
+}
+
+/* ===== STATUS ===== */
+
+.status-open {
+    -fx-background-color: #dcfce7;
+    -fx-text-fill: #166534;
+
+    -fx-font-size: 13px;
+    -fx-font-weight: 900;
+
+    -fx-padding: 8 16;
+
+    -fx-background-radius: 999;
+}
+
+.status-running {
+    -fx-background-color: #dbeafe;
+    -fx-text-fill: #1d4ed8;
+
+    -fx-font-size: 13px;
+    -fx-font-weight: 900;
+
+    -fx-padding: 8 16;
+
+    -fx-background-radius: 999;
+}
+
+.status-finished {
+    -fx-background-color: #fee2e2;
+    -fx-text-fill: #b91c1c;
+
+    -fx-font-size: 13px;
+    -fx-font-weight: 900;
+
+    -fx-padding: 8 16;
+
+    -fx-background-radius: 999;
+}
+
+/* ===== HERO SECTION ===== */
+
+.hero-card {
+    -fx-background-color: white;
+
+    -fx-background-radius: 28;
+
+    -fx-padding: 28;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(15,23,42,0.10),
+            22,
+            0.25,
+            0,
+            6
+    );
+}
+
+.hero-image {
+    -fx-background-color:
+            linear-gradient(to bottom right, #f8fafc, #e2e8f0);
+
+    -fx-background-radius: 24;
+
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 24;
+
+    -fx-border-style: dashed;
+    -fx-border-width: 2;
+}
+
+.image-placeholder {
+    -fx-font-size: 26px;
+    -fx-font-weight: 700;
+
+    -fx-text-fill: #94a3b8;
+}
+
+/* ===== PRODUCT INFO ===== */
+
+.product-name {
+    -fx-font-size: 34px;
+    -fx-font-weight: 900;
+
+    -fx-text-fill: #0f172a;
+}
+
+.product-category {
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+
+    -fx-text-fill: #64748b;
+}
+
+.product-description-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: 800;
+
+    -fx-text-fill: #1e293b;
+}
+
+.product-description {
+    -fx-font-size: 15px;
+
+    -fx-text-fill: #475569;
+
+    -fx-wrap-text: true;
+
+    -fx-line-spacing: 2px;
+}
+
+/* ===== FIELD ===== */
+
+.field-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+
+    -fx-text-fill: #94a3b8;
+}
+
+/* ===== PRICE ===== */
+
+.hero-price {
+    -fx-font-size: 40px;
+    -fx-font-weight: 900;
+
+    -fx-text-fill: #2563eb;
+}
+
+/* ===== COUNTDOWN ===== */
+
+.hero-countdown {
+    -fx-font-size: 32px;
+    -fx-font-weight: 900;
+
+    -fx-text-fill: #7c3aed;
+}
+
+/* ===== STAT GRID ===== */
+
+.stat-grid {
+    -fx-background-color: white;
+
+    -fx-background-radius: 26;
+
+    -fx-padding: 24;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(15,23,42,0.08),
+            18,
+            0.2,
+            0,
+            4
+    );
+}
+
+.stat-box {
+    -fx-background-color: #f8fafc;
+
+    -fx-background-radius: 18;
+
+    -fx-padding: 18;
+}
+
+.stat-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+
+    -fx-text-fill: #94a3b8;
+}
+
+.stat-value {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+
+    -fx-text-fill: #0f172a;
+}
+
+/* ===== SEPARATOR ===== */
+
+.separator .line {
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1;
+}

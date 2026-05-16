@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.controller.RegisterFormController"
+            stylesheets="@../css/register-form.css"
+            styleClass="root">
+
+    <center>
+
+        <ScrollPane fitToWidth="true"
+                    fitToHeight="false"
+                    pannable="true"
+                    hbarPolicy="NEVER"
+                    vbarPolicy="AS_NEEDED"
+                    style="-fx-background-color: transparent;">
+        <content>
+        <HBox alignment="CENTER" styleClass="register-page">
+
+            <!-- LEFT: BRAND PANEL -->
+            <VBox alignment="CENTER_LEFT" spacing="22" styleClass="brand-panel">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <StackPane styleClass="logo-box">
+                        <Label text="⚖" styleClass="logo-icon"/>
+                    </StackPane>
+                    <Label text="BidZone" styleClass="brand-name"/>
+                </HBox>
+
+                <Label text="Bắt đầu hành trình đấu giá của bạn"
+                       styleClass="brand-heading"
+                       wrapText="true"/>
+
+                <Label text="Tạo tài khoản để theo dõi phiên đấu giá, đặt giá theo thời gian thực và quản lý hoạt động của bạn trên hệ thống."
+                       styleClass="brand-description"
+                       wrapText="true"/>
+
+                <VBox spacing="12" styleClass="feature-list">
+                    <Label text="✓ Tham gia phiên đấu giá realtime" styleClass="feature-item"/>
+                    <Label text="✓ Theo dõi giá và thời gian còn lại" styleClass="feature-item"/>
+                    <Label text="✓ Hỗ trợ nhiều vai trò: Bidder, Seller, Admin" styleClass="feature-item"/>
+                </VBox>
+
+                <Region VBox.vgrow="ALWAYS"/>
+
+                <Label text="Online Auction System" styleClass="brand-footer"/>
+            </VBox>
+
+            <!-- RIGHT: REGISTER FORM -->
+            <VBox alignment="CENTER_LEFT" spacing="16" styleClass="register-card">
+                <Label text="Tạo tài khoản mới" styleClass="form-title"/>
+                <Label text="Đăng ký để tham gia các phiên đấu giá trên BidZone"
+                       styleClass="form-subtitle"/>
+
+                <Label text="Username" styleClass="field-label"/>
+                <TextField fx:id="username" promptText="Nhập username"/>
+
+                <Label text="Họ và tên" styleClass="field-label"/>
+                <TextField fx:id="fullname" promptText="Nhập họ và tên"/>
+
+                <Label text="Email" styleClass="field-label"/>
+                <TextField fx:id="email" promptText="Nhập email"/>
+
+                <Label text="Mật khẩu" styleClass="field-label"/>
+                <PasswordField fx:id="password" promptText="Nhập mật khẩu"/>
+
+                <Label text="Xác nhận mật khẩu" styleClass="field-label"/>
+                <PasswordField fx:id="confirmPassword" promptText="Nhập lại mật khẩu"/>
+
+                <Label text="Vai trò" styleClass="field-label"/>
+                <ComboBox fx:id="comboBox"
+                          promptText="Chọn vai trò"
+                          maxWidth="Infinity"
+                          styleClass="role-combo"/>
+
+                <Button text="Đăng ký"
+                        onAction="#handleRegister"
+                        maxWidth="Infinity"
+                        styleClass="register-button"/>
+
+                <HBox alignment="CENTER" spacing="4">
+                    <Label text="Đã có tài khoản?" styleClass="small-text"/>
+                    <Hyperlink text="Đăng nhập"
+                               onAction="#goToLogin"
+                               styleClass="login-link"/>
+                </HBox>
+            </VBox>
+
+        </HBox>
+        </content>
+        </ScrollPane>
+    </center>
+</BorderPane>
