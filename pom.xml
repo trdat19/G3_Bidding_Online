@@ -129,6 +129,48 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.1</version> <executions>
+
+                <execution>
+                    <id>build-server-jar</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <shadedArtifactAttached>true</shadedArtifactAttached>
+                        <shadedClassifierName>server</shadedClassifierName>
+                        <transformers>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <mainClass>server.network.SocketSever</mainClass>
+                            </transformer>
+                        </transformers>
+                    </configuration>
+                </execution>
+
+                <execution>
+                    <id>build-client-jar</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <shadedArtifactAttached>true</shadedArtifactAttached>
+                        <shadedClassifierName>client</shadedClassifierName>
+                        <transformers>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <mainClass>client.ClientLauncher</mainClass>
+                            </transformer>
+                        </transformers>
+                    </configuration>
+                </execution>
+
+            </executions>
+            </plugin>
         </plugins>
+
     </build>
 </project>
