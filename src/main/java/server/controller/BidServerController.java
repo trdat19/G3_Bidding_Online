@@ -1,6 +1,5 @@
 package server.controller;
 
-import server.model.core.Bid;
 import server.network.ClientConnectionHandler;
 import server.service.BidService;
 import shared.dto.request.BaseRequest;

@@ -1,10 +1,10 @@
 package server.controller;
 
 import server.service.AuctionService;
+
 import shared.dto.common.AuctionDTO;
 import shared.dto.common.BidDTO;
 import shared.dto.request.BaseRequest;
-import shared.dto.request.CreateAuctionRequest;
 import shared.dto.response.BaseResponse;
 
 import java.util.List;

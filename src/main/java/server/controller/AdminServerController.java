@@ -1,7 +1,5 @@
 package server.controller;
 
-import server.dao.AuctionDAO;
-import server.dao.UserDAO;
 import server.model.user.User;
 import server.service.AuctionService;
 import server.service.UserService;
