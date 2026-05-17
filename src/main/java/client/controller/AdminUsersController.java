@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import shared.dto.common.UserDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 
 import java.util.List;
 public class AdminUsersController {
@@ -34,7 +35,7 @@ public class AdminUsersController {
         loadUsers();
     }
     private void loadUsers() {
-        BaseRequest request = new BaseRequest("ADMIN_GET_USERS", null);
+        BaseRequest request = new BaseRequest(Action.GET_USERS_LIST, null);;
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
         if (response != null && response.isSuccess()) {

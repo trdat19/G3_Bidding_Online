@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
+import shared.enums.Action;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -58,7 +60,7 @@ public class BidingViewController {
         try {
             double amount = Double.parseDouble(txtBidAmount.getText());
             // Gửi lệnh PLACE_BID lên Server
-            BaseRequest req = new BaseRequest("PLACE_BID", amount);
+            BaseRequest req = new BaseRequest(Action.PLACE_BID, amount);
             out.writeObject(req);
             out.flush();
         } catch (Exception e) {

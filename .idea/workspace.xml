@@ -6,10 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AdminUsersController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AdminUsersController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/database/DBconnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/database/DBconnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/request/BaseRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/request/BaseRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/enums/Action.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/enums/Action.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -182,7 +185,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.17931035&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;two.files.diff.last.used.file&quot;: &quot;C:/Users/truon/Downloads/G3_Bidding_Online-trdat/G3_Bidding_Online-trdat/src/main/resources/view/add-product-view.fxml&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
@@ -293,7 +296,12 @@
       <workItem from="1778860602667" duration="7021000" />
       <workItem from="1778892665560" duration="13632000" />
       <workItem from="1778928642097" duration="1428000" />
-      <workItem from="1778947386863" duration="4466000" />
+      <workItem from="1778947386863" duration="5286000" />
+      <workItem from="1778953095494" duration="1028000" />
+      <workItem from="1778957883567" duration="588000" />
+      <workItem from="1778996223528" duration="3093000" />
+      <workItem from="1779024491835" duration="601000" />
+      <workItem from="1779030100836" duration="2000" />
     </task>
     <servers />
   </component>
