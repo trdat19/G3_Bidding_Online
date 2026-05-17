@@ -10,9 +10,9 @@ public class DBconnection {
     private static DBconnection instance;
     private final HikariDataSource dataSource;
 
-    private String url = "jdbc:postgresql://db.gprbefncnxjtgigvuntl.supabase.co:5432/postgres?sslmode=require";
-    private String user = "postgres";
-    private String pass = "GD3_2026@123";
+    private String url = "jdbc:mysql://127.0.0.1:3306/local_railway";
+    private String user = "root";
+    private String pass = "mysql2007";
 
     private DBconnection() {
         HikariConfig config = new HikariConfig();

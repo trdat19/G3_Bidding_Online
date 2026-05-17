@@ -4,7 +4,7 @@ module client {
     requires java.sql;
     requires java.desktop;
     requires com.zaxxer.hikari;
-    //requires mysql.connector.j;
+    requires mysql.connector.j;
     //requires client;
 
     opens client to javafx.graphics;
