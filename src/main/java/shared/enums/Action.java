@@ -40,5 +40,4 @@ public enum Action {
     UPDATE_USER_PROFILE,
     GET_LEADERBOARD,
     GET_NOTIFICATIONS,
-
 }

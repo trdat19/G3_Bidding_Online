@@ -2,25 +2,23 @@ package client.controller;
 import client.model.Item;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import shared.enums.ItemCategory;
 
+import java.io.File;
 import java.time.LocalDateTime;
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 public class AddProductController {
     @FXML private TextField nameField;
-    @FXML private TextField categoryField;
+    @FXML private ComboBox<ItemCategory> categoryBox;
     @FXML private TextArea descriptionField;
-    @FXML private TextField priceField;
-    @FXML private DatePicker startDatePicker;
-    @FXML private DatePicker endDatePicker;
-    @FXML private ComboBox<Integer> startHourBox;
-    @FXML private ComboBox<Integer> startMinuteBox;
-    @FXML private ComboBox<Integer> endHourBox;
-    @FXML private ComboBox<Integer> endMinuteBox;
     @FXML private Label errorLabel;
-    @FXML private Label messageLabel;
+    @FXML private ImageView productImageView;
+    @FXML private Label imageNameLabel;
+    private File selectedImageFile;
 
 
     private SellerDashboardController sellerDashboardController;
@@ -29,49 +27,74 @@ public class AddProductController {
     }
     @FXML
     private void initialize() {     //tao lua chon ngay gio cho nguoi dung
-        for (int i = 0; i < 24; i++) {
-            startHourBox.getItems().add(i);
-            endHourBox.getItems().add(i);
-        }
-        for (int i = 0; i < 60; i += 5) {
-            startMinuteBox.getItems().add(i);
-            endMinuteBox.getItems().add(i);
-        }
-        startHourBox.setValue(19); //gia tri mac dinh
-        startMinuteBox.setValue(0);
+       errorLabel.setText("");
+       categoryBox.getItems().setAll(ItemCategory.values());
+    }
 
-        endHourBox.setValue(20);
-        endMinuteBox.setValue(0);
+    @FXML
+    private void handleChooseImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Chọn ảnh sản phẩm");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter(
+                        "Image Files",
+                        "*.png",
+                        "*.jpg",
+                        "*.jpeg",
+                        "*.gif"
+                )
+        );
+        Stage stage = (Stage) nameField.getScene().getWindow();
+        File file = fileChooser.showOpenDialog(stage);
+        if (file != null) {
+
+            selectedImageFile = file;
+
+            Image image = new Image(file.toURI().toString());
+
+            productImageView.setImage(image);
+
+            imageNameLabel.setText(file.getName());
+        }
     }
     @FXML
     private void handleSave() {
+        errorLabel.setText("");
+
         String title = nameField.getText().trim();
-        String category = categoryField.getText().trim();
+        ItemCategory category = categoryBox.getValue();
         String description = descriptionField.getText().trim();
-        Double startPrice = Double.parseDouble(priceField.getText().trim());
 
-        LocalDate startDate = startDatePicker.getValue();
-        LocalTime startTime = LocalTime.of(startHourBox.getValue(), startMinuteBox.getValue());
-        LocalDateTime startDateTime = LocalDateTime.of(startDate, startTime);
+        if (title.isEmpty()
+                || category == null
+                || description.isEmpty()) {
 
-        LocalDate endDate = endDatePicker.getValue();
-        LocalTime endTime = LocalTime.of(endHourBox.getValue(), endMinuteBox.getValue());
-        LocalDateTime endDateTime = LocalDateTime.of(endDate, endTime);
-
-        Item newItem = new Item(title,category,description, startPrice, startPrice, "None", startDateTime, endDateTime, "OPEN", 0);
-
-        if (title.isEmpty() || category.isEmpty() || description.isEmpty() || startPrice == null || startDate == null || endDate == null) {
             errorLabel.setText("Vui lòng nhập đầy đủ thông tin");
-        }
-        if (sellerDashboardController != null) {
-            sellerDashboardController.addNewProduct(newItem);
-        }
-        closeWindow();
-        if (startDateTime.isAfter(endDateTime)) {
-            messageLabel.setText("Thời gian bắt đầu phải trước thời gian kết thúc");
             return;
         }
+        if (selectedImageFile == null) {
+            errorLabel.setText("Vui lòng chọn ảnh sản phẩm");
+            return;
+        }
+
+        Item item = new Item(
+                title,
+                category.name(),
+                description,
+                0,
+                0,
+                "",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                "PENDING",
+                0
+        );
+        if (sellerDashboardController != null) {
+            sellerDashboardController.addNewProduct(item);
+        }
+        closeWindow();
     }
+
     @FXML
     private void handleCancel() {
         closeWindow();

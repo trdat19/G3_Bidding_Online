@@ -1,12 +1,12 @@
 package client.controller;
 
 import client.service.ClientNetworkService;
+import client.util.StageUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 import server.model.user.User;
@@ -64,7 +64,7 @@ public class LoginController {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+            StageUtils.setMaximizedScene(stage,root);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -74,10 +74,8 @@ public class LoginController {
     private void handleRegister() {
         try {
             Stage stage = (Stage) username.getScene().getWindow();
-            Scene scene = new Scene(
-                    FXMLLoader.load(getClass().getResource("/view/register-form.fxml"))
-            );
-            stage.setScene(scene);
+            Parent root = FXMLLoader.load(getClass().getResource("/view/register-form.fxml"));
+            StageUtils.setMaximizedScene(stage, root);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

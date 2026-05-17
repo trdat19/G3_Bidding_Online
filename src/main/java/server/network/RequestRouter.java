@@ -1,3 +1,4 @@
+
 package server.network;
 
 import server.controller.*;
@@ -37,7 +38,13 @@ public class RequestRouter {
             return new BaseResponse(false, "Yêu cầu không hợp lệ (Null Request/Action)", null);
         }
 
-        Action action = request.getAction();
+        Action action;
+
+        try {
+            action = request.getAction();
+        } catch (IllegalArgumentException e) {
+            return new BaseResponse(false, "Action không hợp lệ: " + request.getAction(), null);
+        }
 
         System.out.println(">>> [Router] Đang điều phối hành động: " + action);
 
@@ -115,6 +122,13 @@ public class RequestRouter {
                                 "ID phiên đấu giá phải là số nguyên hợp lệ!", null);
                     }
                 }
+                case Action.GET_AUCTION_LIST:
+                    return AuctionServerController.getInstance().getAuctions();
+                case Action.GET_AUCTION_DETAILS:
+                    return AuctionServerController.getInstance().getAuctionDetail(request);
+
+                case Action.GET_BID_HISTORY:
+                    return AuctionServerController.getInstance().getBidHistory(request);
 
                 /**
                  * Thao tác của Admin

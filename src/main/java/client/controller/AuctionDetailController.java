@@ -1,11 +1,11 @@
 package client.controller;
 
 import client.model.Item;
+import client.util.StageUtils;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -44,8 +44,9 @@ public class AuctionDetailController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+            StageUtils.setMaximizedScene(stage, root);
             stage.show();
+            ;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,11 +62,11 @@ public class AuctionDetailController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/bidding-view.fxml"));
             Parent root = loader.load();
 
-//            BiddingViewController controller = loader.getController();
-//            controller.setItem(currentItem);
+            BiddingViewController controller = loader.getController();
+            controller.setItem(currentItem);
 
             Stage stage = (Stage) productNameLabel.getScene().getWindow();
-            stage.setScene(new Scene(root));
+            StageUtils.setMaximizedScene(stage, root);
             stage.show();
 
         } catch (IOException e) {

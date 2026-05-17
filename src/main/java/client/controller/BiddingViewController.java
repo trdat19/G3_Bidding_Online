@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.model.Item;
+import client.util.StageUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -80,7 +81,7 @@ public class BiddingViewController {
             AuctionDetailController controller = loader.getController();
             controller.setItemData(currentItem);
             Stage stage = (Stage) nameLabel.getScene().getWindow();
-            stage.setScene(new Scene(root));
+            StageUtils.setMaximizedScene(stage, root);
             stage.show();
         }catch (IOException e) {
             e.printStackTrace();

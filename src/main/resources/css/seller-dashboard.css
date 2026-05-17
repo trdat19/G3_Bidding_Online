@@ -188,3 +188,53 @@
     -fx-font-size: 45px;
     -fx-cursor: hand;
 }
+.wallet-box {
+    -fx-background-color: #ecfdf5;
+    -fx-border-color: #bbf7d0;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 10 18;
+}
+
+.wallet-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #64748b;
+}
+
+.wallet-balance {
+    -fx-font-size: 20px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #16a34a;
+}
+.status-pill {
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-background-radius: 999;
+    -fx-padding: 7 12;
+}
+
+.status-pending {
+    -fx-background-color: #fff7ed;
+    -fx-text-fill: #c2410c;
+}
+
+.status-active {
+    -fx-background-color: #ecfdf5;
+    -fx-text-fill: #16a34a;
+}
+
+.status-sold {
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #2563eb;
+}
+
+.status-cancelled {
+    -fx-background-color: #fef2f2;
+    -fx-text-fill: #dc2626;
+}
+
+.status-desc {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748b;
+}

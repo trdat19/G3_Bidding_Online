@@ -31,7 +31,49 @@ public class Item {
         this.status = status;
         this.bidCount = bidCount;
     }
+    //setter
+    public void setTitle(String title) {
+         this.title = title;
+    }
 
+    public void setCategory(String category) {
+         this.category = category;
+    }
+
+    public void setDescription(String description) {
+         this.description = description;
+    }
+
+    public void setStartPrice(double startPrice) {
+         this.startPrice = startPrice;
+    }
+
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
+    public void setLeader(String leader) {
+        this.leader =leader;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime startTime) {
+        this.endTime = endTime;
+    }
+
+    public void setStatus(String status) {
+         this.status = status;
+    }
+
+    public void setBidCount(int BidCount) {
+
+        this.bidCount = bidCount;
+    }
+
+    //getter
     public String getTitle() {
         return title;
     }

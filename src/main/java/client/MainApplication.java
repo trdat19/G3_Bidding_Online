@@ -1,12 +1,11 @@
 package client;
 
 import client.service.ClientNetworkService;
+import client.util.StageUtils;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.scene.*;
 
 public class MainApplication extends Application {
 
@@ -21,10 +20,8 @@ public class MainApplication extends Application {
 
         Image icon = new Image(getClass().getResourceAsStream("/image/LOGO.png"));
 
-        Scene scene = new Scene(loader.load());
-        primaryStage.setScene(scene);
+        StageUtils.setMaximizedScene(primaryStage, loader.load());
         primaryStage.getIcons().add(icon);
-        primaryStage.setMaximized(true);
         primaryStage.show();
     }
     @Override
