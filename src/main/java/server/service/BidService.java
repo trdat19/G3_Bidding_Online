@@ -38,7 +38,7 @@ public class BidService {
     private AuctionService auctionService = AuctionService.getInstance();
     private AuctionDAO auctionDAO = new AuctionDAO();
     private BidDAO bidDAO = new BidDAO();
-    private UserDAO userDAO = new UserDAO();
+    private UserDAO userDAO =  new UserDAO();
 
     private BidService() {}
 

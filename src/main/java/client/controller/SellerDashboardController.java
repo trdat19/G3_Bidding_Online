@@ -1,10 +1,12 @@
 package client.controller;
 
 import client.model.Item;
+import client.util.StageUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,6 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -43,7 +46,7 @@ public class SellerDashboardController {
                 "user123",
                 LocalDateTime.parse("2024-04-18T19:00"),
                 LocalDateTime.parse("2026-04-18T20:00"),
-                "OPEN",
+                "ACTIVE",
                 12
         ));
 
@@ -56,7 +59,7 @@ public class SellerDashboardController {
                 "bidder02",
                 LocalDateTime.parse("2024-04-18T19:00"),
                 LocalDateTime.parse("2026-04-18T20:00"),
-                "OPEN",
+                "PENDING",
                 8
         ));
 
@@ -69,7 +72,7 @@ public class SellerDashboardController {
                 "bidder07",
                 LocalDateTime.parse("2024-04-18T19:00"),
                 LocalDateTime.parse("2026-04-18T20:00"),
-                "FINISHED",
+                "CANCELLED",
                 20
         ));
         loadProducts();
@@ -108,13 +111,16 @@ public class SellerDashboardController {
         Label titleLabel = new Label(item.getTitle());
         titleLabel.getStyleClass().add("product-title");
         titleLabel.setWrapText(true);
+        titleLabel.setMaxWidth(324);
 
         Label descLabel = new Label(item.getDescription());
         descLabel.getStyleClass().add("product-desc");
         descLabel.setWrapText(true);
+        descLabel.setMaxWidth(324);
 
-        HBox priceRow = new HBox();
+        HBox priceRow = new HBox(12);
         VBox priceBox = new VBox(6);
+        priceBox.setPrefWidth(140);
         Label priceLabel = new Label("GIÁ KHỞI ĐIỂM");
         priceLabel.getStyleClass().add("meta-label");
         Label priceValue = new Label(String.valueOf(item.getStartPrice() + "$"));
@@ -122,14 +128,15 @@ public class SellerDashboardController {
         priceBox.getChildren().addAll(priceLabel, priceValue);
 
         VBox statusBox = new VBox(6);
+        statusBox.setPrefWidth(150);
         Label statusLabel = new Label("TRẠNG THÁI");
         statusLabel.getStyleClass().add("meta-label");
-        Label statusValue = new Label(item.getStatus());
-        if ("OPEN".equals(item.getStatus())) {
-            statusValue.getStyleClass().add("status-open");
-        } else {
-            statusValue.getStyleClass().add("status-finished");
-        }
+        Label statusValue = new Label(getStatusText(item.getStatus()));
+        statusValue.getStyleClass().addAll("status-pill", getStatusStyleClass(item.getStatus()));
+        Label statusDesc = new Label(getStatusDescription(item.getStatus()));
+        statusDesc.getStyleClass().add("status-desc");
+        statusDesc.setWrapText(true);
+        statusDesc.setMaxWidth(324);
         statusBox.getChildren().addAll(statusLabel, statusValue);
 
         Region spacer = new Region();
@@ -137,28 +144,82 @@ public class SellerDashboardController {
 
         priceRow.getChildren().addAll(priceBox, spacer, statusBox);
 
+        //Doi UI theo tung status
         HBox actionRow = new HBox(12);
-        Button editButton = new Button("Edit");
-        editButton.getStyleClass().add("edit-button");
-        editButton.setOnAction(e -> handleEditProduct(item.getTitle()));
+        String status = item.getStatus();
+        if ("PENDING".equals(status)) {
+            Button editButton = new Button("Edit");
+            editButton.getStyleClass().add("edit-button");
+            editButton.setOnAction(e -> handleEditProduct(item.getTitle()));
 
-        Button deleteButton = new Button("Delete");
-        deleteButton.getStyleClass().add("delete-button");
-        deleteButton.setOnAction(e -> handleDeleteProduct(item));
+            Button deleteButton = new Button("Delete");
+            deleteButton.getStyleClass().add("delete-button");
+            deleteButton.setOnAction(e -> handleDeleteProduct(item));
 
-        actionRow.getChildren().addAll(editButton, deleteButton);
+            actionRow.getChildren().addAll(editButton, deleteButton);
 
-        body.getChildren().addAll(titleLabel, descLabel, priceRow, actionRow);
+        } else if ("ACTIVE".equals(status)) {
+            Button createAuctionButton = new Button("Tạo đấu giá");
+            createAuctionButton.getStyleClass().add("edit-button");
+            createAuctionButton.setOnAction(e -> handleCreateAuction(item));
 
+            Button editButton = new Button("Edit");
+            editButton.getStyleClass().add("edit-button");
+            editButton.setOnAction(e -> handleEditProduct(item.getTitle()));
+
+            actionRow.getChildren().addAll(createAuctionButton, editButton);
+
+        } else if ("SOLD".equals(status)) {
+            Button viewButton = new Button("Xem chi tiết");
+            viewButton.getStyleClass().add("edit-button");
+
+            actionRow.getChildren().add(viewButton);
+
+        } else if ("CANCELLED".equals(status)) {
+            Button deleteButton = new Button("Delete");
+            deleteButton.getStyleClass().add("delete-button");
+            deleteButton.setOnAction(e -> handleDeleteProduct(item));
+
+            actionRow.getChildren().add(deleteButton);
+        }
+        body.getChildren().addAll(titleLabel, descLabel, priceRow, statusDesc, actionRow);
         card.getChildren().addAll(imageBox, body);
         return card;
+    }
+    //các helper để setText theo từng Status: PENDING, ACTIVE SOLD,CANCELLED
+    private String getStatusText(String status) {
+        return switch (status) {
+            case "PENDING" -> "Chờ duyệt";
+            case "ACTIVE" -> "Đã duyệt";
+            case "SOLD" -> "Đã bán";
+            case "CANCELLED" -> "Đã hủy";
+            default -> status;
+        };
+    }
+    private String getStatusDescription(String status) {
+        return switch (status) {
+            case "PENDING" -> "Sản phẩm đang chờ admin kiểm duyệt.";
+            case "ACTIVE" -> "Sản phẩm đã được duyệt, có thể tạo phiên đấu giá.";
+            case "SOLD" -> "Sản phẩm đã bán thành công.";
+            case "CANCELLED" -> "Sản phẩm hoặc phiên đấu giá đã bị hủy.";
+            default -> "";
+        };
+    }
+    private String getStatusStyleClass(String status) {
+        return switch (status) {
+            case "PENDING" -> "status-pending";
+            case "ACTIVE" -> "status-active";
+            case "SOLD" -> "status-sold";
+            case "CANCELLED" -> "status-cancelled";
+            default -> "status-pending";
+        };
     }
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+            StageUtils.setMaximizedScene(stage, root);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -176,7 +237,14 @@ public class SellerDashboardController {
 
             Stage stage = new Stage();
             stage.setTitle("Thêm sản phẩm");
-            stage.setScene(new Scene(root));
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            double dialogWidth = Math.min(720, Math.max(360, screenBounds.getWidth() - 80));
+            double dialogHeight = Math.min(640, Math.max(420, screenBounds.getHeight() - 80));
+
+            stage.setScene(new Scene(root, dialogWidth, dialogHeight));
+            stage.setMinWidth(Math.min(520, dialogWidth));
+            stage.setMinHeight(Math.min(420, dialogHeight));
+            stage.setMaxHeight(screenBounds.getHeight() - 40);
 
             stage.show();
 
@@ -201,6 +269,27 @@ public class SellerDashboardController {
 
     private void handleDeleteProduct(Item item) {
         itemList.remove(item);
+        loadProducts();
+    }
+    //Hàm nối với SetupAuctionView khi admin duyệt
+    private void handleCreateAuction(Item item) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/setup-auction-view.fxml"));
+            Parent root = loader.load();
+
+            SetupAuctionViewController controller = loader.getController();
+            controller.setData(item, this);
+
+            Stage stage = new Stage();
+            stage.setTitle("Thiết lập phiên đấu giá");
+            stage.setScene(new Scene(root));
+            stage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public void refreshProducts() {
         loadProducts();
     }
 }

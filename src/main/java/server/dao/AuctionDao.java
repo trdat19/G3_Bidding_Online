@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.Database.DBconnection;
 import server.model.core.Auction;
 import shared.enums.AuctionStatus;
 
@@ -282,7 +282,7 @@ public class AuctionDAO {
         }
         Timestamp endTs = rs.getTimestamp("end_time");
         if (endTs != null) {
-            auction.setStartTime(endTs.toLocalDateTime());
+            auction.setEndTime(endTs.toLocalDateTime());
         }
         return auction;
     }

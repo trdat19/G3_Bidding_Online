@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.controller.AdminRequestController"
+            stylesheets="@admin-product-requests.css"
+            styleClass="page">
+
+    <VBox spacing="24"
+          AnchorPane.topAnchor="0"
+          AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0"
+          AnchorPane.rightAnchor="0">
+
+        <padding>
+            <Insets top="28" right="32" bottom="28" left="32"/>
+        </padding>
+
+        <!-- HEADER -->
+        <HBox alignment="CENTER_LEFT">
+
+            <VBox spacing="6">
+                <Label text="Product Requests"
+                       styleClass="page-title"/>
+
+                <Label text="Duyệt hoặc từ chối sản phẩm seller gửi lên"
+                       styleClass="page-subtitle"/>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Refresh"
+                    onAction="#handleRefresh"
+                    styleClass="secondary-btn"/>
+        </HBox>
+
+        <!-- FILTER BAR -->
+        <HBox spacing="14"
+              alignment="CENTER_LEFT"
+              styleClass="filter-card">
+
+            <TextField fx:id="searchField"
+                       promptText="Tìm kiếm sản phẩm..."
+                       HBox.hgrow="ALWAYS"/>
+
+            <ComboBox fx:id="statusFilterBox"
+                      promptText="Status"
+                      prefWidth="180"/>
+
+            <Button text="Search"
+                    onAction="#handleSearch"
+                    styleClass="primary-btn"/>
+        </HBox>
+
+        <!-- TABLE -->
+        <VBox spacing="14"
+              VBox.vgrow="ALWAYS"
+              styleClass="table-card">
+
+            <Label text="Danh sách yêu cầu"
+                   styleClass="section-title"/>
+
+            <TableView fx:id="requestTable"
+                       VBox.vgrow="ALWAYS">
+
+                <columns>
+
+                    <TableColumn fx:id="productNameColumn"
+                                 text="Tên sản phẩm"
+                                 prefWidth="240"/>
+
+                    <TableColumn fx:id="sellerColumn"
+                                 text="Seller"
+                                 prefWidth="180"/>
+
+                    <TableColumn fx:id="categoryColumn"
+                                 text="Loại"
+                                 prefWidth="150"/>
+
+                    <TableColumn fx:id="statusColumn"
+                                 text="Trạng thái"
+                                 prefWidth="160"/>
+
+                    <TableColumn fx:id="actionColumn"
+                                 text="Action"
+                                 prefWidth="320"/>
+
+                </columns>
+
+            </TableView>
+
+        </VBox>
+
+    </VBox>
+
+</AnchorPane>

@@ -1,4 +1,5 @@
 package client.controller;
+import client.util.StageUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +22,7 @@ public class AdminDashboardController {
     private static final String PRODUCTS_PAGE = "/view/admin/admin-products.fxml";
     private static final String REPORTS_PAGE = "/view/admin/admin-reports.fxml";
     private static final String SETTINGS_PAGE = "/view/admin/admin-settings.fxml";
+    private static final String REQUEST_PAGE = "/view/admin/admin-request.fxml";
 
     @FXML private StackPane contentPane;
     @FXML private TableView<Item> auctionTable;
@@ -38,8 +40,7 @@ public class AdminDashboardController {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setMaximized(true);
+            StageUtils.setMaximizedScene(stage, root);
             stage.show();
         }catch (IOException e) {
             e.printStackTrace();
@@ -99,8 +100,9 @@ public class AdminDashboardController {
         }catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
+    }
+    @FXML
+    private void showPeoductRequests() {
+        loadPage(REQUEST_PAGE);
     }
 }

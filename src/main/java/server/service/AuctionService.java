@@ -34,7 +34,7 @@ public class AuctionService {
 
     private final AuctionDAO auctionDAO = new AuctionDAO();
     private final ItemDAO itemDAO = new ItemDAO();
-    private final UserDAO userDAO = new UserDAO();
+    private final UserDAO userDAO =  new UserDAO();
     private final BidDAO bidDAO = new BidDAO();
 
     private AuctionService() {}
@@ -69,7 +69,18 @@ public class AuctionService {
 
         dto.setItemId(item.getId());
         dto.setItemName(item.getNameItem());
+        dto.setItemDescription(item.getDescription());
+        dto.setItemCategory(item.getCategory().name());
+        dto.setItemImageUrl(item.getImageUrl());
+        dto.setStartPrice(auction.getStartPrice());
 
+        Bid highestBid = bidDAO.getHighestBidByAuctionId(auction.getId());
+        if (highestBid != null) {
+            User leader = userDAO.findById(highestBid.getBidderId());
+            dto.setLeaderId(highestBid.getBidderId());
+            dto.setLeaderName(leader != null ? leader.getFullName() : "ID: " + highestBid.getBidderId());
+        }
+        dto.setBidCount(bidDAO.countBidByAuctionId(auction.getId()));
         dto.setSellerId(auction.getSellerId());
         dto.setSellerName(userDAO.findById(item.getSellerId()).getFullName());
 

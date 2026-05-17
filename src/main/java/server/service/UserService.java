@@ -19,7 +19,7 @@ import java.util.List;
 public class UserService {
     private static UserService instance = null;
 
-    private final UserDAO userDAO = new UserDAO();
+    private final UserDAO userDAO =  new UserDAO();
 
     private UserService() {}
 

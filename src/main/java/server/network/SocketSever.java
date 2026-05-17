@@ -3,6 +3,7 @@ package server.network;
 import server.scheduler.AuctionScheduler;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -13,6 +14,7 @@ public class SocketSever {
 
 
     public void start() {
+        boolean schedulerStarted = false;
         try {
             serverSocket = new ServerSocket(PORT);
             isRunning = true;
@@ -20,6 +22,7 @@ public class SocketSever {
 
             // Khởi động AuctionScheduler
             AuctionScheduler.getInstance().start();
+            schedulerStarted = true;
 
             while (isRunning) {
                 Socket clientSocket = serverSocket.accept();
@@ -28,13 +31,18 @@ public class SocketSever {
                 new Thread(new ClientConnectionHandler(clientSocket)).start();
             }
         }
+        catch (BindException e) {
+            System.err.println("Khong the khoi dong server: cong " + PORT + " dang bi su dung.");
+            System.err.println("Hay tat process dang chay tren cong " + PORT + " roi chay lai SocketSever.");
+        }
         catch (IOException e) {
-            if (isRunning) {
-                e.printStackTrace();
-            }
+            System.err.println("Loi khi khoi dong server: " + e.getMessage());
+            e.printStackTrace();
         }
         finally {
-            AuctionScheduler.getInstance().stop();
+            if (schedulerStarted) {
+                AuctionScheduler.getInstance().stop();
+            }
         }
     }
     private void acceptLoop()

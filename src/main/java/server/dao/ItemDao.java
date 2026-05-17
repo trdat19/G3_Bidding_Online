@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.Database.DBconnection;
 import server.model.item.Art;
 import server.model.item.Electronics;
 import server.model.item.Item;

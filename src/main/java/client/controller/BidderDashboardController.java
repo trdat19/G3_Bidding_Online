@@ -1,13 +1,14 @@
 package client.controller;
 
 import client.model.Item;
+import client.service.ClientNetworkService;
+import client.util.StageUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -16,6 +17,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import javafx.event.ActionEvent;
+import shared.dto.common.AuctionDTO;
+import shared.dto.response.BaseResponse;
+import shared.dto.request.BaseRequest;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,62 +37,49 @@ public class BidderDashboardController {
     private final List<Item> itemList = new ArrayList<>();
     @FXML
     public void initialize() {
-        bidderNameLabel.setText("Nguyễn Việt Anh");
-        itemList.add(new Item(
-                "MacBook Pro M3 Max",
-                "Electronics",
-                "Laptop hiệu năng cao dành cho đồ họa và lập trình",
-                2000,
-                2500,
-                "user123",
-                LocalDateTime.parse("2024-04-18T19:00"),
-                LocalDateTime.parse("2026-04-18T20:00"),
-                "OPEN",
-                12
-        ));
-
-        itemList.add(new Item(
-                "Bức tranh Hoa hướng dương",
-                "Art",
-                "Tác phẩm nghệ thuật phong cách cổ điển",
-                300000,
-                400000,
-                "bidder02",
-                LocalDateTime.parse("2026-04-29T19:00"),
-                LocalDateTime.parse("2026-04-30T20:00"),
-                "OPEN",
-                8
-        ));
-
-        itemList.add(new Item(
-                "Ferrari 250 GTO 1962",
-                "Hypercar",
-                "Mẫu siêu xe sưu tầm phiên bản hiếm",
-                500000,
-                510000,
-                "bidder07",
-                LocalDateTime.parse("2026-04-29T19:00"),
-                LocalDateTime.parse("2026-04-30T20:00"),
-                "FINISHED",
-                20
-        ));
-        loadProducts();
+        bidderNameLabel.setText("Bidder");
+        loadAuctionsFromServer();
     }
-    private void loadProducts() {
-        auctionContainer.getChildren().clear();
-        for (Item items : itemList) {
-            auctionContainer.getChildren().add(createProductCard(items));
+    private void loadAuctionsFromServer() {
+        BaseRequest request = new BaseRequest("GET_AUCTION_LIST", null);
+        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+        itemList.clear();
+        if (response != null || !response.isSuccess() || response.getData() == null) {
+            auctionContainer.getChildren().clear();
+            auctionContainer.getChildren().add (new Label(
+                    response != null ? response.getMessage() : "Khong ket noi duoc server"
+            ));
+            return;
+        }
+        List<AuctionDTO> auctions = (List<AuctionDTO>) response.getData();
+        for (AuctionDTO auction : auctions) {
+            itemList.add(toItem(auction));
         }
     }
+    private Item toItem(AuctionDTO auction) {
+        return new Item(
+                auction.getItemName(),
+                auction.getItemCategory(),
+                auction.getItemDescription(),
+                auction.getStartPrice()!= null ? auction.getStartPrice().doubleValue(): 0,
+                auction.getDisplayPrice()!= null ? auction.getStartPrice().doubleValue() : 0,
+                auction.getLeaderName()!= null ? auction.getLeaderName() : "Chưa có",
+                auction.getStartTime(),
+                auction.getEndTime(),
+                auction.getStatus()!= null ? auction.getStatus().name() : "",
+                auction.getBidCount()
+        );
+    }
+
     private VBox createProductCard(Item item) {
         VBox card = new VBox();
         card.setPrefWidth(330);
         card.setSpacing(16);
-        card.getStyleClass().add("auction-class");
+        card.getStyleClass().add("auction-card");
 
         StackPane imageBox = new StackPane();
         imageBox.setPrefHeight(210);
-        imageBox.setPrefWidth(200);
+        imageBox.setPrefWidth(330);
         imageBox.getStyleClass().add("image-box");
 
         Label categoryBadge = new Label(item.getCategory());
@@ -95,10 +87,15 @@ public class BidderDashboardController {
         StackPane.setAlignment(categoryBadge, Pos.TOP_LEFT);
         StackPane.setMargin(categoryBadge, new Insets(12, 0, 0, 12));
 
+        Label statusBadge = new Label(item.getStatus());
+        statusBadge.getStyleClass().add("status-pill");
+        StackPane.setAlignment(statusBadge, Pos.TOP_RIGHT);
+        StackPane.setMargin(statusBadge, new Insets(12, 12, 0, 0));
+
         Label imagePlaceholder = new Label("Image");
         imagePlaceholder.getStyleClass().add("image-placeholder");
 
-        imageBox.getChildren().addAll(categoryBadge, imagePlaceholder);
+        imageBox.getChildren().addAll(categoryBadge, statusBadge, imagePlaceholder);
 
         VBox infoBox = new VBox();
         infoBox.setSpacing(8);
@@ -108,12 +105,13 @@ public class BidderDashboardController {
 
         Label descLabel = new Label(item.getDescription());
         descLabel.getStyleClass().add("item-desc");
+        descLabel.setWrapText(true);
 
         infoBox.getChildren().addAll(titleLabel, descLabel);
 
-        Separator separator = new Separator();
-
         HBox metaBox = new HBox();
+        metaBox.setSpacing(16);
+        metaBox.getStyleClass().add("quick-meta-box");
 
         VBox priceBox = new VBox();
         priceBox.setSpacing(4);
@@ -121,8 +119,8 @@ public class BidderDashboardController {
         Label priceText = new Label("GIÁ HIỆN TẠI");
         priceText.getStyleClass().add("meta-label");
 
-        Label priceValue = new Label(String.valueOf(item.getStartPrice()) + "$");
-        priceValue.setFont(new Font(22));
+        Label priceValue = new Label(item.getCurrentPrice() + "$");
+        priceValue.getStyleClass().add("price-label");
 
         priceBox.getChildren().addAll(priceText, priceValue);
 
@@ -133,11 +131,11 @@ public class BidderDashboardController {
         timeBox.setSpacing(4);
         timeBox.setAlignment(Pos.CENTER_RIGHT);
 
-        Label timeText = new Label("TRẠNG THÁI");
+        Label timeText = new Label("CÒN LẠI");
         timeText.getStyleClass().add("meta-label");
 
-        Label timeValue = new Label(item.getStatus());
-        timeValue.getStyleClass().add("time-label");
+        Label timeValue = new Label(formatTimeLeft(item.getEndTime()));
+        timeValue.getStyleClass().add("time-left");
 
         timeBox.getChildren().addAll(timeText, timeValue);
 
@@ -145,24 +143,42 @@ public class BidderDashboardController {
 
         Button detailButton = new Button("Xem chi tiết");
         detailButton.getStyleClass().add("detail-button");
+        detailButton.setMaxWidth(Double.MAX_VALUE);
         detailButton.setOnAction(event -> viewDetail(item));
 
         card.getChildren().addAll(
                 imageBox,
                 infoBox,
-                separator,
                 metaBox,
                 detailButton
         );
 
         return card;
     }
+    private String formatTimeLeft(LocalDateTime endTime) {
+        java.time.Duration remaining = java.time.Duration.between(
+                LocalDateTime.now(),
+                endTime
+        );
+
+        long seconds = remaining.getSeconds();
+
+        if (seconds <= 0) {
+            return "00:00:00";
+        }
+
+        long hours = seconds / 3600;
+        long minutes = (seconds % 3600) / 60;
+        long secs = seconds % 60;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, secs);
+    }
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+            StageUtils.setMaximizedScene(stage, root);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -178,7 +194,7 @@ public class BidderDashboardController {
             controller.setItemData(item);
 
             Stage stage = (Stage) auctionContainer.getScene().getWindow();
-            stage.setScene(new Scene(root));
+            StageUtils.setMaximizedScene(stage, root);
             stage.show();
 
         } catch (IOException e) {

@@ -1,4 +1,4 @@
-package server.dao;
+/*package server.dao;
 
 import server.model.user.Admin;
 import server.model.user.Bidder;
@@ -146,4 +146,4 @@ public class TestUserDao {
                     u.getStatus());
         }
     }
-}
+}*/
