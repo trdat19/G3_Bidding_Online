@@ -4,40 +4,48 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="900.0" prefWidth="1400.0" styleClass="root-container" stylesheets="@bidder-dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.BidderDashboardController">
+<?import javafx.geometry.Insets?>
+<BorderPane prefHeight="900.0" prefWidth="1400.0" styleClass="root-container" stylesheets="@../css/bidder-dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.BidderDashboardController">
    <top>
-      <HBox alignment="CENTER_LEFT" prefHeight="12.0" prefWidth="200.0" spacing="12.0" styleClass="header" BorderPane.alignment="CENTER_LEFT">
+      <HBox alignment="CENTER_LEFT" prefHeight="90.0" styleClass="top-bar">
+         <padding>
+            <Insets bottom="20" left="30" right="30" top="20" />
+         </padding>
+
          <children>
-            <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+            <HBox alignment="CENTER_LEFT" spacing="12">
                <children>
-                  <Label styleClass="logo-icon" text="⚖" textFill="#fcfcff">
-                     <font>
-                        <Font size="20.0" />
-                     </font></Label>
-                  <Label prefHeight="45.0" prefWidth="115.0" styleClass="logo-text" text="BidZone">
-                     <font>
-                        <Font size="27.0" />
-                     </font></Label>
+                  <StackPane prefHeight="42" prefWidth="42" styleClass="logo-box">
+                     <children>
+                        <Label styleClass="logo-icon" text="⚖" />
+                     </children>
+                  </StackPane>
+                  <Label styleClass="logo-text" text="BidZone" />
                </children>
             </HBox>
-            <Region prefHeight="100.0" prefWidth="49.0" HBox.hgrow="ALWAYS" />
-            <VBox prefHeight="69.0" prefWidth="157.0">
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <HBox alignment="CENTER_RIGHT" spacing="18">
                <children>
-                  <Label fx:id="bidderNameLabel" prefHeight="22.0" prefWidth="151.0" text="Nguyễn Việt Anh">
-                     <font>
-                        <Font size="20.0" />
-                     </font>
-                  </Label>
-                  <Label text="BIDDER">
-                     <font>
-                        <Font size="20.0" />
-                     </font></Label>
+
+                  <VBox alignment="CENTER_RIGHT" spacing="4">
+                     <children>
+                        <Label fx:id="bidderNameLabel" text="" styleClass="user-name"/>
+                        <Label text="BIDDER" styleClass="user-role"/>
+                     </children>
+                  </VBox>
+
+                  <VBox alignment="CENTER_LEFT" spacing="4" styleClass="wallet-box">
+                     <children>
+                        <Label text="Ví của tôi" styleClass="wallet-title"/>
+                        <Label fx:id="walletBalanceLabel" text="\$0.00" styleClass="wallet-balance"/>
+                     </children>
+                  </VBox>
+
                </children>
-            </VBox>
-            <Button mnemonicParsing="false" onAction="#handleLogout" prefHeight="32.0" prefWidth="67.0" styleClass="logout-button" text="🚪">
-               <font>
-                  <Font size="19.0" />
-               </font></Button>
+            </HBox>
+            <Button mnemonicParsing="false" onAction="#handleLogout" styleClass="logout-button" text="🚪" />
          </children>
       </HBox>
    </top>

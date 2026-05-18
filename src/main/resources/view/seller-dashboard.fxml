@@ -4,10 +4,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="900.0" prefWidth="1400.0" stylesheets="@seller-dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.SellerDashboardController">
+<AnchorPane prefHeight="900.0" prefWidth="1400.0" stylesheets="@../css/seller-dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.SellerDashboardController">
 
     <children>
-        <VBox prefHeight="900.0" prefWidth="1400.0" spacing="0">
+        <VBox spacing="0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <HBox alignment="CENTER_LEFT" prefHeight="90.0" styleClass="top-bar">
                 <padding>
                     <Insets bottom="20" left="30" right="30" top="20" />
@@ -27,12 +27,25 @@
 
                     <Region HBox.hgrow="ALWAYS" />
 
-                    <VBox alignment="CENTER_RIGHT" spacing="4">
+                    <HBox alignment="CENTER_RIGHT" spacing="18">
                         <children>
-                            <Label fx:id="sellerNameLabel" prefHeight="23.0" prefWidth="207.0" styleClass="user-name" text="Nguyễn Việt Anh" />
-                            <Label prefHeight="20.0" prefWidth="200.0" styleClass="user-role" text="SELLER" />
+
+                            <VBox alignment="CENTER_RIGHT" spacing="4">
+                                <children>
+                                    <Label fx:id="sellerNameLabel" text="" styleClass="user-name"/>
+                                    <Label text="SELLER" styleClass="user-role"/>
+                                </children>
+                            </VBox>
+
+                            <VBox alignment="CENTER_LEFT" spacing="4" styleClass="wallet-box">
+                                <children>
+                                    <Label text="Ví của tôi" styleClass="wallet-title"/>
+                                    <Label fx:id="walletBalanceLabel" text="\$0.00" styleClass="wallet-balance"/>
+                                </children>
+                            </VBox>
+
                         </children>
-                    </VBox>
+                    </HBox>
                <Button mnemonicParsing="false" onAction="#handleLogout" styleClass="logout-button" text="🚪" />
                 </children>
             </HBox>

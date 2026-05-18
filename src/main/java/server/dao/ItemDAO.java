@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.Database.DBconnection;
 import server.model.item.Art;
 import server.model.item.Electronics;
 import server.model.item.Item;
@@ -18,8 +18,8 @@ public class ItemDAO {
 
     // thêm item mới
     public boolean insertItem(Item item) {
-        String sql = "INSERT INTO Items(name_item, category, description, id_seller, price_start, status_item) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO items(name_item, category, description, id_seller, price_start, status_item, image_url) " +
+                "VALUES (?, ?, ?, ?, ?, ? , ?)";
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
@@ -28,8 +28,9 @@ public class ItemDAO {
             ps.setString(2, item.getCategory().name());
             ps.setString(3, item.getDescription());
             ps.setLong(4, item.getSellerId());
-            ps.setBigDecimal(5, item.getPriceStart());
+            ps.setBigDecimal(5, BigDecimal.ONE);
             ps.setString(6, item.getStatusItem().name());
+            ps.setString(7, item.getImageUrl());
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
@@ -48,7 +49,7 @@ public class ItemDAO {
 
     // tìm item theo id
     public Item findById(long id) {
-        String sql = "SELECT * FROM Items WHERE id_item = ?";
+        String sql = "SELECT * FROM items WHERE id_item = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
@@ -67,7 +68,7 @@ public class ItemDAO {
 
     // tìm item theo tên
     public Item findByName(String nameItem) {
-        String sql = "SELECT * FROM Items WHERE name_item = ?";
+        String sql = "SELECT * FROM items WHERE name_item = ?";
         try(Connection con = DBconnection.getInstance().getConnection();
             PreparedStatement ps = con.prepareStatement(sql))
         {
@@ -86,7 +87,7 @@ public class ItemDAO {
 
     // lấy tất cả item
     public List<Item> getAllItems() {
-        String sql = "SELECT * FROM Items";
+        String sql = "SELECT * FROM items";
 
         List<Item> items = new ArrayList<>();
         try (Connection con = DBconnection.getInstance().getConnection();
@@ -106,7 +107,7 @@ public class ItemDAO {
 
     // lấy item theo id của seller
     public List<Item> findBySellerId(long sellerId) {
-        String sql = "SELECT * FROM Items WHERE id_seller = ?";
+        String sql = "SELECT * FROM items WHERE id_seller = ?";
         List<Item> items = new ArrayList<>();
 
         try (Connection con = DBconnection.getInstance().getConnection();
@@ -127,8 +128,8 @@ public class ItemDAO {
 
     // cập nhật toàn bộ item
     public boolean updateItem(Item item) {
-        String sql = "UPDATE Items SET name_item = ?, category = ?, description = ?, " +
-                "id_seller = ?, price_start = ?, status_item = ? WHERE id_item = ?";
+        String sql = "UPDATE items SET name_item = ?, category = ?, description = ?, " +
+                "id_seller = ?, price_start = ?, status_item = ?, image_url = ? WHERE id_item = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
@@ -137,9 +138,10 @@ public class ItemDAO {
             ps.setString(2, item.getCategory().name());
             ps.setString(3, item.getDescription());
             ps.setLong(4, item.getSellerId());
-            ps.setBigDecimal(5, item.getPriceStart());
+            ps.setBigDecimal(5, BigDecimal.ONE);
             ps.setString(6, item.getStatusItem().name());
-            ps.setLong(7, item.getId());
+            ps.setString(7,item.getImageUrl());
+            ps.setLong(8, item.getId());
 
             return ps.executeUpdate() > 0;
 
@@ -151,7 +153,7 @@ public class ItemDAO {
 
     // đổi status item
     public boolean updateStatus(long idItem, ItemStatus status) {
-        String sql = "UPDATE Items SET status_item = ? WHERE id_item = ?";
+        String sql = "UPDATE items SET status_item = ? WHERE id_item = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
@@ -168,7 +170,7 @@ public class ItemDAO {
 
     // xóa item
     public boolean deleteItem(long idItem) {
-        String sql = "DELETE FROM Items WHERE id_item = ?";
+        String sql = "DELETE FROM items WHERE id_item = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -190,25 +192,29 @@ public class ItemDAO {
         long sellerId = rs.getLong("id_seller");
         BigDecimal priceStart = rs.getBigDecimal("price_start");
         ItemStatus statusItem = ItemStatus.valueOf(rs.getString("status_item"));
-        Timestamp createdAtItem = rs.getTimestamp("created_at_item");
+        Timestamp createdAtItem = rs.getTimestamp("created_atItem");
+        String imageUrl = rs.getString("image_url");
 
         switch (category) {
             case ART:
-                Art art = new Art(nameItem, description, sellerId, priceStart, statusItem);
+                Art art = new Art(nameItem, description, sellerId, statusItem);
                 art.setId(id);
                 art.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                art.setImageUrl(imageUrl);
                 return art;
 
             case ELECTRONICS:
-                Electronics electronics = new Electronics(nameItem, description, sellerId, priceStart, statusItem);
+                Electronics electronics = new Electronics(nameItem, description, sellerId, statusItem);
                 electronics.setId(id);
                 electronics.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                electronics.setImageUrl(imageUrl);
                 return electronics;
 
             case VEHICLE:
-                Vehicle vehicle = new Vehicle(nameItem, description, sellerId, priceStart, statusItem);
+                Vehicle vehicle = new Vehicle(nameItem, description, sellerId, statusItem);
                 vehicle.setId(id);
                 vehicle.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                vehicle.setImageUrl(imageUrl);
                 return vehicle;
 
             default:

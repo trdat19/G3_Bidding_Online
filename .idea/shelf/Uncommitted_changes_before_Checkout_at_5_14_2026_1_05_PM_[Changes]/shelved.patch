@@ -1,0 +1,89 @@
+Index: src/main/java/client/controller/BidingViewController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package client.controller;\r\n\r\nimport javafx.application.Platform;\r\nimport javafx.fxml.FXML;\r\nimport javafx.scene.control.Button;\r\nimport javafx.scene.control.Label;\r\nimport javafx.scene.control.TextField;\r\nimport shared.dto.request.BaseRequest;\r\nimport shared.dto.response.BaseResponse;\r\nimport shared.enums.Action;\r\n\r\nimport java.io.ObjectInputStream;\r\nimport java.io.ObjectOutputStream;\r\n\r\npublic class BidingViewController {\r\n\r\n    @FXML private Label lblCurrentPrice; // Nhãn hiển thị giá hiện tại\r\n    @FXML private TextField txtBidAmount; // Ô nhập số tiền muốn đặt\r\n    @FXML private Button btnPlaceBid;    // Nút bấm đặt giá\r\n\r\n    // Giả sử Socket đã được khởi tạo ở một lớp quản lý kết nối chung\r\n    private ObjectOutputStream out;\r\n    private ObjectInputStream in;\r\n\r\n    public void initialize() {\r\n        // 1. KÍCH HOẠT LUỒNG REALTIME NGAY KHI MỞ MÀN HÌNH\r\n        startRealtimeListener();\r\n\r\n        // 2. XỬ LÝ SỰ KIỆN BẤM NÚT ĐẶT GIÁ\r\n        btnPlaceBid.setOnAction(event -> {\r\n            sendBidRequest();\r\n        });\r\n    }\r\n\r\n    private void startRealtimeListener() {\r\n        new Thread(() -> {\r\n            try {\r\n                while (true) {\r\n                    Object obj = in.readObject();\r\n                    if (obj instanceof BaseResponse) {\r\n                        BaseResponse response = (BaseResponse) obj;\r\n\r\n                        // Nếu Server báo có giá mới (từ RealtimePushServer đẩy về)\r\n                        if (\"NEW_BID_UPDATE\".equals(response.getAction())) {\r\n                            Platform.runLater(() -> {\r\n                                // Cập nhật số tiền mới lên màn hình\r\n                                lblCurrentPrice.setText(response.getData().toString());\r\n                                System.out.println(\">>> Realtime: Đã cập nhật giá mới từ Server!\");\r\n                            });\r\n                        }\r\n                    }\r\n                }\r\n            } catch (Exception e) {\r\n                System.out.println(\"Mất kết nối Realtime.\");\r\n            }\r\n        }).start();\r\n    }\r\n\r\n    private void sendBidRequest() {\r\n        try {\r\n            double amount = Double.parseDouble(txtBidAmount.getText());\r\n            // Gửi lệnh PLACE_BID lên Server\r\n            BaseRequest req = new BaseRequest(Action.PLACE_BID, amount);\r\n            out.writeObject(req);\r\n            out.flush();\r\n        } catch (Exception e) {\r\n            System.out.println(\"Lỗi gửi lệnh đặt giá.\");\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/client/controller/BidingViewController.java b/src/main/java/client/controller/BidingViewController.java
+--- a/src/main/java/client/controller/BidingViewController.java	(revision 4750f0c1046e8c5f6ac7223f4641837f77b1e1a4)
++++ b/src/main/java/client/controller/BidingViewController.java	(date 1778638174189)
+@@ -6,11 +6,13 @@
+ import javafx.scene.control.Label;
+ import javafx.scene.control.TextField;
+ import shared.dto.request.BaseRequest;
++import shared.dto.request.bid.PlaceBidRequest;
+ import shared.dto.response.BaseResponse;
+ import shared.enums.Action;
+ 
+ import java.io.ObjectInputStream;
+ import java.io.ObjectOutputStream;
++import java.math.BigDecimal;
+ 
+ public class BidingViewController {
+ 
+@@ -58,9 +60,10 @@
+ 
+     private void sendBidRequest() {
+         try {
+-            double amount = Double.parseDouble(txtBidAmount.getText());
++            BigDecimal amount = new BigDecimal(txtBidAmount.getText());
++
+             // Gửi lệnh PLACE_BID lên Server
+-            BaseRequest req = new BaseRequest(Action.PLACE_BID, amount);
++            PlaceBidRequest req = new PlaceBidRequest(amount);
+             out.writeObject(req);
+             out.flush();
+         } catch (Exception e) {
+Index: src/main/java/shared/dto/response/CreateAuctionResponse.java
+===================================================================
+diff --git a/src/main/java/shared/dto/response/CreateAuctionResponse.java b/src/main/java/shared/dto/response/CreateAuctionResponse.java
+new file mode 100644
+--- /dev/null	(date 1778636577746)
++++ b/src/main/java/shared/dto/response/CreateAuctionResponse.java	(date 1778636577746)
+@@ -0,0 +1,15 @@
++package shared.dto.response;
++
++import shared.dto.common.AuctionDTO;
++
++public class CreateAuctionResponse extends BaseResponse{
++
++    private static final long serialVersionUID = 1L;
++
++    private AuctionDTO auctionDTO;
++
++    public CreateAuctionResponse(AuctionDTO auctionDTO) {
++        super(true, "Tạo phiên đấu giá thành công!");
++        this.auctionDTO = auctionDTO;
++    }
++}
+Index: src/main/java/shared/dto/request/bid/PlaceBidRequest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package shared.dto.request.bid;\r\n\r\npublic class PlaceBidRequest {\r\n}\r\n
+===================================================================
+diff --git a/src/main/java/shared/dto/request/bid/PlaceBidRequest.java b/src/main/java/shared/dto/request/bid/PlaceBidRequest.java
+--- a/src/main/java/shared/dto/request/bid/PlaceBidRequest.java	(revision 4750f0c1046e8c5f6ac7223f4641837f77b1e1a4)
++++ b/src/main/java/shared/dto/request/bid/PlaceBidRequest.java	(date 1778638283428)
+@@ -1,4 +1,20 @@
+ package shared.dto.request.bid;
+ 
+-public class PlaceBidRequest {
++import shared.dto.request.BaseRequest;
++import shared.enums.Action;
++
++import java.math.BigDecimal;
++
++public class PlaceBidRequest extends BaseRequest {
++    private static final long serialVersionUID = 1L;
++
++    private BigDecimal amount;
++
++    public PlaceBidRequest(BigDecimal amount) {
++        super(Action.PLACE_BID);
++        this.amount = amount;
++    }
++
++    //getter;
++    public BigDecimal getAmount() { return amount; }
+ }

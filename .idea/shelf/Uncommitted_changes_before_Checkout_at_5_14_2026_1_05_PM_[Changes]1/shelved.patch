@@ -1,0 +1,202 @@
+Index: src/main/java/server/service/AuctionService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package server.service;\r\n\r\nimport server.dao.AuctionDAO;\r\nimport server.dao.BidDAO;\r\nimport server.dao.ItemDAO;\r\nimport server.dao.UserDAO;\r\nimport server.model.core.Auction;\r\nimport server.model.core.Bid;\r\nimport server.model.item.Item;\r\nimport server.model.user.User;\r\nimport server.network.RealtimePushServer;\r\nimport shared.dto.common.AuctionDTO;\r\nimport shared.dto.request.CreateAuctionRequest;\r\nimport shared.enums.AuctionStatus;\r\nimport shared.dto.response.BaseResponse;\r\nimport shared.enums.ItemStatus;\r\n\r\nimport java.math.BigDecimal;\r\nimport java.time.LocalDateTime;\r\n\r\n/**\r\n * AuctionService xử lí các nghiệp vụ liên quan tới phiên đấu giá\r\n * tức là đảm bảo 1 phiên đấu giá hoạt động đúng logic\r\n * Singleton đảm bảo tính nhất quán - dựa vào mức độ quan trọng trong hệ thống của AuctionService\r\n */\r\n\r\npublic class AuctionService {\r\n\r\n    private static AuctionService instance = null;\r\n\r\n    private final AuctionDAO auctionDAO = new AuctionDAO();\r\n    private final ItemDAO itemDAO = new ItemDAO();\r\n    private final UserDAO userDAO = new UserDAO();\r\n    private final BidDAO bidDAO = new BidDAO();\r\n\r\n    private AuctionService() {}\r\n\r\n    /**\r\n     * sử dụng double-check locking thay cho synchronized method\r\n     * tức là: chỉ synchronized khi object chưa được tạo, còn tạo rồi thì không cần lock nữa\r\n     * --> nhanh hơn\r\n     */\r\n    public AuctionService getInstance() {\r\n        //check lần 1, nếu tồn tại rồi thì return luôn\r\n        if (instance == null) {\r\n\r\n            synchronized (AuctionService.class) {\r\n                //check lần 2, chưa tồn tại thì mới tạo\r\n                if (instance == null) {\r\n                    instance = new AuctionService();\r\n                }\r\n            }\r\n        }\r\n        return instance;\r\n    }\r\n\r\n    //----------------HELPER-----------------\r\n    /**\r\n     * chuyển dữ liệu Auction được nhận thành DTO gửi lại cho client\r\n     */\r\n    private AuctionDTO toDTO(Auction auction, Item item) {\r\n        AuctionDTO dto = new AuctionDTO();\r\n\r\n        dto.setId(auction.getId());\r\n\r\n        dto.setItemId(item.getId());\r\n        dto.setItemName(item.getNameItem());\r\n\r\n        dto.setSellerId(auction.getSellerId());\r\n        dto.setSellerName(userDAO.findById(item.getSellerId()).getFullName());\r\n\r\n        dto.setStartTime(auction.getStartTime());\r\n        dto.setCurrentPrice(auction.getMaxPrice() != null ? auction.getMaxPrice() : auction.getStartPrice());\r\n        dto.setMinIncrement(auction.getMinIncrement());\r\n        dto.setBuyNowPrice(auction.getBuyNowPrice());\r\n\r\n        dto.setStatus(auction.getStatus());\r\n        dto.setStartTime(auction.getStartTime());\r\n        dto.setEndTime(auction.getEndTime());\r\n\r\n        return dto;\r\n    }\r\n    //----------------CREATE-----------------\r\n\r\n    /**\r\n     * tạo phiên đấu giá từ dữ liệu được gửi lên\r\n     */\r\n    public BaseResponse createAuction(CreateAuctionRequest data)\r\n    {\r\n        try {\r\n            Long itemId = data.getItemId();\r\n            Long sellerId = data.getSellerId();\r\n            BigDecimal startPrice = data.getStartPrice();\r\n            BigDecimal minIncrement = data.getMinIncrement();\r\n            BigDecimal buyNowPrice = data.getBuyNowPrice();\r\n            LocalDateTime startTime = data.getStartTime();\r\n            LocalDateTime endTime = data.getEndTime();\r\n\r\n            //kiểm tra xem item có tồn tại không?\r\n            Item item = itemDAO.findById(itemId);\r\n            if (item == null) {\r\n                return new BaseResponse(false, \"Sản phẩm không tồn tại!\", null);\r\n            }\r\n\r\n            //kiểm tra rằng item chưa ở phiên đấu giá nào khác\r\n            if (auctionDAO.existsOpenAuctionByItemId(itemId)) {\r\n                return new BaseResponse(false, \"Sản phẩm đang nằm ở phiên đấu giá khác!\", null);\r\n            }\r\n\r\n            //kiểm tra logic thời gian start < end\r\n            if (!endTime.isAfter(startTime)) {\r\n                return new BaseResponse(false,\r\n                                        \"Thời gian kết thúc phải sau thời gian bắt đầu\",\r\n                                        null);\r\n            }\r\n            \r\n            Auction auction = new Auction(itemId, sellerId, startPrice, null,\r\n                                            minIncrement, buyNowPrice, startTime, endTime);\r\n\r\n            boolean checkInsertAuction = auctionDAO.insertAuction(auction);\r\n            if (!checkInsertAuction) {\r\n                return new BaseResponse(false, \"Lỗi lưu phiên đấu giá vào hệ thống\", null);\r\n            }\r\n\r\n            //Chuển trạng thái của item trong Dao\r\n            itemDAO.updateStatus(itemId, ItemStatus.ACTIVE);\r\n            System.out.println(\">>> [AuctionService] Tạo auction #\" + auction.getId() + \" cho item #\" + itemId);\r\n\r\n            return new BaseResponse(true, \"Tạo phiên đấu giá thành công\", toDTO(auction, item));\r\n        }\r\n        catch (Exception e) {\r\n            e.printStackTrace();\r\n            return new BaseResponse(false, \"Lỗi tạo phiên: \" + e.getMessage(), null);\r\n        }\r\n    }\r\n\r\n    //-------------------START-------------------\r\n\r\n    /**\r\n     * Mở phiên đấu giá (Chuyển status: preparing -> open)\r\n     * synchronized đảm bảo các thread đều xem được trạng thái mới nhất của auction,\r\n     * tránh logic lỗi mở auction 2 lần\r\n     */\r\n    public synchronized boolean startAuction(Long auctionId)\r\n    {\r\n        Auction auction = auctionDAO.findById(auctionId);\r\n        if (auction == null) {\r\n            return false;\r\n        }\r\n        if (auction.getStatus() != AuctionStatus.PREPARING) {\r\n            //không ở trạng thái preparing thì thôi return false\r\n            return false;\r\n        }\r\n\r\n        boolean checkOpenAuction = auctionDAO.openAuction(auctionId);\r\n        if (checkOpenAuction) {\r\n            System.out.println(\">>> [AuctionService] Đã mở auction #\" + auctionId);\r\n\r\n            //push thông báo cho tất cả client đang xem\r\n            BaseResponse event = new BaseResponse(true, \"AUCTION_STARTED\",\r\n                    \"Phiên đấu giá #\" + auctionId + \" đã bắt đầu!\");\r\n            RealtimePushServer.pushToAuctionSubscribers(auctionId.longValue(), event);\r\n        }\r\n        return checkOpenAuction;\r\n\r\n    }\r\n\r\n    //--------------FINISH------------------\r\n\r\n    /**\r\n     * kết thúc phiên đấu giá, chuyển trạng thái sang FINISHED\r\n     * xác định người chiến thắng và trả thông tin\r\n     */\r\n    public synchronized BaseResponse finishAuction(Long auctionId)\r\n    {\r\n        Auction auction = auctionDAO.findById(auctionId);\r\n        if (auction == null) {\r\n            return new BaseResponse(false, \"Phiên đấu giá không tồn tại!\", null);\r\n        }\r\n\r\n        //check trạng thái\r\n        if (auction.getStatus() == AuctionStatus.FINISHED ||\r\n            auction.getStatus() == AuctionStatus.CANCELLED) {\r\n                return new BaseResponse(false, \"Phiên đấu giá đã kết thúc trước đó!\", null);\r\n        }\r\n\r\n        //cập nhật\r\n        auctionDAO.updateStatus(auctionId, AuctionStatus.FINISHED);\r\n\r\n        //Xác định winner từ highestBid\r\n        Bid highestBid = bidDAO.getHighestBidByAuctionId(auctionId);\r\n        if (highestBid != null) {\r\n            itemDAO.updateStatus(auction.getItemId(), ItemStatus.SOLD);\r\n        }\r\n\r\n        String winnerMsg;\r\n        if (highestBid != null) {\r\n            User winner = userDAO.findById(highestBid.getBidderId());\r\n            String winnerName = (winner != null) ? winner.getFullName() : \"ID:\" + highestBid.getBidderId();\r\n            winnerMsg = String.format(\"Phiên #%d kết thúc! Người thắng: %s với giá %s\",\r\n                    auctionId, winnerName, highestBid.getAmount());\r\n        } else {\r\n            winnerMsg = \"Phiên #\" + auctionId + \" kết thúc. Không có ai đặt giá.\";\r\n        }\r\n\r\n        System.out.println(\">>> [AuctionService] \" + winnerMsg);\r\n\r\n        // Push cho tất cả client đang xem phiên này\r\n        BaseResponse finishEvent = new BaseResponse(true, \"AUCTION_FINISHED\", winnerMsg);\r\n        //RealtimePushServer.pushToAuctionSubscribers(auctionId.intValue(), finishEvent);\r\n\r\n        return new BaseResponse(true, winnerMsg, highestBid);\r\n\r\n    }\r\n\r\n\r\n    public void extendAuction()\r\n    {\r\n\r\n    }\r\n    public void getOpenAuctions()\r\n    {\r\n\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/server/service/AuctionService.java b/src/main/java/server/service/AuctionService.java
+--- a/src/main/java/server/service/AuctionService.java	(revision 4750f0c1046e8c5f6ac7223f4641837f77b1e1a4)
++++ b/src/main/java/server/service/AuctionService.java	(date 1778636653706)
+@@ -11,6 +11,8 @@
+ import server.network.RealtimePushServer;
+ import shared.dto.common.AuctionDTO;
+ import shared.dto.request.CreateAuctionRequest;
++import shared.dto.response.CreateAuctionResponse;
++import shared.dto.response.ErrorResponse;
+ import shared.enums.AuctionStatus;
+ import shared.dto.response.BaseResponse;
+ import shared.enums.ItemStatus;
+@@ -99,19 +101,17 @@
+             //kiểm tra xem item có tồn tại không?
+             Item item = itemDAO.findById(itemId);
+             if (item == null) {
+-                return new BaseResponse(false, "Sản phẩm không tồn tại!", null);
++                return new ErrorResponse("Sản phẩm không tồn tại!");
+             }
+ 
+             //kiểm tra rằng item chưa ở phiên đấu giá nào khác
+             if (auctionDAO.existsOpenAuctionByItemId(itemId)) {
+-                return new BaseResponse(false, "Sản phẩm đang nằm ở phiên đấu giá khác!", null);
++                return new ErrorResponse("Sản phẩm đang nằm ở phiên đấu giá khác!");
+             }
+ 
+             //kiểm tra logic thời gian start < end
+             if (!endTime.isAfter(startTime)) {
+-                return new BaseResponse(false,
+-                                        "Thời gian kết thúc phải sau thời gian bắt đầu",
+-                                        null);
++                return new ErrorResponse("Thời gian kết thúc phải sau thời gian bắt đầu!");
+             }
+             
+             Auction auction = new Auction(itemId, sellerId, startPrice, null,
+@@ -119,18 +119,18 @@
+ 
+             boolean checkInsertAuction = auctionDAO.insertAuction(auction);
+             if (!checkInsertAuction) {
+-                return new BaseResponse(false, "Lỗi lưu phiên đấu giá vào hệ thống", null);
++                return new ErrorResponse("Lỗi khi lưu phiên đấu giá vào hệ thống!");
+             }
+ 
+             //Chuển trạng thái của item trong Dao
+             itemDAO.updateStatus(itemId, ItemStatus.ACTIVE);
+             System.out.println(">>> [AuctionService] Tạo auction #" + auction.getId() + " cho item #" + itemId);
+ 
+-            return new BaseResponse(true, "Tạo phiên đấu giá thành công", toDTO(auction, item));
++            return new CreateAuctionResponse(toDTO(auction, item));
+         }
+         catch (Exception e) {
+             e.printStackTrace();
+-            return new BaseResponse(false, "Lỗi tạo phiên: " + e.getMessage(), null);
++            return new ErrorResponse(String.format("Lỗi tạo phiên: %s",e.getMessage()));
+         }
+     }
+ 
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"b2eef1a4-41bd-4aaf-b744-e1f162b63323\" name=\"Changes\" comment=\"\">\r\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/shared/dto/response/auth/LogoutResponse.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/client/controller/LoginController.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/client/controller/LoginController.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/server/service/AuctionService.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/server/service/AuctionService.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/shared/dto/response/auth/LoginResponse.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/shared/dto/response/auth/LoginResponse.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/shared/dto/response/auth/RegisterResponse.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/shared/dto/response/auth/RegisterResponse.java\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"EmbeddingIndexingInfo\">\r\n    <option name=\"cachedIndexableFilesCount\" value=\"148\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"FxmlFile\" />\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Vanhh06&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/trdat19/G3_Bidding_Online.git&quot;,\r\n    &quot;accountId&quot;: &quot;09b394b9-de4b-40b5-b91c-1e6a52f783ab&quot;\r\n  }\r\n}</component>\r\n  <component name=\"MavenImportPreferences\">\r\n    <option name=\"generalSettings\">\r\n      <MavenGeneralSettings>\r\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\r\n      </MavenGeneralSettings>\r\n    </option>\r\n  </component>\r\n  <component name=\"McpProjectServerCommands\">\r\n    <commands />\r\n    <urls />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;customColor&quot;: &quot;&quot;,\r\n  &quot;associatedIndex&quot;: 4\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"3CfCJrYpUewYWR28PzbpCOw4LaV\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"Application.MainApplication.executor\": \"Run\",\r\n    \"Application.SocketServer.executor\": \"Run\",\r\n    \"Application.SocketSever.executor\": \"Run\",\r\n    \"Application.client.MainApplication.executor\": \"Run\",\r\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\r\n    \"RunOnceActivity.MCP Project settings loaded\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252\": \"true\",\r\n    \"RunOnceActivity.git.unshallow\": \"true\",\r\n    \"RunOnceActivity.typescript.service.memoryLimit.init\": \"true\",\r\n    \"codeWithMe.voiceChat.enabledByDefault\": \"false\",\r\n    \"com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1\": \"true\",\r\n    \"git-widget-placeholder\": \"trdat\",\r\n    \"ignore.virus.scanning.warn.message\": \"true\",\r\n    \"junie.onboarding.icon.badge.shown\": \"true\",\r\n    \"kotlin-language-version-configured\": \"true\",\r\n    \"last_opened_file_path\": \"D:/UET/LTNC/javaFX/G3_BiddingOnline\",\r\n    \"node.js.detected.package.eslint\": \"true\",\r\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\r\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\r\n    \"nodejs_package_manager_path\": \"npm\",\r\n    \"project.structure.last.edited\": \"Project\",\r\n    \"project.structure.proportion\": \"0.15\",\r\n    \"project.structure.side.proportion\": \"0.17931035\",\r\n    \"settings.editor.selected.configurable\": \"ml.llm.AcpAgentsConfigurable\",\r\n    \"to.speed.mode.migration.done\": \"true\",\r\n    \"vue.rearranger.settings.migration\": \"true\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"MoveFile.RECENT_KEYS\">\r\n      <recent name=\"D:\\UET\\LTNC\\javaFX\\G3_BiddingOnline\\src\\main\\resources\\css\" />\r\n    </key>\r\n    <key name=\"MoveClassesOrPackagesDialog.RECENTS_KEY\">\r\n      <recent name=\"shared.dto.request.auth\" />\r\n      <recent name=\"shared.dto.request\" />\r\n      <recent name=\"shared.dto.response\" />\r\n      <recent name=\"shared.dto.common\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"Application.SocketServer\">\r\n    <configuration name=\"MainApplication\" type=\"Application\" factoryName=\"Application\">\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"client.MainApplication\" />\r\n      <module name=\"G3_BiddingOnline\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"SocketServer\" type=\"Application\" factoryName=\"Application\">\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"server.network.SocketSever\" />\r\n      <module name=\"G3_BiddingOnline\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration default=\"true\" type=\"JetRunConfigurationType\">\r\n      <module name=\"G3_Bidding_Online\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration default=\"true\" type=\"KotlinStandaloneScriptRunConfigurationType\">\r\n      <module name=\"G3_Bidding_Online\" />\r\n      <option name=\"filePath\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <list>\r\n      <item itemvalue=\"Application.MainApplication\" />\r\n      <item itemvalue=\"Application.SocketServer\" />\r\n    </list>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"b2eef1a4-41bd-4aaf-b744-e1f162b63323\" name=\"Changes\" comment=\"\" />\r\n      <created>1776767171231</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1776767171231</updated>\r\n      <workItem from=\"1776849512243\" duration=\"5095000\" />\r\n      <workItem from=\"1776854639250\" duration=\"143000\" />\r\n      <workItem from=\"1776854810698\" duration=\"2370000\" />\r\n      <workItem from=\"1776857201168\" duration=\"998000\" />\r\n      <workItem from=\"1776866941654\" duration=\"6109000\" />\r\n      <workItem from=\"1776885173783\" duration=\"2749000\" />\r\n      <workItem from=\"1776888284025\" duration=\"1035000\" />\r\n      <workItem from=\"1778520122919\" duration=\"3064000\" />\r\n      <workItem from=\"1778549706062\" duration=\"603000\" />\r\n      <workItem from=\"1778554742856\" duration=\"9638000\" />\r\n      <workItem from=\"1778590252279\" duration=\"10273000\" />\r\n    </task>\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"XSLT-Support.FileAssociations.UIState\">\r\n    <expand />\r\n    <select />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 4750f0c1046e8c5f6ac7223f4641837f77b1e1a4)
++++ b/.idea/workspace.xml	(date 1778738521082)
+@@ -5,22 +5,25 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/src/main/java/shared/dto/response/auth/LogoutResponse.java" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/src/main/java/shared/dto/response/CreateAuctionResponse.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/RegisterFormController.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/response/auth/LoginResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/response/auth/LoginResponse.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/response/auth/RegisterResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/response/auth/RegisterResponse.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/shared/dto/request/bid/PlaceBidRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/dto/request/bid/PlaceBidRequest.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+     <option name="LAST_RESOLUTION" value="IGNORE" />
++  </component>
++  <component name="CopilotPersistence">
++    <persistenceIdMap>
++      <entry key="_D:/UET/LTNC/javaFX/G3_BiddingOnline" value="3CfCJrYpUewYWR28PzbpCOw4LaV" />
++    </persistenceIdMap>
+   </component>
+   <component name="EmbeddingIndexingInfo">
+-    <option name="cachedIndexableFilesCount" value="148" />
++    <option name="cachedIndexableFilesCount" value="159" />
+   </component>
+   <component name="FileTemplateManagerImpl">
+     <option name="RECENT_TEMPLATES">
+@@ -68,37 +71,37 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "Application.MainApplication.executor": "Run",
+-    "Application.SocketServer.executor": "Run",
+-    "Application.SocketSever.executor": "Run",
+-    "Application.client.MainApplication.executor": "Run",
+-    "ModuleVcsDetector.initialDetectionPerformed": "true",
+-    "RunOnceActivity.MCP Project settings loaded": "true",
+-    "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+-    "RunOnceActivity.git.unshallow": "true",
+-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+-    "codeWithMe.voiceChat.enabledByDefault": "false",
+-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+-    "git-widget-placeholder": "trdat",
+-    "ignore.virus.scanning.warn.message": "true",
+-    "junie.onboarding.icon.badge.shown": "true",
+-    "kotlin-language-version-configured": "true",
+-    "last_opened_file_path": "D:/UET/LTNC/javaFX/G3_BiddingOnline",
+-    "node.js.detected.package.eslint": "true",
+-    "node.js.selected.package.eslint": "(autodetect)",
+-    "node.js.selected.package.tslint": "(autodetect)",
+-    "nodejs_package_manager_path": "npm",
+-    "project.structure.last.edited": "Project",
+-    "project.structure.proportion": "0.15",
+-    "project.structure.side.proportion": "0.17931035",
+-    "settings.editor.selected.configurable": "ml.llm.AcpAgentsConfigurable",
+-    "to.speed.mode.migration.done": "true",
+-    "vue.rearranger.settings.migration": "true"
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;Application.MainApplication.executor&quot;: &quot;Run&quot;,
++    &quot;Application.SocketServer.executor&quot;: &quot;Run&quot;,
++    &quot;Application.SocketSever.executor&quot;: &quot;Run&quot;,
++    &quot;Application.client.MainApplication.executor&quot;: &quot;Run&quot;,
++    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
++    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
++    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;new__trdat&quot;,
++    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
++    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
++    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
++    &quot;last_opened_file_path&quot;: &quot;D:/UET/LTNC/javaFX/G3_BiddingOnline&quot;,
++    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
++    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
++    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
++    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
++    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
++    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
++    &quot;project.structure.side.proportion&quot;: &quot;0.17931035&quot;,
++    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
++    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
++    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="RecentsManager">
+     <key name="MoveFile.RECENT_KEYS">
+       <recent name="D:\UET\LTNC\javaFX\G3_BiddingOnline\src\main\resources\css" />
+@@ -159,6 +162,12 @@
+       <workItem from="1778549706062" duration="603000" />
+       <workItem from="1778554742856" duration="9638000" />
+       <workItem from="1778590252279" duration="10273000" />
++      <workItem from="1778643030494" duration="2373000" />
++      <workItem from="1778661653717" duration="182000" />
++      <workItem from="1778726690934" duration="186000" />
++      <workItem from="1778727383003" duration="1321000" />
++      <workItem from="1778737458574" duration="710000" />
++      <workItem from="1778738195051" duration="324000" />
+     </task>
+     <servers />
+   </component>
+@@ -180,4 +189,12 @@
+     <expand />
+     <select />
+   </component>
++  <component name="github-copilot-workspace">
++    <instructionFileLocations>
++      <option value=".github/instructions" />
++    </instructionFileLocations>
++    <promptFileLocations>
++      <option value=".github/prompts" />
++    </promptFileLocations>
++  </component>
+ </project>
+\ No newline at end of file

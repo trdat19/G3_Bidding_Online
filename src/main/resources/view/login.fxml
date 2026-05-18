@@ -6,11 +6,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane stylesheets="@login.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.LoginController">
+<StackPane styleClass="root" stylesheets="@../css/login.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.LoginController">
    <children>
       <HBox alignment="CENTER" prefWidth="1200.0">
          <children>
-            <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="600.0" spacing="20.0" styleClass="brand-title" stylesheets="@login.css">
+            <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="600.0" spacing="20.0" styleClass="brand-title" stylesheets="@../css/login.css">
                <children>
                   <StackPane styleClass="icon-circle">
                      <children>
@@ -39,12 +39,16 @@
             </VBox>
             <StackPane>
                <children>
-                  <VBox alignment="CENTER" prefHeight="242.0" prefWidth="500.0" spacing="15.0" stylesheets="@login.css">
+                  <VBox alignment="CENTER" prefHeight="242.0" prefWidth="500.0" spacing="15.0" stylesheets="@../css/login.css">
                   
                       <TextField fx:id="username" promptText="Username" />
                       <PasswordField fx:id="password" promptText="Password" />
                   
-                      <Button onAction="#handleLogin" text="Login" />
+                      <Button onAction="#handleLogin" text="Login">
+                        <styleClass>
+                           <String fx:value="login-button" />
+                           <String fx:value="login-title" />
+                        </styleClass></Button>
                      <Label layoutX="500.0" layoutY="300.0" textFill="#f90909" />
                      <Label fx:id="errorLabel" textFill="#e00909" />
                      <Hyperlink onAction="#handleRegister" text="Don't have a account? Register" />

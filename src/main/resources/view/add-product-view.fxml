@@ -1,35 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="TOP_LEFT" prefHeight="600" prefWidth="500" spacing="14" style="-fx-background-color: white; -fx-padding: 25;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AddProductController">
+<AnchorPane prefHeight="640.0" prefWidth="720.0" stylesheets="@../css/add-product-view.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AddProductController">
+
     <children>
-        <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #111827;" text="Thêm sản phẩm mới" />
 
-        <Label text="Tên sản phẩm" />
-        <TextField fx:id="nameField" promptText="Nhập tên sản phẩm" />
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" pannable="true" styleClass="modal-scroll" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <content>
+                <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="root-container">
 
-        <Label text="Danh mục" />
-        <TextField fx:id="categoryField" promptText="Ví dụ: ELECTRONICS" />
-        <TextArea fx:id="descriptionField" prefHeight="100" promptText="Nhập mô tả sản phẩm" />
+                    <padding>
+                        <Insets bottom="24" left="30" right="30" top="24" />
+                    </padding>
 
-        <Label text="Giá khởi điểm" />
-        <TextField fx:id="priceField" promptText="Ví dụ: 2500" />
+            <!-- HEADER -->
+            <VBox alignment="CENTER" spacing="8">
+                <Label styleClass="form-title" text="Tạo sản phẩm mới" />
 
-        <Label text="Ngày bắt đầu" />
-        <DatePicker fx:id="startDatePicker" />
+                <Label styleClass="form-subtitle" />
+            </VBox>
 
-        <Label text="Ngày kết thúc" />
-        <DatePicker fx:id="endDatePicker" />
+            <!-- MAIN CARD -->
+            <VBox maxWidth="620" spacing="18" styleClass="form-card">
 
-        <Label fx:id="errorLable" textFill="#de0808" />
+                <padding>
+                    <Insets bottom="24" left="28" right="28" top="24" />
+                </padding>
 
-        <HBox spacing="12">
-            <children>
-                <Button onAction="#handleSave" style="-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-weight: bold;" text="Lưu" />
-                <Button onAction="#handleCancel" style="-fx-background-color: #e5e7eb; -fx-font-weight: bold;" text="Hủy" />
-            </children>
-        </HBox>
+                <!-- IMAGE PICKER -->
+                <VBox spacing="14">
+
+                    <Label styleClass="section-label" text="Ảnh sản phẩm" />
+
+                    <StackPane fx:id="imagePickerBox" prefHeight="190" prefWidth="540" styleClass="image-picker-box">
+
+                        <ImageView fx:id="productImageView" fitHeight="170" fitWidth="520" preserveRatio="true" />
+
+                        <VBox alignment="CENTER" spacing="12">
+
+                            <Label styleClass="upload-icon" text="🖼" />
+
+                            <Button onAction="#handleChooseImage" styleClass="upload-button" text="+ Chọn ảnh từ máy tính" />
+
+                            <Label fx:id="imageNameLabel" styleClass="upload-hint" />
+                        </VBox>
+
+                    </StackPane>
+                </VBox>
+
+                <!-- PRODUCT NAME -->
+                <VBox spacing="10">
+                    <Label styleClass="section-label" text="Tên sản phẩm" />
+
+                    <TextField fx:id="nameField" promptText="Ví dụ: MacBook Pro M3 Max" />
+                </VBox>
+
+                <!-- CATEGORY -->
+                <VBox spacing="10">
+                    <Label styleClass="section-label" text="Loại sản phẩm" />
+                    <ComboBox fx:id="categoryBox" maxWidth="Infinity" prefWidth="520.0" promptText="Chọn loại sản phẩm" />
+                </VBox>
+
+                <!-- DESCRIPTION -->
+                <VBox spacing="10">
+                    <Label styleClass="section-label" text="Mô tả sản phẩm" />
+
+                    <TextArea fx:id="descriptionField" promptText="Nhập mô tả chi tiết sản phẩm..." wrapText="true" />
+                </VBox>
+
+                <!-- STATUS INFO -->
+                <HBox alignment="CENTER_LEFT" spacing="12" styleClass="pending-box">
+
+                    <Label styleClass="pending-icon" text="⏳" />
+
+                    <VBox spacing="4">
+                        <Label styleClass="pending-title" text="Sản phẩm sẽ ở trạng thái PENDING" />
+
+                        <Label styleClass="pending-desc" text="Admin sẽ duyệt trước khi sản phẩm xuất hiện cho bidder" />
+                    </VBox>
+                </HBox>
+
+                <!-- ERROR -->
+                <Label fx:id="errorLabel" styleClass="error-label" />
+
+                <!-- BUTTONS -->
+                <HBox alignment="CENTER_RIGHT" spacing="14">
+
+                    <Button onAction="#handleCancel" styleClass="cancel-button" text="Hủy" />
+
+                    <Button onAction="#handleSave" styleClass="save-button" text="Gửi yêu cầu" />
+                </HBox>
+
+            </VBox>
+
+        </VBox>
+            </content>
+        </ScrollPane>
+
     </children>
-</VBox>
+</AnchorPane>

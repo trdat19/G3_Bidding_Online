@@ -1,103 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1100.0" stylesheets="@auction-detail.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AuctionDetailController">
-    <children>
-        <VBox prefHeight="700.0" prefWidth="1100.0" spacing="20.0" styleClass="root-container" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.controller.AuctionDetailController"
+            stylesheets="@../css/auction-detail.css"
+            styleClass="root">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="18">
             <padding>
-                <Insets bottom="25" left="30" right="30" top="25" />
+                <Insets top="18" right="42" bottom="18" left="42"/>
             </padding>
-            <HBox alignment="CENTER_LEFT" spacing="12">
-                <Button fx:id="backButton" onAction="#handleBack" styleClass="back-button" text="← Back" />
-                <Label styleClass="page-title" text="Thông tin đấu giá" />
-                <Region HBox.hgrow="ALWAYS" />
-                <Label fx:id="statusLabel" styleClass="status-running" text="RUNNING" />
-            </HBox>
-            <HBox spacing="25.0" VBox.vgrow="ALWAYS">
-                <VBox alignment="TOP_CENTER" spacing="15.0" styleClass="image-card">
-                    <padding>
-                        <Insets bottom="20" left="20" right="20" top="20" />
-                    </padding>
 
-                    <Label styleClass="section-title" text="Ảnh sản phẩm" />
-                    <ImageView fx:id="productImageView" fitHeight="260" fitWidth="360" preserveRatio="true" styleClass="image-box" />
-                    <Label styleClass="hint-text" text="(MacBook Pro M3 Max)" />
-                </VBox>
-                <VBox spacing="18.0" HBox.hgrow="ALWAYS">
-                    <VBox spacing="12.0" styleClass="info-card">
-                        <padding>
-                            <Insets bottom="22" left="22" right="22" top="22" />
-                        </padding>
+            <Button text="← Back"
+                    onAction="#handleBack"
+                    styleClass="back-button"/>
 
-                        <Label fx:id="productNameLabel" styleClass="product-name" text="MacBook Pro M3 Max" />
-                        <Label fx:id="categoryLabel" styleClass="product-category" text="Category: Electronics" />
+            <Label text="Chi tiết phiên đấu giá"
+                   styleClass="page-title"/>
 
-                        <Separator />
+            <Region HBox.hgrow="ALWAYS"/>
 
-                        <Label styleClass="section-title" text="Mô tả sản phẩm" />
-                        <Label fx:id="descriptionLabel" prefHeight="31.0" prefWidth="582.0" styleClass="product-description-title" wrapText="true" />
-                    </VBox>
-                    <VBox spacing="14.0" styleClass="info-card">
-                        <padding>
-                            <Insets bottom="22" left="22" right="22" top="22" />
-                        </padding>
+            <Label fx:id="statusLabel"
+                   text="OPEN"
+                   styleClass="status-open"/>
+        </HBox>
+    </top>
 
-                        <Label styleClass="section-title" text="Thông tin đấu giá" />
+    <center>
+        <VBox spacing="24">
+            <padding>
+                <Insets top="28" right="42" bottom="36" left="42"/>
+            </padding>
 
-                        <HBox spacing="20">
-                            <VBox spacing="6" styleClass="current-price" HBox.hgrow="ALWAYS">
-                                <Label styleClass="current-price" text="Giá khởi điểm" />
-                                <Label fx:id="startPriceLabel" styleClass="current-price" text="20,000,000 VND" />
-                            </VBox>
+            <!-- HERO SECTION -->
+            <HBox spacing="28" styleClass="hero-card">
 
-                            <VBox prefHeight="44.0" prefWidth="221.0" spacing="6" styleClass="price-value" HBox.hgrow="ALWAYS">
-                                <Label styleClass="current-price" text="Giá cao nhất hiện tại" />
-                                <Label fx:id="currentPriceLabel" prefHeight="31.0" prefWidth="202.0" styleClass="current-price" text="25,500,000 VND" />
-                            </VBox>
-                        </HBox>
+                <StackPane prefWidth="430"
+                           prefHeight="330"
+                           styleClass="hero-image">
+                    <Label text="Image"
+                           styleClass="image-placeholder"/>
+                </StackPane>
 
-                        <HBox spacing="20">
-                            <VBox spacing="6" styleClass="field-label" HBox.hgrow="ALWAYS">
-                                <Label styleClass="small-label" text="Người dẫn đầu" />
-                                <Label fx:id="leadingBidderLabel" styleClass="normal-value" text="user123" />
-                            </VBox>
+                <VBox spacing="16" HBox.hgrow="ALWAYS">
 
-                            <VBox prefHeight="18.0" prefWidth="118.0" spacing="6" styleClass="field-label" HBox.hgrow="ALWAYS">
-                                <Label prefHeight="17.0" prefWidth="101.0" styleClass="small-label" text="Bid Count" />
-                                <Label fx:id="bidCountLabel" styleClass="normal-value" text="12 bids" />
-                            </VBox>
-                        </HBox>
+                    <Label fx:id="productNameLabel"
+                           text="Product Name"
+                           styleClass="product-name"/>
 
-                        <HBox spacing="20">
-                            <VBox spacing="6" styleClass="field-label" HBox.hgrow="ALWAYS">
-                                <Label styleClass="small-label" text="Thời gian bắt đầu" />
-                                <Label fx:id="startTimeLabel" styleClass="normal-value" text="18/04/2026 19:00" />
-                            </VBox>
+                    <Label fx:id="categoryLabel"
+                           text="Category"
+                           styleClass="product-category"/>
 
-                            <VBox spacing="6" styleClass="field-label" HBox.hgrow="ALWAYS">
-                                <Label prefHeight="18.0" prefWidth="130.0" styleClass="small-label" text="Thời gian kết thúc" />
-                                <Label fx:id="endTimeLabel" styleClass="normal-value" text="18/04/2026 20:00" />
-                            </VBox>
-                        </HBox>
+                    <Separator/>
 
-                        <VBox spacing="6" styleClass="countdown-value">
-                            <Label styleClass="small-label" text="Thời gian còn lại" />
-                            <Label fx:id="countdownLabel" styleClass="countdown-text" text="00:42:18" />
-                        </VBox>
-                    </VBox>
+                    <Label text="Mô tả sản phẩm"
+                           styleClass="product-description-title"/>
 
-                    <!-- Action buttons -->
-                    <HBox alignment="CENTER_RIGHT" spacing="15">
-                        <Button fx:id="joinAuctionButton" onAction="#handleJoinAuction" styleClass="primary-button" text="Tham gia" />
-                        <Button fx:id="backToListButton" onAction="#handleBack" styleClass="secondary-button" text="Quay lại" />
+                    <Label fx:id="descriptionLabel"
+                           text="Description"
+                           wrapText="true"
+                           styleClass="product-description"/>
+
+                    <Region VBox.vgrow="ALWAYS"/>
+
+                    <Label text="Giá hiện tại"
+                           styleClass="field-label"/>
+
+                    <Label fx:id="currentPriceLabel"
+                           text="0"
+                           styleClass="hero-price"/>
+
+                    <Label text="Thời gian còn lại"
+                           styleClass="field-label"/>
+
+                    <Label fx:id="timeLeftLabel"
+                           text="00:00:00"
+                           styleClass="hero-countdown"/>
+
+                    <HBox spacing="12">
+                        <Button text="Tham gia đấu giá"
+                                onAction="#handleJoinAuction"
+                                styleClass="primary-button"/>
+
+                        <Button text="Quay lại danh sách"
+                                onAction="#handleBack"
+                                styleClass="secondary-button"/>
                     </HBox>
 
                 </VBox>
             </HBox>
+
+            <!-- STAT GRID -->
+            <GridPane hgap="16" vgap="16" styleClass="stat-grid">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="33.33"/>
+                    <ColumnConstraints percentWidth="33.33"/>
+                    <ColumnConstraints percentWidth="33.33"/>
+                </columnConstraints>
+
+                <VBox spacing="6"
+                      styleClass="stat-box"
+                      GridPane.rowIndex="0"
+                      GridPane.columnIndex="0">
+                    <Label text="GIÁ KHỞI ĐIỂM"
+                           styleClass="stat-label"/>
+                    <Label fx:id="startPriceLabel"
+                           text="0"
+                           styleClass="stat-value"/>
+                </VBox>
+
+                <VBox spacing="6"
+                      styleClass="stat-box"
+                      GridPane.rowIndex="0"
+                      GridPane.columnIndex="1">
+                    <Label text="NGƯỜI DẪN ĐẦU"
+                           styleClass="stat-label"/>
+                    <Label fx:id="leadingBidderLabel"
+                           text="None"
+                           styleClass="stat-value"/>
+                </VBox>
+
+                <VBox spacing="6"
+                      styleClass="stat-box"
+                      GridPane.rowIndex="0"
+                      GridPane.columnIndex="2">
+                    <Label text="SỐ LƯỢT BID"
+                           styleClass="stat-label"/>
+                    <Label fx:id="bidCountLabel"
+                           text="0 bids"
+                           styleClass="stat-value"/>
+                </VBox>
+
+                <VBox spacing="6"
+                      styleClass="stat-box"
+                      GridPane.rowIndex="1"
+                      GridPane.columnIndex="0">
+                    <Label text="BẮT ĐẦU"
+                           styleClass="stat-label"/>
+                    <Label fx:id="startTimeLabel"
+                           text="--/--/---- --:--"
+                           styleClass="stat-value"/>
+                </VBox>
+
+                <VBox spacing="6"
+                      styleClass="stat-box"
+                      GridPane.rowIndex="1"
+                      GridPane.columnIndex="1">
+                    <Label text="KẾT THÚC"
+                           styleClass="stat-label"/>
+                    <Label fx:id="endTimeLabel"
+                           text="--/--/---- --:--"
+                           styleClass="stat-value"/>
+                </VBox>
+
+                <VBox spacing="6"
+                      styleClass="stat-box"
+                      GridPane.rowIndex="1"
+                      GridPane.columnIndex="2">
+                    <Label text="TRẠNG THÁI"
+                           styleClass="stat-label"/>
+                    <Label text="Theo dõi realtime"
+                           styleClass="stat-value"/>
+                </VBox>
+
+            </GridPane>
+
         </VBox>
-    </children>
-</AnchorPane>
+    </center>
+
+</BorderPane>

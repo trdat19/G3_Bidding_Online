@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.Database.DBconnection;
 import server.model.core.Auction;
 import shared.enums.AuctionStatus;
 
@@ -8,11 +8,6 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Locale;
 
 public class AuctionDAO {
 
@@ -222,21 +217,6 @@ public class AuctionDAO {
         return false;
     }
 
-    // mở auction
-    public boolean openAuction(long idAuction) {
-        return updateStatus(idAuction, AuctionStatus.OPEN);
-    }
-
-    // đóng auction
-    public boolean closeAuction(long idAuction) {
-        return updateStatus(idAuction, AuctionStatus.CLOSED);
-    }
-
-    // hủy auction
-    public boolean cancelAuction(long idAuction) {
-        return updateStatus(idAuction, AuctionStatus.CANCELLED);
-    }
-
     // kiểm tra auction có tồn tại không
     public boolean existsAuctionById(long idAuction) {
         String sql = "SELECT 1 FROM auctions WHERE id_auction = ?";
@@ -302,8 +282,22 @@ public class AuctionDAO {
         }
         Timestamp endTs = rs.getTimestamp("end_time");
         if (endTs != null) {
-            auction.setStartTime(endTs.toLocalDateTime());
+            auction.setEndTime(endTs.toLocalDateTime());
         }
         return auction;
+    }
+
+    public boolean deleteAuctionsByItemId(long itemId) {
+        String sql = "DELETE FROM auctions WHERE id_item = ?";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, itemId);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("deleteAuctionsByItemId error: " + e.getMessage());
+            return false;
+        }
     }
 }

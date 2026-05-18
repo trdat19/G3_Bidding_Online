@@ -1,12 +1,13 @@
 package server.model.user;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import server.model.Entity;
 import shared.enums.UserRole;
 import shared.enums.UserStatus;
 
-public abstract class User extends Entity implements java.io.Serializable{
+public abstract class User extends Entity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

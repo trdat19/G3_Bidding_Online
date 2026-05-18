@@ -1,49 +1,76 @@
 package server.controller;
 
+import server.model.core.Bid;
 import server.network.ClientConnectionHandler;
 import server.service.BidService;
-import shared.request.BaseRequest;
-import shared.response.BaseResponse;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
+import shared.exception.AuctionClosedException;
+import shared.exception.AuctionNotFoundException;
+import shared.exception.BidTooLowException;
+import shared.exception.InvalidAuctionTimeException;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 public class BidServerController {
     private static BidServerController instance;
-    public static synchronized BidServerController getInstance() {
-        if (instance == null)
-        {
-            instance = new BidServerController();
+    private final BidService bidService = BidService.getInstance();
+
+    private BidServerController() {}
+
+    //double-checked locking
+    public static BidServerController getInstance() {
+        if (instance == null) {
+
+            synchronized (BidServerController.class) {
+                if (instance == null) {
+                    instance = new BidServerController();
+                }
+            }
         }
         return instance;
     }
 
-    private final BidService bidService = BidService.getInstance();
-
-    // THÊM DÒNG NÀY: Khóa cửa lại không cho ai 'new' từ bên ngoài
-    private BidServerController() {}
-
+    /** Xử lý đặt giá từ client, sau đó gọi Service để thực hiện và kích hoạt RealtimePush */
     public BaseResponse placeBid(BaseRequest request, ClientConnectionHandler handler) {
-        // 1. Giả sử request.getData() là một Object/Map chứa {auctionId, userId, amount}
-        // Bạn bóc tách dữ liệu ở đây (ép kiểu tùy theo nhóm bạn quy định)
-//        // Ví dụ
-//        int auctionId = 1;
-//        String userId = "User01";
-//        double amount = 500.0;
-        Map<String, Object> data = (Map<String, Object>) request.getData();
-        int auctionId = Integer.parseInt(data.get("auctionId").toString());
-        String userId = data.get("userId").toString();
-        double amount = Double.parseDouble(data.get("amount").toString());
+        try {
+            // Lấy bidderId từ session
+            Long bidderId = handler.getUser().getId();
 
-        // 2. Gọi Service xử lý logic và kích hoạt Realtime Push
-        bidService.placeBid(auctionId, userId, amount);
+            // 1. request.getData() là một Object/Map chứa {auctionId, bidderId, amount}
+            // Bóc tách dữ liệu
+            Map<String, Object> data = (Map<String, Object>) request.getData();
+            Long auctionId = Long.parseLong(data.get("auctionId").toString());
+            BigDecimal amount = new BigDecimal(data.get("amount").toString());
 
-        // 3. Trả về phản hồi cho chính người vừa đặt giá
-        return new BaseResponse(true, "Yêu cầu đặt giá của bạn đang được xử lý!", null);
+            boolean ok = bidService.placeBid(auctionId, bidderId, amount);
+            if (!ok) {
+                return new BaseResponse(false, "Đặt giá thất bại! Vui lòng thử lại sau.", null);
+            }
+
+            return new BaseResponse(true, "Yêu cầu đặt giá của bạn đã được xử lý!", null);
+        }
+        catch (AuctionNotFoundException e) {
+            return new BaseResponse(false, e.getMessage(), null);
+        }
+        catch (AuctionClosedException e) {
+            return new BaseResponse(false, e.getMessage(), null);
+        }
+        catch (BidTooLowException e) {
+            return new BaseResponse(false, e.getMessage(), null);
+        }
+        catch (InvalidAuctionTimeException e) {
+            return new BaseResponse(false, e.getMessage(), null);
+        }
+        catch (NumberFormatException e) {
+            return new BaseResponse(false, "Số tiền đặt giá không hợp lệ!", null);
+        }
+        catch (Exception e) {
+            //e.printStackTrace();
+            return new BaseResponse(false, "Lỗi hệ thống: " + e.getMessage(), null);
+        }
     }
 
-    public BaseResponse getBidHistory(BaseRequest request) {
-        // Gọi Service lấy dữ liệu từ Database (hoặc List lịch sử)
-//        bidService.getHistory(1);
-        return new BaseResponse(true, "Lấy lịch sử thành công", null);
-    }
+
 }

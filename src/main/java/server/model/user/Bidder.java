@@ -1,6 +1,5 @@
 package server.model.user;
 
-import server.model.core.AuctionManager;
 import shared.enums.UserRole;
 
 import java.math.BigDecimal;
@@ -38,11 +37,24 @@ public class Bidder extends User {
         return super.getInfo() + String.format(" | Balance: %s", balance);
     }
 
-    public void placeBid(String auctionId, double amount) {
-        AuctionManager manager = AuctionManager.getInstance();
+    //quản lý số dư, nạp rút tiền
+    public void deposit(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Invalid deposit");
+        }
+        balance = balance.add(amount);
+    }
 
-        // Bid bid = new Bid() tạo bid mới để đặt giá
+    public void withdraw(BigDecimal amount) {
+        if (balance.compareTo(amount) < 0) {
+            throw new IllegalStateException("Not enough balance");
+        }
+        balance = balance.subtract(amount);
+    }
 
+    //ktra xem đủ tiền để đặt giá mua đồ k
+    public boolean canAfford(BigDecimal amount) {
+        return balance.compareTo(amount) >=0;
     }
 
 

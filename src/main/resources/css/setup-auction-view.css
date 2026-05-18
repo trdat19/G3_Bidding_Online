@@ -1,0 +1,156 @@
+.root-container {
+    -fx-background-color: linear-gradient(to bottom right, #eef2ff, #f8fafc);
+    -fx-font-family: "Segoe UI";
+}
+
+.modal-scroll,
+.modal-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.modal-scroll {
+    -fx-background: transparent;
+}
+
+.form-card {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-border-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.12), 28, 0.2, 0, 8);
+}
+
+.form-title {
+    -fx-font-size: 34px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+.form-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #64748b;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #111827;
+}
+
+.section-label {
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1e293b;
+}
+
+/* INFO BOX */
+
+.info-box {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 14 16;
+}
+
+.product-name {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #111827;
+}
+
+.product-category {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+}
+
+/* INPUT */
+
+.text-field,
+.combo-box,
+.date-picker,
+.spinner {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-font-size: 15px;
+    -fx-text-fill: #0f172a;
+}
+
+.text-field,
+.combo-box,
+.date-picker,
+.spinner {
+    -fx-pref-height: 46;
+}
+
+.text-field:focused,
+.combo-box:focused,
+.date-picker:focused,
+.spinner:focused {
+    -fx-border-color: #4f46e5;
+    -fx-background-color: white;
+}
+
+/* NOTICE */
+
+.notice-box {
+    -fx-background-color: #ecfeff;
+    -fx-border-color: #67e8f9;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 16 18;
+}
+
+.notice-icon {
+    -fx-font-size: 28px;
+}
+
+.notice-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f766e;
+}
+
+.notice-desc {
+    -fx-font-size: 13px;
+    -fx-text-fill: #155e75;
+}
+
+/* BUTTONS */
+
+.save-button {
+    -fx-background-color: #4f46e5;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 12;
+    -fx-padding: 12 22;
+    -fx-cursor: hand;
+}
+
+.save-button:hover {
+    -fx-background-color: #4338ca;
+}
+
+.cancel-button {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #1e293b;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 12;
+    -fx-padding: 12 22;
+    -fx-cursor: hand;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #cbd5e1;
+}
+
+/* ERROR */
+
+.error-label {
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+}

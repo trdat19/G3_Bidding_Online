@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefWidth="720.0"
+            prefHeight="760.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.controller.SetupAuctionViewController"
+            stylesheets="@../css/setup-auction-view.css">
+
+    <children>
+
+        <ScrollPane fitToWidth="true"
+                    hbarPolicy="NEVER"
+                    pannable="true"
+                    styleClass="modal-scroll"
+                    AnchorPane.topAnchor="0"
+                    AnchorPane.bottomAnchor="0"
+                    AnchorPane.leftAnchor="0"
+                    AnchorPane.rightAnchor="0">
+            <content>
+                <VBox spacing="28"
+                      alignment="TOP_CENTER"
+                      styleClass="root-container">
+
+                    <padding>
+                        <Insets top="36" right="36" bottom="36" left="36"/>
+                    </padding>
+
+            <!-- HEADER -->
+            <VBox spacing="8" alignment="CENTER">
+
+                <Label text="Thiết lập phiên đấu giá"
+                       styleClass="form-title"/>
+
+                <Label text="Nhập thông tin đấu giá sau khi admin đã duyệt"
+                       styleClass="form-subtitle"/>
+
+            </VBox>
+
+            <!-- MAIN CARD -->
+            <VBox spacing="24"
+                  maxWidth="620"
+                  styleClass="form-card">
+
+                <padding>
+                    <Insets top="32" right="32" bottom="32" left="32"/>
+                </padding>
+
+                <!-- PRODUCT INFO -->
+                <VBox spacing="8">
+
+                    <Label text="Thông tin sản phẩm"
+                           styleClass="section-title"/>
+
+                    <VBox spacing="6"
+                          styleClass="info-box">
+
+                        <Label fx:id="productNameLabel"
+                               text="Tên sản phẩm"
+                               styleClass="product-name"/>
+
+                        <Label fx:id="productCategoryLabel"
+                               text="Danh mục"
+                               styleClass="product-category"/>
+
+                    </VBox>
+
+                </VBox>
+
+                <!-- START PRICE -->
+                <VBox spacing="10">
+
+                    <Label text="Giá khởi điểm"
+                           styleClass="section-label"/>
+
+                    <TextField fx:id="startPriceField"
+                               promptText="Ví dụ: 2000"/>
+
+                </VBox>
+
+                <!-- MIN INCREMENT -->
+                <VBox spacing="10">
+                    <Label text="Bước nhảy giá" styleClass="section-label"/>
+
+                    <TextField fx:id="minIncrementField"
+                               promptText="Ví dụ: 10000"/>
+                </VBox>
+                <!-- START TIME -->
+                <VBox spacing="12">
+
+                    <Label text="Thời gian bắt đầu"
+                           styleClass="section-label"/>
+
+                    <HBox spacing="14"
+                          alignment="CENTER_LEFT">
+
+                        <DatePicker fx:id="startDatePicker"
+                                    HBox.hgrow="ALWAYS"/>
+
+                        <ComboBox fx:id="startHourBox"
+                                  prefWidth="90"/>
+
+                        <ComboBox fx:id="startMinuteBox"
+                                  prefWidth="90"/>
+
+                    </HBox>
+
+                </VBox>
+
+                <!-- END TIME -->
+                <VBox spacing="12">
+
+                    <Label text="Thời gian kết thúc"
+                           styleClass="section-label"/>
+
+                    <HBox spacing="14"
+                          alignment="CENTER_LEFT">
+
+                        <DatePicker fx:id="endDatePicker"
+                                    HBox.hgrow="ALWAYS"/>
+
+                        <ComboBox fx:id="endHourBox"
+                                  prefWidth="90"/>
+
+                        <ComboBox fx:id="endMinuteBox"
+                                  prefWidth="90"/>
+
+                    </HBox>
+
+                </VBox>
+
+                <!-- INFO BOX -->
+                <HBox spacing="12"
+                      alignment="CENTER_LEFT"
+                      styleClass="notice-box">
+
+                    <Label text="ℹ"
+                           styleClass="notice-icon"/>
+
+                    <VBox spacing="4">
+
+                        <Label text="Sau khi gửi yêu cầu, sẽ không thể chỉnh sửa thông tin phiên đấu giá"
+                               styleClass="notice-title"/>
+
+                        <Label text="Trạng thái sản phẩm sẽ chuyển sang WAITING_APPROVAL"
+                               styleClass="notice-desc"/>
+
+                    </VBox>
+
+                </HBox>
+
+                <!-- ERROR -->
+                <Label fx:id="errorLabel"
+                       styleClass="error-label"/>
+
+                <!-- BUTTONS -->
+                <HBox spacing="14"
+                      alignment="CENTER_RIGHT">
+
+                    <Button text="Hủy"
+                            onAction="#handleCancel"
+                            styleClass="cancel-button"/>
+
+                    <Button text="Lưu và mở phiên"
+                            onAction="#handleSave"
+                            styleClass="save-button"/>
+
+                </HBox>
+
+            </VBox>
+
+                </VBox>
+            </content>
+        </ScrollPane>
+
+    </children>
+
+</AnchorPane>

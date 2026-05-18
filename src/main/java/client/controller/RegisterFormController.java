@@ -1,14 +1,16 @@
 package client.controller;
 
 import client.service.ClientNetworkService;
+import client.util.StageUtils;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import shared.enums.UserRole;
-import shared.request.BaseRequest;
-import shared.response.BaseResponse;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -109,8 +111,9 @@ public class RegisterFormController {
     private void goToLogin() {
         try {
             Stage stage = (Stage) username.getScene().getWindow();
-            Scene scene = new Scene(FXMLLoader.load(getClass().getResource("/view/login.fxml")));
-            stage.setScene(scene);
+            Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
+            StageUtils.setMaximizedScene(stage,root);
+            stage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }

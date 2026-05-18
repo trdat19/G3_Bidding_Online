@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="700" prefWidth="1200" styleClass="root-pane" stylesheets="@../../css/admin-dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AdminDashboardController">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15" styleClass="top-bar">
+            <padding>
+                <Insets bottom="15" left="20" right="20" top="15" />
+            </padding>
+
+            <Label styleClass="logo-label" text="BidZone Admin" />
+            <Region HBox.hgrow="ALWAYS" />
+
+            <TextField prefWidth="250" promptText="Search..." />
+            <Label text="Admin" />
+            <Button onAction="#handleLogout" styleClass="logout-btn" text="Logout" />
+        </HBox>
+    </top>
+
+    <left>
+        <VBox prefWidth="220" spacing="10" styleClass="sidebar">
+            <padding>
+                <Insets bottom="20" left="10" right="10" top="20" />
+            </padding>
+
+            <Button maxWidth="Infinity" onAction="#showDashboard" text="Dashboard" />
+            <Button maxWidth="Infinity" onAction="#showProductRequests" text="Requests" />
+            <Button maxWidth="Infinity" onAction="#showUsers" text="Users" />
+            <Button maxWidth="Infinity" onAction="#showAuctions" text="Auctions" />
+            <Button maxWidth="Infinity" onAction="#showProducts" text="Products" />
+            <Button maxWidth="Infinity" onAction="#showReports" text="Reports" />
+            <Button maxWidth="Infinity" onAction="#showSettings" text="Settings" />
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentPane" styleClass="content-pane"/>
+    </center>
+
+</BorderPane>

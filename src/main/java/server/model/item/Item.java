@@ -14,7 +14,6 @@ public abstract class Item extends Entity {
     protected String nameItem;
     protected String description;
     protected Long sellerId;
-    protected BigDecimal priceStart;
     protected ItemCategory category;
     protected ItemStatus statusItem;
     protected LocalDateTime createdAtItem;
@@ -23,16 +22,12 @@ public abstract class Item extends Entity {
     public Item() {}
 
     public Item(String nameItem, String description, Long sellerId,
-                BigDecimal priceStart, ItemStatus statusItem) {
+                ItemCategory category, ItemStatus statusItem) {
         super();
         this.nameItem = nameItem;
         this.description = description;
+        this.category = category;
         this.sellerId = sellerId;
-        if (priceStart.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Price phải > 0");
-        }
-        else
-            this.priceStart = priceStart;
         this.statusItem = statusItem != null ? statusItem : ItemStatus.PENDING;
     }
 
@@ -46,7 +41,6 @@ public abstract class Item extends Entity {
     public Long getSellerId() {
         return sellerId;
     }
-    public BigDecimal getPriceStart() {return priceStart;}
     public ItemCategory getCategory() {
         return category;
     }
@@ -56,6 +50,7 @@ public abstract class Item extends Entity {
     public LocalDateTime getCreatedAtItem() {
         return createdAtItem;
     }
+    public String getImageUrl() { return imageUrl; }
 
     // setter
     public void setNameItem(String nameItem) {
@@ -67,21 +62,19 @@ public abstract class Item extends Entity {
     public void setSellerId(Long sellerId) {
         this.sellerId = sellerId;
     }
-    public void setPriceStart(BigDecimal priceStart) {
-        this.priceStart = priceStart;
-    }
     public void setCategory(ItemCategory category) {this.category = category;}
     public void setStatusItem(ItemStatus statusItem) { this.statusItem = statusItem; }
     public void setCreatedAtItem(LocalDateTime createdAtItem) {
         this.createdAtItem = createdAtItem;
     }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     @Override
     public String getInfo() {
-        return String.format("[%s] %s – Starting price: %s",
+        return String.format("[%s] %s – %s",
                 category,
                 nameItem,
-                priceStart.setScale(2, java.math.RoundingMode.HALF_UP)
+                description
         );
     }
 }

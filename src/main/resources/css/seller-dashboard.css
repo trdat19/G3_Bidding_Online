@@ -1,0 +1,240 @@
+.root {
+    -fx-font-family: "Segoe UI";
+    -fx-background-color: #f3f6fb;
+}
+
+.top-bar {
+    -fx-background-color: white;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 0 0 1 0;
+}
+
+.logo-box {
+    -fx-background-color: linear-gradient(to bottom right, #5b5ce2, #6d5dfc);
+    -fx-background-radius: 14;
+}
+
+.logo-icon {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.logo-text {
+    -fx-font-size: 28px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1f2937;
+}
+
+.user-name {
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1f2937;
+}
+
+.user-role {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #6b7280;
+}
+
+.hero-section {
+    -fx-background-color: linear-gradient(to right, #eef3ff, #f7f9fc);
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 0 0 1 0;
+}
+
+.hero-title {
+    -fx-font-size: 34px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+.hero-subtitle {
+    -fx-font-size: 18px;
+    -fx-text-fill: #64748b;
+}
+
+.primary-button {
+    -fx-background-color: #4f46e5;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 12;
+    -fx-padding: 12 22;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #4338ca;
+}
+
+.secondary-button {
+    -fx-background-color: white;
+    -fx-text-fill: #374151;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 12;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 12;
+    -fx-padding: 12 22;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #f9fafb;
+}
+
+.main-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.main-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.content-wrapper {
+    -fx-background-color: transparent;
+}
+
+.section-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #111827;
+}
+
+/* CARD */
+.product-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 20;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 14, 0.15, 0, 4);
+}
+
+.product-image {
+    -fx-background-color: #eef2f7;
+    -fx-background-radius: 18 18 0 0;
+}
+
+.category-badge {
+    -fx-background-color: white;
+    -fx-text-fill: #475569;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 999;
+    -fx-padding: 6 12;
+}
+
+.product-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #111827;
+}
+
+.product-desc {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6b7280;
+}
+
+.meta-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #9ca3af;
+}
+
+.meta-value {
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #111827;
+}
+
+.status-open {
+    -fx-text-fill: #16a34a;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+}
+
+.status-finished {
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+}
+
+.edit-button {
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #2563eb;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10;
+    -fx-padding: 10 18;
+    -fx-cursor: hand;
+}
+
+.delete-button {
+    -fx-background-color: #fef2f2;
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10;
+    -fx-padding: 10 18;
+    -fx-cursor: hand;
+}
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 45px;
+    -fx-cursor: hand;
+}
+.wallet-box {
+    -fx-background-color: #ecfdf5;
+    -fx-border-color: #bbf7d0;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 10 18;
+}
+
+.wallet-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #64748b;
+}
+
+.wallet-balance {
+    -fx-font-size: 20px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #16a34a;
+}
+.status-pill {
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-background-radius: 999;
+    -fx-padding: 7 12;
+}
+
+.status-pending {
+    -fx-background-color: #fff7ed;
+    -fx-text-fill: #c2410c;
+}
+
+.status-active {
+    -fx-background-color: #ecfdf5;
+    -fx-text-fill: #16a34a;
+}
+
+.status-sold {
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #2563eb;
+}
+
+.status-cancelled {
+    -fx-background-color: #fef2f2;
+    -fx-text-fill: #dc2626;
+}
+
+.status-desc {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748b;
+}

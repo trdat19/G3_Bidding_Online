@@ -1,4 +1,4 @@
-package server.database;
+package server.Database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,9 +10,9 @@ public class DBconnection {
     private static DBconnection instance;
     private final HikariDataSource dataSource;
 
-    private String url = "jdbc:mysql://nozomi.proxy.rlwy.net:24310/railway?serverTimezone=UTC&useSSL=true&requireSSL=true";
+    private String url = "jdbc:mysql://localhost:3307/new_db";
     private String user = "root";
-    private String pass = "QMXMdCasKkgHnqOxFfAXwzouhwqMtqOR";
+    private String pass = "123456";
 
     private DBconnection() {
         HikariConfig config = new HikariConfig();
