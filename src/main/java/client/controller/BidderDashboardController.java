@@ -43,11 +43,13 @@ public class BidderDashboardController
 
     private final List<Item> itemList = new ArrayList<>();
     private final List<Timeline> countdownTimelines = new ArrayList<>();
+    private Timeline refreshTimeLine;
 
     @FXML
     public void initialize() {
         bidderNameLabel.setText(ClientSession.getCurrentUserFullName());
         loadAuctionsFromServer();
+        startAutoRefresh();
     }
     private void loadAuctionsFromServer() {
         BaseRequest request = new BaseRequest("GET_AUCTION_LIST", null);
@@ -247,6 +249,8 @@ public class BidderDashboardController
 
         @FXML
     private void handleLogout(ActionEvent event) {
+        stopAutoRefresh();
+        stopCountdowns();
         ClientSession.clear();
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
@@ -259,6 +263,8 @@ public class BidderDashboardController
     }
     @FXML
     private void viewDetail(Item item) {
+        stopAutoRefresh();
+        stopCountdowns();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/auction-detail.fxml"));
             Parent root = loader.load();
@@ -276,5 +282,20 @@ public class BidderDashboardController
     }
     public void setBidderName(String bidderName) {
         bidderNameLabel.setText(bidderName);
+    }
+    private void startAutoRefresh()
+    {
+        refreshTimeLine = new Timeline(new KeyFrame(Duration.seconds(5), event -> loadAuctionsFromServer()));
+        refreshTimeLine.setCycleCount(Timeline.INDEFINITE);
+        refreshTimeLine.play();
+    }
+
+    private void stopAutoRefresh()
+    {
+        if(refreshTimeLine != null)
+        {
+            refreshTimeLine.stop();
+            refreshTimeLine = null;
+        }
     }
 }

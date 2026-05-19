@@ -4,6 +4,8 @@ import client.model.Item;
 import client.service.ClientNetworkService;
 import client.session.ClientSession;
 import client.util.StageUtils;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +26,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 
@@ -43,6 +46,7 @@ public class SellerDashboardController {
     private FlowPane productContainer;
 
     private final List<Item> itemList = new ArrayList<>();
+    private Timeline refreshTimeline;
 
     @FXML
     public void initialize() {
@@ -154,7 +158,7 @@ public class SellerDashboardController {
             case "WAITING_APPROVAL" -> "Chờ duyệt";
             case "ACTIVE" -> "Đã duyệt";
             case "SOLD" -> "Đã bán";
-            case "CANCELLED" -> "Đã hủy";
+            case "CANCELLED" -> "Ế hàng";
             default -> status;
         };
     }
@@ -164,7 +168,7 @@ public class SellerDashboardController {
             case "WAITING_APPROVAL" -> "Sản phẩm đang chờ admin duyệt phiên đấu giá.";
             case "ACTIVE" -> "Sản phẩm đang được đấu giá, không thể chỉnh sửa.";
             case "SOLD" -> "Sản phẩm đã bán thành công.";
-            case "CANCELLED" -> "Sản phẩm hoặc phiên đấu giá đã bị hủy.";
+            case "CANCELLED" -> "Phiên đấu giá đã kết thúc nhưng không có ai đặt giá. Có thể tạo lại phiên đấu giá mới";
             default -> "";
         };
     }
@@ -353,5 +357,6 @@ public class SellerDashboardController {
             default -> "Ở trạng thái " + status;
         };
     }
+
 
 }

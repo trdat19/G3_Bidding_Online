@@ -65,11 +65,11 @@ public class BidService {
 
         // 1. Lấy phiên đấu giá từ DB
         Auction auction = auctionDAO.findById(auctionId);
-        System.out.println("===== PLACE BID DEBUG =====");
-        System.out.println("BID auctionId = " + auctionId);
-        System.out.println("DB auction status = " + auction.getStatus());
-        System.out.println("Amount = " + amount);
-        System.out.println("===========================");
+//        System.out.println("===== PLACE BID DEBUG =====");
+//        System.out.println("BID auctionId = " + auctionId);
+//        System.out.println("DB auction status = " + auction.getStatus());
+//        System.out.println("Amount = " + amount);
+//        System.out.println("===========================");
         if (auction == null) {
             throw new AuctionNotFoundException(auctionId);
         }
@@ -146,7 +146,10 @@ public class BidService {
         // 12. Push realtime tới tất cả client đang xem phiên này
         BidDTO bidDTO = new BidDTO(bid.getId(), auctionId, bidderId,
                 bidderName, amount, bid.getTimestamp());
+
         BaseResponse bidEvent = new BaseResponse(true, "NEW_BID", bidDTO);
+        bidEvent.setAction("NEW_BID");
+
         RealtimePushServer.pushToAuctionSubscribers(auctionId, bidEvent);
 
         System.out.printf(">>> [BidService] %s đặt giá %s cho phiên #%d%n",

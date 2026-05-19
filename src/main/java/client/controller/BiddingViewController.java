@@ -14,7 +14,9 @@ import client.service.ClientNetworkService;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.dto.common.AuctionDTO;
-
+import javafx.application.Platform;
+import shared.dto.common.BidDTO;
+import java.util.function.Consumer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +37,8 @@ public class BiddingViewController {
     @FXML private Label statusTextLabel;
     private Item currentItem;
     private Timeline countdownTimeLine;
+    private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
+
     public void setItem(Item item) {
         this.currentItem = item;
 
@@ -45,6 +49,9 @@ public class BiddingViewController {
         leaderLabel.setText(item.getLeader());
         bidCountLabel.setText(String.valueOf(item.getBidCount()));
         startCountDown(item.getEndTime());
+        ClientNetworkService.getInstance().addEventListener(realtimeListener);
+        ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest("SUBSCRIBE_AUCTION", currentItem.getId()));
     }
     private void startCountDown(LocalDateTime endTime) {
         if (countdownTimeLine != null) {
@@ -78,6 +85,7 @@ public class BiddingViewController {
     }
     @FXML
     private void handleBack() {
+        ClientNetworkService.getInstance().removeEventListener(realtimeListener);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/auction-detail.fxml"));
             Parent root = loader.load();
@@ -146,4 +154,27 @@ public class BiddingViewController {
         leaderLabel.setText(currentItem.getLeader());
         bidCountLabel.setText(currentItem.getBidCount() + " bids");
     }
+
+    private void handleRealtimeEvent(BaseResponse response) {
+        if (!"NEW_BID".equals(response.getAction())) {
+            return;
+        }
+
+        BidDTO bid = (BidDTO) response.getData();
+
+        if (!bid.getAuctionId().equals(currentItem.getId())) {
+            return;
+        }
+
+        Platform.runLater(() -> {
+            currentItem.setCurrentPrice(bid.getAmount().doubleValue());
+            currentItem.setLeader(bid.getBidderName());
+            currentItem.setBidCount(currentItem.getBidCount() + 1);
+
+            currentPriceLabel.setText(String.valueOf(currentItem.getCurrentPrice()));
+            leaderLabel.setText(currentItem.getLeader());
+            bidCountLabel.setText(currentItem.getBidCount() + " bids");
+        });
+    }
+
 }
