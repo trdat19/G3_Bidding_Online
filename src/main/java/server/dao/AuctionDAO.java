@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.Database.DBconnection;
 import server.model.core.Auction;
 import shared.enums.AuctionStatus;
 

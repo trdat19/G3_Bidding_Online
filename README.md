@@ -1,3 +1,5 @@
+[![Java CI with Maven](https://github.com/trdat19/G3_Bidding_Online/actions/workflows/maven.yml/badge.svg)](https://github.com/trdat19/G3_Bidding_Online/actions/workflows/maven.yml)
+
 # HỆ THỐNG ĐẤU GIÁ TRỰC TUYẾN - BIDZONE
 ## Nhóm 3 - 2526II_UET.CS2043_3
 

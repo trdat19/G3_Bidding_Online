@@ -132,18 +132,68 @@ public class AuctionService {
 
         Auction auction = new Auction(itemId, sellerId, startPrice, startPrice,
                                         minIncrement, buyNowPrice, startTime, endTime);
-        auction.setStatus(AuctionStatus.WAITING_APPROVAL);
+
         boolean checkInsertAuction = auctionDAO.insertAuction(auction);
         if (!checkInsertAuction) {
             throw new RuntimeException("Lỗi lưu phiên đấu giá vào hệ thống");
         }
 
-        //Chuển trạng thái của item trong Dao
+        //Chuyển trạng thái của item trong Dao
+
         itemDAO.updateStatus(itemId, ItemStatus.WAITING_APPROVAL);
         System.out.println(">>> [AuctionService] Tạo auction #" + auction.getId() + " cho item #" + itemId);
 
         return toDTO(auction, item);
     }
+    //Thêm method admin lấy danh sách request
+    public List<AuctionDTO> getCreateAuctionRequests() {
+        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.PREPARING);
+        List<AuctionDTO> dtos = new ArrayList<>();
+
+        for (Auction auction : auctions) {
+            Item item = itemDAO.findById(auction.getItemId());
+            if (item != null) {
+                dtos.add(toDTO(auction, item));
+            }
+        }
+        return dtos;
+    }
+    //Thêm method admin duyệt request
+    public AuctionDTO approveCreateAuctionRequest(Long auctionId) {
+        Auction auction = auctionDAO.findById(auctionId);
+
+        if (auction == null) {
+            throw new RuntimeException("Không tìm thấy yêu cầu đấu giá");
+        }
+        if (auction.getStatus() != AuctionStatus.PREPARING) {
+            throw new RuntimeException("Chỉ duyệt được yêu cầu đang chờ duyệt");
+
+        }
+        auctionDAO.updateStatus(auctionId, AuctionStatus.OPEN);
+        itemDAO.updateStatus(auction.getItemId(), ItemStatus.ACTIVE);
+
+        auction.setStatus(AuctionStatus.OPEN);
+
+        Item item = itemDAO.findById(auction.getItemId());
+        return toDTO(auction, item);
+    }
+    //Thêm method admin từ chối request
+    public AuctionDTO rejectCreateAuctionRequest(Long auctionId) {
+        Auction auction = auctionDAO.findById(auctionId);
+        if (auction == null) {
+           throw new RuntimeException("Không tìm thấy yêu cầu đấu giá");
+        }
+        if (auction.getStatus() != AuctionStatus.PREPARING)  {
+           throw new RuntimeException("Chỉ duyệt được yêu cầu đang chờ duyệt");
+        }
+        auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELLED);
+        itemDAO.updateStatus(auction.getItemId(), ItemStatus.PENDING);
+
+        auction.setStatus(AuctionStatus.CANCELLED);
+        Item item = itemDAO.findById(auction.getItemId());
+        return toDTO(auction,item);
+    }
+
 
     //----------------CANCEL------------------
     public boolean cancelAuction(Long auctionId) {
@@ -278,9 +328,7 @@ public class AuctionService {
     //---------------GET--------------
     /** Lấy tất cả phiên đang OPEN */
     public List<AuctionDTO> getOpenAuctions() {
-        List<Auction> auctions = new ArrayList<>();
-        auctions.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN));
-        auctions.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.RUNNING));
+        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN);
         List<AuctionDTO> dtos = new ArrayList<>();
         for (Auction a : auctions) {
             Item item = itemDAO.findById(a.getItemId());
@@ -328,40 +376,5 @@ public class AuctionService {
         }
 
         return dtos;
-    }
-
-    public List<AuctionDTO> getAuctionApprovalRequests() {
-        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.WAITING_APPROVAL);
-        List<AuctionDTO> dtos = new ArrayList<>();
-
-        for (Auction auction : auctions) {
-            Item item = itemDAO.findById(auction.getItemId());
-            dtos.add(toDTO(auction, item));
-        }
-
-        return dtos;
-    }
-
-    public boolean rejectAuctionRequest(Long auctionId) {
-        Auction auction = auctionDAO.findById(auctionId);
-
-        if (auction == null || auction.getStatus() != AuctionStatus.WAITING_APPROVAL) {
-            return false;
-        }
-
-        auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELLED);
-        itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
-
-        return true;
-    }
-
-    public boolean approveAuctionRequest(Long auctionId) {
-        Auction auction = auctionDAO.findById(auctionId);
-        if (auction == null || auction.getStatus() != AuctionStatus.WAITING_APPROVAL) {
-            return false;
-        }
-        boolean auctionUpdated = auctionDAO.updateStatus(auctionId, AuctionStatus.OPEN);
-        boolean itemUpdated = itemDAO.updateStatus(auction.getItemId(), ItemStatus.ACTIVE);
-    return auctionUpdated && itemUpdated;
     }
 }

@@ -15,7 +15,7 @@ public enum Action {
     UPDATE_ITEM,
     DELETE_ITEM,
     GET_SELLER_ITEMS,
-    CREATE_AUCTION,
+    SEND_CREATE_AUCTION_REQUEST,
 
     /**
      * Bidder

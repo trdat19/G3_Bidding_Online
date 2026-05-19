@@ -72,10 +72,7 @@ public class RequestRouter {
                     requireRole(handler, UserRole.SELLER);
                     return SellerServerController.getInstance().createItem(request, handler);
                 }
-                case Action.GET_SELLER_ITEMS: {
-                    requireRole(handler, UserRole.SELLER);
-                    return SellerServerController.getInstance().getItemsBySeller(handler);
-                }
+
                 case Action.UPDATE_ITEM: {
                     requireRole(handler, UserRole.SELLER);
                     return SellerServerController.getInstance().updateItem(request);
@@ -95,9 +92,16 @@ public class RequestRouter {
                         return new BaseResponse(false, "itemId phải là số nguyên hợp lệ!", null);
                     }
                 }
-                case CREATE_AUCTION:
+
+                case Action.GET_SELLER_ITEMS: {
+                    requireRole(handler, UserRole.SELLER);
+                    return SellerServerController.getInstance().getItemsBySeller(handler);
+                }
+                case Action.SEND_CREATE_AUCTION_REQUEST: {
                     requireRole(handler, UserRole.SELLER);
                     return AuctionServerController.getInstance().createAuction(request, handler);
+
+                }
 
                 /**
                  * Thao tác của Bidder
@@ -137,22 +141,6 @@ public class RequestRouter {
                 /**
                  * Thao tác của Admin
                  */
-                case Action.GET_CREATE_AUCTION_REQUESTS:
-                {
-                    requireRole(handler, UserRole.ADMIN);
-                    return AdminServerController.getInstance().getCreateAuctionRequests();
-                }
-
-                case Action.ACCEPT_CREATE_AUCTION_REQUEST: {
-                    requireRole(handler, UserRole.ADMIN);
-                    return AdminServerController.getInstance().acceptCreateAuctionRequest(request);
-                }
-
-                case Action.REJECT_CREATE_AUCTION_REQUEST: {
-                    requireRole(handler, UserRole.ADMIN);
-                    return AdminServerController.getInstance().rejectCreateAuctionRequest(request);
-                }
-
                 case Action.GET_USERS_LIST: {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().getAllUsers();
@@ -172,6 +160,19 @@ public class RequestRouter {
                         return new BaseResponse(false, "Thiếu dữ liệu userId để khóa!", null);
                     }
                     return AdminServerController.getInstance().disableUser(request);
+                }
+
+                case Action.GET_CREATE_AUCTION_REQUESTS: {
+                    requireRole(handler, UserRole.ADMIN);
+                    return AuctionServerController.getInstance().getCreateAuctionRequests();
+                }
+                case Action.ACCEPT_CREATE_AUCTION_REQUEST: {
+                    requireRole(handler, UserRole.ADMIN);
+                    return AuctionServerController.getInstance().approveCreateAuctionRequest(request);
+                }
+                case Action.REJECT_CREATE_AUCTION_REQUEST: {
+                    requireRole(handler, UserRole.ADMIN);
+                    return AuctionServerController.getInstance().rejectCreateAuctionRequest(request);
                 }
                 default: {
                     return new BaseResponse(false,

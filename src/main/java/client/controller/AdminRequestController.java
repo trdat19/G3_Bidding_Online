@@ -100,7 +100,7 @@ public class AdminRequestController {
 
     private void approveRequest(AuctionDTO auction) {
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest(Action.ACCEPT_CREATE_AUCTION_REQUEST, auction.getId()));;
+                .sendRequest(new BaseRequest(Action.ACCEPT_CREATE_AUCTION_REQUEST, auction.getId()));
 
         if (response != null && response.isSuccess()) {
             loadRequests();

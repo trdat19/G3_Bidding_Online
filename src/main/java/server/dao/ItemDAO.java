@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.Database.DBconnection;
 import server.model.item.Art;
 import server.model.item.Electronics;
 import server.model.item.Item;
@@ -19,7 +19,7 @@ public class ItemDAO {
     // thêm item mới
     public boolean insertItem(Item item) {
         String sql = "INSERT INTO items(name_item, category, description, id_seller, price_start, status_item, image_url) " +
-                "VALUES (?, ?, ?, ?, ?, ? , ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
@@ -129,7 +129,7 @@ public class ItemDAO {
     // cập nhật toàn bộ item
     public boolean updateItem(Item item) {
         String sql = "UPDATE items SET name_item = ?, category = ?, description = ?, " +
-                "id_seller = ?, price_start = ?, status_item = ?, image_url = ? WHERE id_item = ?";
+                "id_seller = ?, price_start = ?, status_item = ? WHERE id_item = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
@@ -140,8 +140,7 @@ public class ItemDAO {
             ps.setLong(4, item.getSellerId());
             ps.setBigDecimal(5, BigDecimal.ONE);
             ps.setString(6, item.getStatusItem().name());
-            ps.setString(7,item.getImageUrl());
-            ps.setLong(8, item.getId());
+            ps.setLong(7, item.getId());
 
             return ps.executeUpdate() > 0;
 
@@ -194,12 +193,13 @@ public class ItemDAO {
         ItemStatus statusItem = ItemStatus.valueOf(rs.getString("status_item"));
         Timestamp createdAtItem = rs.getTimestamp("created_atItem");
         String imageUrl = rs.getString("image_url");
-
         switch (category) {
             case ART:
                 Art art = new Art(nameItem, description, sellerId, statusItem);
                 art.setId(id);
-                art.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                if (createdAtItem != null) {
+                    art.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                }
                 art.setImageUrl(imageUrl);
                 return art;
 
