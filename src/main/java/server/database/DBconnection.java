@@ -15,6 +15,7 @@ public class DBconnection {
     private String pass = "mysql2007";
 
     private DBconnection() {
+
         HikariConfig config = new HikariConfig();
 
         config.setJdbcUrl(url);
