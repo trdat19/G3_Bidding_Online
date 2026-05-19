@@ -10,9 +10,9 @@ public class DBconnection {
     private static DBconnection instance;
     private final HikariDataSource dataSource;
 
-    private String url = "jdbc:mysql://127.0.0.1:3306/local_railway";
-    private String user = "root";
-    private String pass = "mysql2007";
+    private String url = "jdbc:mysql://2gHYcGAmktnRtig.root:tMk8jhH0IqFvkJq5@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/Auction_System?sslMode=VERIFY_IDENTITY";
+    private String user = "2gHYcGAmktnRtig.root";
+    private String pass = "tMk8jhH0IqFvkJq5";
 
     private DBconnection() {
         HikariConfig config = new HikariConfig();
