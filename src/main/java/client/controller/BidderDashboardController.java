@@ -33,7 +33,8 @@ import java.util.List;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class BidderDashboardController {
+public class BidderDashboardController
+{
     @FXML
     private FlowPane auctionContainer;
 
@@ -107,7 +108,7 @@ public class BidderDashboardController {
         StackPane.setAlignment(categoryBadge, Pos.TOP_LEFT);
         StackPane.setMargin(categoryBadge, new Insets(12, 0, 0, 12));
 
-        Label statusBadge = new Label(item.getStatus());
+        Label statusBadge = new Label();
         statusBadge.getStyleClass().add("status-pill");
         StackPane.setAlignment(statusBadge, Pos.TOP_RIGHT);
         StackPane.setMargin(statusBadge, new Insets(12, 12, 0, 0));
@@ -167,7 +168,7 @@ public class BidderDashboardController {
 
         Label timeValue = new Label();
         timeValue.getStyleClass().add("time-left");
-        startCountdown(timeValue, item.getEndTime());
+        startCountdown(timeText, timeValue, statusBadge, item.getStartTime(), item.getEndTime());
 
         timeBox.getChildren().addAll(timeText, timeValue);
 
@@ -194,27 +195,22 @@ public class BidderDashboardController {
         countdownTimelines.clear();
     }
 
-    private void startCountdown(Label label, LocalDateTime endTime) {
-        label.setText(formatTimeLeft(endTime));
+    private void startCountdown(Label titleLabel, Label valueLabel, Label statusLabel,
+                                LocalDateTime startTime, LocalDateTime endTime) {
+        updateAuctionTimeUI(titleLabel, valueLabel, statusLabel, startTime, endTime);
 
         Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), event -> label.setText(formatTimeLeft(endTime)))
+                new KeyFrame(Duration.seconds(1), event ->
+                        updateAuctionTimeUI(titleLabel, valueLabel, statusLabel, startTime, endTime)
+                )
         );
+
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
         countdownTimelines.add(timeline);
     }
-
-    private String formatTimeLeft(LocalDateTime endTime) {
-        if (endTime == null) {
-            return "--:--:--";
-        }
-
-        java.time.Duration remaining = java.time.Duration.between(
-                LocalDateTime.now(),
-                endTime
-        );
-
+    private String formatDuration(LocalDateTime from, LocalDateTime to) {
+        java.time.Duration remaining = java.time.Duration.between(from, to);
         long seconds = remaining.getSeconds();
 
         if (seconds <= 0) {
@@ -227,7 +223,29 @@ public class BidderDashboardController {
 
         return String.format("%02d:%02d:%02d", hours, minutes, secs);
     }
-    @FXML
+    private void updateAuctionTimeUI(Label titleLabel, Label valueLabel, Label statusLabel,
+                                     LocalDateTime startTime, LocalDateTime endTime) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (startTime != null && now.isBefore(startTime)) {
+            statusLabel.setText("Sắp diễn ra");
+            titleLabel.setText("BẮT ĐẦU SAU");
+            valueLabel.setText(formatDuration(now, startTime));
+            return;
+        }
+
+        if (endTime != null && now.isBefore(endTime)) {
+            statusLabel.setText("Đang diễn ra");
+            titleLabel.setText("CÒN LẠI");
+            valueLabel.setText(formatDuration(now, endTime));
+            return;
+        }
+        statusLabel.setText("Đã kết thúc");
+        titleLabel.setText("ĐÃ KẾT THÚC");
+        valueLabel.setText("00:00:00");
+    }
+
+        @FXML
     private void handleLogout(ActionEvent event) {
         ClientSession.clear();
         try {

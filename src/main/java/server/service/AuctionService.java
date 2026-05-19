@@ -278,7 +278,9 @@ public class AuctionService {
     //---------------GET--------------
     /** Lấy tất cả phiên đang OPEN */
     public List<AuctionDTO> getOpenAuctions() {
-        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN);
+        List<Auction> auctions = new ArrayList<>();
+        auctions.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN));
+        auctions.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.RUNNING));
         List<AuctionDTO> dtos = new ArrayList<>();
         for (Auction a : auctions) {
             Item item = itemDAO.findById(a.getItemId());

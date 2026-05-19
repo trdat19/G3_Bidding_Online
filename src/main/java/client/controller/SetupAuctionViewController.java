@@ -57,7 +57,7 @@ public class SetupAuctionViewController {
             endHourBox.getItems().add(i);
         }
 
-        for (int i = 0; i < 60; i += 5) {
+        for (int i = 0; i < 60; i ++) {
             startMinuteBox.getItems().add(i);
             endMinuteBox.getItems().add(i);
         }
@@ -142,7 +142,7 @@ public class SetupAuctionViewController {
         data.put("itemId", item.getId());
         data.put("startPrice", BigDecimal.valueOf(startPrice));
         data.put("minIncrement", BigDecimal.valueOf(minIncrement));
-        data.put("buyNowPrice", BigDecimal.valueOf(startPrice * 2));
+        data.put("buyNowPrice", BigDecimal.valueOf(startPrice * 10));
         data.put("startTime", startDateTime);
         data.put("endTime", endDateTime);
 

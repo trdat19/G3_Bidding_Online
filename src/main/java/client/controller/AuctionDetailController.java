@@ -45,10 +45,8 @@ public class AuctionDetailController {
         leadingBidderLabel.setText(item.getLeader());
         startTimeLabel.setText(formatDateTime(item.getStartTime()));
         endTimeLabel.setText(formatDateTime(item.getEndTime()));
-        statusLabel.setText(item.getStatus());
         bidCountLabel.setText(item.getBidCount() + " bids");
-
-        startCountdown(item.getEndTime());
+        startCountdown(item.getStartTime(), item.getEndTime());
 
         this.currentItem = item;
     }
@@ -98,19 +96,53 @@ public class AuctionDetailController {
         return dateTime.format(dateTimeFormatter);
     }
 
-    private void startCountdown(LocalDateTime endTime) {
+    private void startCountdown(LocalDateTime startTime, LocalDateTime endTime) {
         stopCountdown();
 
-        timeLeftLabel.setText(formatTimeLeft(endTime));
+        updateAuctionTimeUI(startTime, endTime);
 
         countdownTimeline = new Timeline(
                 new KeyFrame(Duration.seconds(1), event ->
-                        timeLeftLabel.setText(formatTimeLeft(endTime))
+                        updateAuctionTimeUI(startTime, endTime)
                 )
         );
 
         countdownTimeline.setCycleCount(Timeline.INDEFINITE);
         countdownTimeline.play();
+    }
+
+    private void updateAuctionTimeUI(LocalDateTime startTime, LocalDateTime endTime) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (startTime != null && now.isBefore(startTime)) {
+            statusLabel.setText("Sắp diễn ra");
+            timeLeftLabel.setText(formatDuration(now, startTime));
+            return;
+        }
+
+        if (endTime != null && now.isBefore(endTime)) {
+            statusLabel.setText("Đang diễn ra");
+            timeLeftLabel.setText(formatDuration(now, endTime));
+            return;
+        }
+
+        statusLabel.setText("Đã kết thúc");
+        timeLeftLabel.setText("00:00:00");
+    }
+
+    private String formatDuration(LocalDateTime from, LocalDateTime to) {
+        java.time.Duration remaining = java.time.Duration.between(from, to);
+        long seconds = remaining.getSeconds();
+
+        if (seconds <= 0) {
+            return "00:00:00";
+        }
+
+        long hours = seconds / 3600;
+        long minutes = (seconds % 3600) / 60;
+        long secs = seconds % 60;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, secs);
     }
 
     private void stopCountdown() {
