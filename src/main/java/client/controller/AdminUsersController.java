@@ -35,7 +35,7 @@ public class AdminUsersController {
         loadUsers();
     }
     private void loadUsers() {
-        BaseRequest request = new BaseRequest(Action.GET_USERS_LIST, null);;
+        BaseRequest request = new BaseRequest(Action.GET_USERS_LIST, null);
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
         if (response != null && response.isSuccess()) {

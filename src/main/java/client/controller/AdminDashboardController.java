@@ -102,7 +102,7 @@ public class AdminDashboardController {
         }
     }
     @FXML
-    private void showPeoductRequests() {
+    private void showProductRequests() {
         loadPage(REQUEST_PAGE);
     }
 }

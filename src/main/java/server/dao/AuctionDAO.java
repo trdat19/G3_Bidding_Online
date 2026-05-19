@@ -282,8 +282,22 @@ public class AuctionDAO {
         }
         Timestamp endTs = rs.getTimestamp("end_time");
         if (endTs != null) {
-            auction.setStartTime(endTs.toLocalDateTime());
+            auction.setEndTime(endTs.toLocalDateTime());
         }
         return auction;
+    }
+
+    public boolean deleteAuctionsByItemId(long itemId) {
+        String sql = "DELETE FROM auctions WHERE id_item = ?";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, itemId);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("deleteAuctionsByItemId error: " + e.getMessage());
+            return false;
+        }
     }
 }

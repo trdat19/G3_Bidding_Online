@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.service.ClientNetworkService;
+import client.session.ClientSession;
 import client.util.StageUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -43,12 +44,39 @@ public class LoginController {
 
         if (response != null && response.isSuccess()) {
             User LogginUser = (User) response.getData();
+            ClientSession.setCurrentUser(LogginUser);
             UserRole role = LogginUser.getRole();
             if (role == UserRole.BIDDER) {
-                loadScene("/view/bidder-dashboard.fxml", event);
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/bidder-dashboard.fxml"));
+                    Parent root = loader.load();
+
+                    BidderDashboardController controller = loader.getController();
+                    controller.setBidderName(LogginUser.getFullName());
+
+                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    StageUtils.setMaximizedScene(stage, root);
+                    stage.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            else if(role == UserRole.SELLER) {
-                loadScene("/view/seller-dashboard.fxml", event);
+            else if(role == UserRole.SELLER)
+            {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/seller-dashboard.fxml"));
+                    Parent root = loader.load();
+
+                    SellerDashboardController controller = loader.getController();
+                    controller.setSellerName(LogginUser.getFullName());
+
+                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    StageUtils.setMaximizedScene(stage, root);
+                    stage.show();
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
             }
             else if(role == UserRole.ADMIN)  {
                 loadScene("/view/admin/admin-dashboard.fxml", event);

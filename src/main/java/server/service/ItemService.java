@@ -1,5 +1,6 @@
 package server.service;
 
+import server.dao.AuctionDAO;
 import server.dao.ItemDAO;
 import server.model.item.Item;
 import server.model.item.ItemFactory;
@@ -21,6 +22,8 @@ public class ItemService {
     private static ItemService instance;
 
     private final ItemDAO itemDAO = new ItemDAO();
+
+    private final AuctionDAO auctionDAO = new AuctionDAO();
 
     private ItemService() {}
 
@@ -60,6 +63,9 @@ public class ItemService {
 
         //static factory tạo item theo category
         Item item = ItemFactory.createItem(category, name, description, sellerId, ItemStatus.PENDING);
+        if (data.containsKey("imageUrl")) {
+            item.setImageUrl(data.get("imageUrl").toString());
+        }
 
         boolean ok = itemDAO.insertItem(item);
         return ok ? item : null;
@@ -72,7 +78,7 @@ public class ItemService {
             throw new IllegalArgumentException("Thiếu id sản phẩm cần cập nhật!");
         }
 
-        Long itemId = (Long) data.get("id");
+        Long itemId = Long.parseLong(data.get("id").toString());
         Item item = itemDAO.findById(itemId);
         if (item == null) {
             throw new IllegalArgumentException("Sản phẩm không tồn tại!");
@@ -104,9 +110,16 @@ public class ItemService {
             throw new IllegalArgumentException("Sản phẩm không tồn tại!");
         }
 
-        // Chỉ cho phép xóa sản phẩm khi nó đang ở trạng thái PENDING
-        if (item.getStatusItem() != ItemStatus.PENDING) {
-            throw new IllegalStateException("Chỉ có thể xóa sản phẩm khi đang PENDING!");
+        if (item.getStatusItem() != ItemStatus.PENDING
+                && item.getStatusItem() != ItemStatus.CANCELLED) {
+            throw new IllegalStateException("Chỉ có thể xóa sản phẩm khi đang PENDING hoặc CANCELLED!");
+        }
+
+        if (item.getStatusItem() == ItemStatus.CANCELLED) {
+            boolean deletedAuctions = auctionDAO.deleteAuctionsByItemId(itemId);
+            if (!deletedAuctions) {
+                return false;
+            }
         }
 
         return itemDAO.deleteItem(itemId);

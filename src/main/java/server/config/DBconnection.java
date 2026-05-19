@@ -1,4 +1,4 @@
-package server.database;
+package server.config;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,9 +10,9 @@ public class DBconnection {
     private static DBconnection instance;
     private final HikariDataSource dataSource;
 
-    private String url = "jdbc:mysql://localhost:3306/local_railway";
+    private String url = "jdbc:mysql://localhost:3306/auction_system";
     private String user = "root";
-    private String pass = "mysql2007";
+    private String pass = "011007";
 
     private DBconnection() {
         HikariConfig config = new HikariConfig();

@@ -28,6 +28,7 @@
             </padding>
 
             <Button maxWidth="Infinity" onAction="#showDashboard" text="Dashboard" />
+            <Button maxWidth="Infinity" onAction="#showProductRequests" text="Requests" />
             <Button maxWidth="Infinity" onAction="#showUsers" text="Users" />
             <Button maxWidth="Infinity" onAction="#showAuctions" text="Auctions" />
             <Button maxWidth="Infinity" onAction="#showProducts" text="Products" />

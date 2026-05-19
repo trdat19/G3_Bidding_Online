@@ -2,7 +2,10 @@ package client.controller;
 
 import client.model.Item;
 import client.service.ClientNetworkService;
+import client.session.ClientSession;
 import client.util.StageUtils;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -17,18 +20,22 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import javafx.event.ActionEvent;
+import javafx.util.Duration;
 import shared.dto.common.AuctionDTO;
 import shared.dto.response.BaseResponse;
 import shared.dto.request.BaseRequest;
-import shared.enums.Action;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import shared.enums.Action;
 
-public class BidderDashboardController {
+public class BidderDashboardController
+{
     @FXML
     private FlowPane auctionContainer;
 
@@ -36,25 +43,39 @@ public class BidderDashboardController {
     private Label bidderNameLabel;
 
     private final List<Item> itemList = new ArrayList<>();
+    private final List<Timeline> countdownTimelines = new ArrayList<>();
+
     @FXML
     public void initialize() {
-        bidderNameLabel.setText("Bidder");
+        bidderNameLabel.setText(ClientSession.getCurrentUserFullName());
         loadAuctionsFromServer();
     }
     private void loadAuctionsFromServer() {
-        BaseRequest request = new BaseRequest(Action.GET_AUCTION_LIST, null);
+        BaseRequest request = new BaseRequest(Action.GET_AUCTION_LIST, null);;
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+
         itemList.clear();
-        if (response != null || !response.isSuccess() || response.getData() == null) {
-            auctionContainer.getChildren().clear();
-            auctionContainer.getChildren().add (new Label(
+        stopCountdowns();
+        auctionContainer.getChildren().clear();
+
+        if (response == null || !response.isSuccess() || response.getData() == null) {
+            auctionContainer.getChildren().add(new Label(
                     response != null ? response.getMessage() : "Khong ket noi duoc server"
             ));
             return;
         }
-        List<AuctionDTO> auctions = (List<AuctionDTO>) response.getData();
-        for (AuctionDTO auction : auctions) {
-            itemList.add(toItem(auction));
+
+        List<?> auctions = (List<?>) response.getData();
+
+        for (Object obj : auctions) {
+            AuctionDTO auction = (AuctionDTO) obj;
+
+            Item item = toItem(auction);
+            item.setId(auction.getId());
+            item.setImageUrl(auction.getItemImageUrl());
+
+            itemList.add(item);
+            auctionContainer.getChildren().add(createProductCard(item));
         }
     }
     private Item toItem(AuctionDTO auction) {
@@ -63,7 +84,7 @@ public class BidderDashboardController {
                 auction.getItemCategory(),
                 auction.getItemDescription(),
                 auction.getStartPrice()!= null ? auction.getStartPrice().doubleValue(): 0,
-                auction.getDisplayPrice()!= null ? auction.getStartPrice().doubleValue() : 0,
+                auction.getDisplayPrice()!= null ? auction.getDisplayPrice().doubleValue() : 0,
                 auction.getLeaderName()!= null ? auction.getLeaderName() : "Chưa có",
                 auction.getStartTime(),
                 auction.getEndTime(),
@@ -88,15 +109,26 @@ public class BidderDashboardController {
         StackPane.setAlignment(categoryBadge, Pos.TOP_LEFT);
         StackPane.setMargin(categoryBadge, new Insets(12, 0, 0, 12));
 
-        Label statusBadge = new Label(item.getStatus());
+        Label statusBadge = new Label();
         statusBadge.getStyleClass().add("status-pill");
         StackPane.setAlignment(statusBadge, Pos.TOP_RIGHT);
         StackPane.setMargin(statusBadge, new Insets(12, 12, 0, 0));
 
-        Label imagePlaceholder = new Label("Image");
-        imagePlaceholder.getStyleClass().add("image-placeholder");
+        if (item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
+            ImageView imageView = new ImageView(new Image(item.getImageUrl(), true));
+            imageView.setFitWidth(330);
+            imageView.setFitHeight(210);
+            imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
 
-        imageBox.getChildren().addAll(categoryBadge, statusBadge, imagePlaceholder);
+            imageBox.getChildren().add(imageView);
+        } else {
+            Label imagePlaceholder = new Label("Image");
+            imagePlaceholder.getStyleClass().add("image-placeholder");
+            imageBox.getChildren().add(imagePlaceholder);
+        }
+
+        imageBox.getChildren().addAll(categoryBadge, statusBadge);
 
         VBox infoBox = new VBox();
         infoBox.setSpacing(8);
@@ -135,8 +167,9 @@ public class BidderDashboardController {
         Label timeText = new Label("CÒN LẠI");
         timeText.getStyleClass().add("meta-label");
 
-        Label timeValue = new Label(formatTimeLeft(item.getEndTime()));
+        Label timeValue = new Label();
         timeValue.getStyleClass().add("time-left");
+        startCountdown(timeText, timeValue, statusBadge, item.getStartTime(), item.getEndTime());
 
         timeBox.getChildren().addAll(timeText, timeValue);
 
@@ -156,12 +189,29 @@ public class BidderDashboardController {
 
         return card;
     }
-    private String formatTimeLeft(LocalDateTime endTime) {
-        java.time.Duration remaining = java.time.Duration.between(
-                LocalDateTime.now(),
-                endTime
+    private void stopCountdowns() {
+        for (Timeline timeline : countdownTimelines) {
+            timeline.stop();
+        }
+        countdownTimelines.clear();
+    }
+
+    private void startCountdown(Label titleLabel, Label valueLabel, Label statusLabel,
+                                LocalDateTime startTime, LocalDateTime endTime) {
+        updateAuctionTimeUI(titleLabel, valueLabel, statusLabel, startTime, endTime);
+
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), event ->
+                        updateAuctionTimeUI(titleLabel, valueLabel, statusLabel, startTime, endTime)
+                )
         );
 
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+        countdownTimelines.add(timeline);
+    }
+    private String formatDuration(LocalDateTime from, LocalDateTime to) {
+        java.time.Duration remaining = java.time.Duration.between(from, to);
         long seconds = remaining.getSeconds();
 
         if (seconds <= 0) {
@@ -174,8 +224,31 @@ public class BidderDashboardController {
 
         return String.format("%02d:%02d:%02d", hours, minutes, secs);
     }
-    @FXML
+    private void updateAuctionTimeUI(Label titleLabel, Label valueLabel, Label statusLabel,
+                                     LocalDateTime startTime, LocalDateTime endTime) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (startTime != null && now.isBefore(startTime)) {
+            statusLabel.setText("Sắp diễn ra");
+            titleLabel.setText("BẮT ĐẦU SAU");
+            valueLabel.setText(formatDuration(now, startTime));
+            return;
+        }
+
+        if (endTime != null && now.isBefore(endTime)) {
+            statusLabel.setText("Đang diễn ra");
+            titleLabel.setText("CÒN LẠI");
+            valueLabel.setText(formatDuration(now, endTime));
+            return;
+        }
+        statusLabel.setText("Đã kết thúc");
+        titleLabel.setText("ĐÃ KẾT THÚC");
+        valueLabel.setText("00:00:00");
+    }
+
+        @FXML
     private void handleLogout(ActionEvent event) {
+        ClientSession.clear();
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -201,5 +274,8 @@ public class BidderDashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public void setBidderName(String bidderName) {
+        bidderNameLabel.setText(bidderName);
     }
 }

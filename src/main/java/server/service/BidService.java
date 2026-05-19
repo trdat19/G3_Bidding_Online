@@ -35,10 +35,10 @@ public class BidService {
     // Sử dụng Singleton để đảm bảo mọi luồng đều dùng chung một đối tượng xử lý giá
     private static BidService instance;
 
-    private final AuctionService auctionService = AuctionService.getInstance();
-    private final AuctionDAO auctionDAO = new AuctionDAO();
-    private final BidDAO bidDAO = new BidDAO();
-    private final UserDAO userDAO =  new UserDAO();
+    private AuctionService auctionService = AuctionService.getInstance();
+    private AuctionDAO auctionDAO = new AuctionDAO();
+    private BidDAO bidDAO = new BidDAO();
+    private UserDAO userDAO =  new UserDAO();
 
     private BidService() {}
 
@@ -51,6 +51,7 @@ public class BidService {
                 }
             }
         }
+
         return instance;
     }
 
@@ -65,6 +66,11 @@ public class BidService {
 
         // 1. Lấy phiên đấu giá từ DB
         Auction auction = auctionDAO.findById(auctionId);
+        System.out.println("===== PLACE BID DEBUG =====");
+        System.out.println("BID auctionId = " + auctionId);
+        System.out.println("DB auction status = " + auction.getStatus());
+        System.out.println("Amount = " + amount);
+        System.out.println("===========================");
         if (auction == null) {
             throw new AuctionNotFoundException(auctionId);
         }
@@ -76,9 +82,15 @@ public class BidService {
         }
 
         // 3. Kiểm tra thời gian
-        if (LocalDateTime.now().isAfter(auction.getEndTime())) {
-            auctionService.finishAuction(auctionId); // Kết thúc phiên nếu chưa kịp đóng!
-            throw new InvalidAuctionTimeException(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+
+        if (auction.getStartTime() != null && now.isBefore(auction.getStartTime())) {
+            throw new InvalidAuctionTimeException(now);
+        }
+
+        if (auction.getEndTime() != null && now.isAfter(auction.getEndTime())) {
+            auctionService.finishAuction(auctionId);
+            throw new InvalidAuctionTimeException(now);
         }
 
         // 4. Tính mức giá tối thiểu hợp lệ

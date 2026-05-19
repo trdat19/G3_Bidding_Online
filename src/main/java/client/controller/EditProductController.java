@@ -1,8 +1,12 @@
 package client.controller;
+
 import client.model.Item;
 import client.service.ClientNetworkService;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
@@ -13,17 +17,17 @@ import shared.enums.Action;
 import shared.enums.ItemCategory;
 
 import java.io.File;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddProductController {
+public class EditProductController {
     @FXML private TextField nameField;
     @FXML private ComboBox<ItemCategory> categoryBox;
     @FXML private TextArea descriptionField;
     @FXML private Label errorLabel;
     @FXML private ImageView productImageView;
     @FXML private Label imageNameLabel;
+    private Item editingItem;
     private File selectedImageFile;
 
 
@@ -87,10 +91,10 @@ public class AddProductController {
         data.put("name", title);
         data.put("category", category.name());
         data.put("description", description);
+        data.put("id", editingItem.getId());
         data.put("imageUrl", selectedImageFile.toURI().toString());
-
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest(Action.CREATE_ITEM, data));
+                .sendRequest(new BaseRequest(Action.UPDATE_ITEM, data));
 
         if (response == null || !response.isSuccess()) {
             errorLabel.setText(response != null ? response.getMessage() : "Khong ket noi duoc server");
@@ -111,5 +115,15 @@ public class AddProductController {
     private void closeWindow() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
+    }
+
+    public void setData(Item item, SellerDashboardController sellerDashboardController) {
+        this.editingItem = item;
+        this.sellerDashboardController = sellerDashboardController;
+
+        nameField.setText(item.getTitle());
+        categoryBox.setValue(ItemCategory.valueOf(item.getCategory()));
+        descriptionField.setText(item.getDescription());
+        imageNameLabel.setText("Giữ ảnh hiện tại");
     }
 }

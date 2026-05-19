@@ -32,7 +32,7 @@
 
                             <VBox alignment="CENTER_RIGHT" spacing="4">
                                 <children>
-                                    <Label fx:id="sellerNameLabel" text="Nguyễn Việt Anh" styleClass="user-name"/>
+                                    <Label fx:id="sellerNameLabel" text="" styleClass="user-name"/>
                                     <Label text="SELLER" styleClass="user-role"/>
                                 </children>
                             </VBox>

@@ -13,17 +13,22 @@
 
     <children>
 
-        <VBox spacing="28"
-              alignment="TOP_CENTER"
-              AnchorPane.topAnchor="0"
-              AnchorPane.bottomAnchor="0"
-              AnchorPane.leftAnchor="0"
-              AnchorPane.rightAnchor="0"
-              styleClass="root-container">
+        <ScrollPane fitToWidth="true"
+                    hbarPolicy="NEVER"
+                    pannable="true"
+                    styleClass="modal-scroll"
+                    AnchorPane.topAnchor="0"
+                    AnchorPane.bottomAnchor="0"
+                    AnchorPane.leftAnchor="0"
+                    AnchorPane.rightAnchor="0">
+            <content>
+                <VBox spacing="28"
+                      alignment="TOP_CENTER"
+                      styleClass="root-container">
 
-            <padding>
-                <Insets top="36" right="36" bottom="36" left="36"/>
-            </padding>
+                    <padding>
+                        <Insets top="36" right="36" bottom="36" left="36"/>
+                    </padding>
 
             <!-- HEADER -->
             <VBox spacing="8" alignment="CENTER">
@@ -77,18 +82,13 @@
 
                 </VBox>
 
-                <!-- BID COUNT -->
+                <!-- MIN INCREMENT -->
                 <VBox spacing="10">
+                    <Label text="Bước nhảy giá" styleClass="section-label"/>
 
-                    <Label text="Bid Count"
-                           styleClass="section-label"/>
-
-                    <Spinner fx:id="bidCountSpinner"
-                             prefHeight="46"
-                             editable="true"/>
-
+                    <TextField fx:id="minIncrementField"
+                               promptText="Ví dụ: 10000"/>
                 </VBox>
-
                 <!-- START TIME -->
                 <VBox spacing="12">
 
@@ -143,10 +143,10 @@
 
                     <VBox spacing="4">
 
-                        <Label text="Sau khi lưu, sản phẩm sẽ hiển thị cho bidder"
+                        <Label text="Sau khi gửi yêu cầu, sẽ không thể chỉnh sửa thông tin phiên đấu giá"
                                styleClass="notice-title"/>
 
-                        <Label text="Trạng thái sản phẩm sẽ chuyển sang READY"
+                        <Label text="Trạng thái sản phẩm sẽ chuyển sang WAITING_APPROVAL"
                                styleClass="notice-desc"/>
 
                     </VBox>
@@ -173,7 +173,9 @@
 
             </VBox>
 
-        </VBox>
+                </VBox>
+            </content>
+        </ScrollPane>
 
     </children>
 

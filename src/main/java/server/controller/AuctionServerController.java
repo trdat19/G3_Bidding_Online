@@ -1,7 +1,7 @@
 package server.controller;
 
+import server.network.ClientConnectionHandler;
 import server.service.AuctionService;
-
 import shared.dto.common.AuctionDTO;
 import shared.dto.common.BidDTO;
 import shared.dto.request.BaseRequest;
@@ -77,7 +77,7 @@ public class AuctionServerController {
     }
 
     /** createAuction – Seller tạo phiên mới */
-    public BaseResponse createAuction(BaseRequest request) {
+    public BaseResponse createAuction(BaseRequest request, ClientConnectionHandler handler) {
         try {
             Map<String, Object> data = (Map<String, Object>) request.getData();
 
@@ -86,19 +86,21 @@ public class AuctionServerController {
                     && data.containsKey("buyNowPrice")
                     && data.containsKey("startTime")
                     && data.containsKey("endTime")
-                    && data.containsKey("itemId")
-                    && data.containsKey("sellerId")))
+                    && data.containsKey("itemId")))
             {
                 return new BaseResponse(false,
                         "Thiếu thông tin cần thiết để tạo phiên đấu giá!", null);
             }
 
+            data.put("sellerId", handler.getUser().getId());
+
             return new BaseResponse(true,
                     "Tạo phiên đấu giá thành công!",
                             auctionService.createAuction(data));
 
-        } catch (Exception e) {
-            return new BaseResponse(false, "Dữ liệu phiên không hợp lệ!", null);
+        }  catch (Exception e) {
+            e.printStackTrace();
+            return new BaseResponse(false, e.getMessage(), null);
         }
     }
 
