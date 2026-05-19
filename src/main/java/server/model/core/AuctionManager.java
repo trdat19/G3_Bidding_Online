@@ -1,20 +1,10 @@
 package server.model.core;
 
 import server.dao.AuctionDAO;
-import server.dao.BidDAO;
-import server.dao.UserDAO;
-import server.model.user.Bidder;
-import server.model.user.User;
-import shared.enums.AuctionStatus;
 import shared.exception.AuctionClosedException;
 import shared.exception.BidTooLowException;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * AuctionManager quản lý runtime, schedule,... hay nói đơn giản là sẽ gọi AuctionService để xử lý logic

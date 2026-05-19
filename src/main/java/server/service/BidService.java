@@ -35,10 +35,10 @@ public class BidService {
     // Sử dụng Singleton để đảm bảo mọi luồng đều dùng chung một đối tượng xử lý giá
     private static BidService instance;
 
-    private AuctionService auctionService = AuctionService.getInstance();
-    private AuctionDAO auctionDAO = new AuctionDAO();
-    private BidDAO bidDAO = new BidDAO();
-    private UserDAO userDAO =  new UserDAO();
+    private final AuctionService auctionService = AuctionService.getInstance();
+    private final AuctionDAO auctionDAO = new AuctionDAO();
+    private final BidDAO bidDAO = new BidDAO();
+    private final UserDAO userDAO =  new UserDAO();
 
     private BidService() {}
 
