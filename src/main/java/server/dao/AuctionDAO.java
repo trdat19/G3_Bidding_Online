@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.Database.DBconnection;
+import server.database.DBconnection;
 import server.model.core.Auction;
 import shared.enums.AuctionStatus;
 
@@ -248,6 +248,21 @@ public class AuctionDAO {
         }
         return false;
     }
+    //Kiem tra item nay co auction chưa
+    public boolean existsAuctionByItemId(long itemId) {
+        String sql = "SELECT 1 FROM auctions WHERE id_item = ? LIMIT 1";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, itemId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("existsAuctionByItemId error: " + e.getMessage());
+        }
+        return false;
+    }
 
     // xóa auction theo id
     public boolean deleteAuction(long idAuction) {
@@ -286,4 +301,5 @@ public class AuctionDAO {
         }
         return auction;
     }
+
 }

@@ -7,9 +7,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class AuctionDetailController {
     @FXML private Label productNameLabel;
@@ -22,7 +27,12 @@ public class AuctionDetailController {
     @FXML private Label endTimeLabel;
     @FXML private Label statusLabel;
     @FXML private Label bidCountLabel;
+    @FXML private ImageView imageView;
+    @FXML private Label imagePlaceholderLabel;
     private Item currentItem;
+
+    private static final DateTimeFormatter TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public void setItemData(Item item) {
         productNameLabel.setText(item.getTitle());
@@ -31,12 +41,28 @@ public class AuctionDetailController {
         startPriceLabel.setText(String.valueOf(item.getStartPrice()));
         currentPriceLabel.setText(String.valueOf(item.getCurrentPrice()));
         leadingBidderLabel.setText(item.getLeader());
-        startTimeLabel.setText(item.getStartTime().toString());
-        endTimeLabel.setText(item.getEndTime().toString());
+        startTimeLabel.setText(formatDateTime(item.getStartTime()));
+        endTimeLabel.setText(formatDateTime(item.getEndTime()));
         statusLabel.setText(item.getStatus());
         bidCountLabel.setText(item.getBidCount() + " bids");
+        setProductImage(item.getImageUrl());
 
         this.currentItem = item;
+    }
+    private void setProductImage(String imageUrl) {
+        boolean hasImage = imageUrl != null && !imageUrl.isBlank();
+
+        imageView.setVisible(hasImage);
+        imageView.setManaged(hasImage);
+        imagePlaceholderLabel.setVisible(!hasImage);
+        imagePlaceholderLabel.setManaged(!hasImage);
+
+        if (hasImage) {
+            imageView.setImage(new Image(imageUrl, true));
+        }
+    }
+    private String formatDateTime(LocalDateTime time) {
+        return time != null ? time.format(TIME_FORMATTER) : "--/--/---- --:--";
     }
 
     private void loadScene(String fxmlPath, ActionEvent event) {
@@ -58,6 +84,14 @@ public class AuctionDetailController {
 
     @FXML
     private void handleJoinAuction(ActionEvent event) {
+        if (currentItem.getStartTime() != null
+                && LocalDateTime.now().isBefore(currentItem.getStartTime())) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText(null);
+            alert.setContentText("Phiên đấu giá chưa bắt đầu!");
+            alert.showAndWait();
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/bidding-view.fxml"));
             Parent root = loader.load();

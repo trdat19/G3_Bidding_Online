@@ -1,5 +1,6 @@
 package client.controller;
 
+import client.model.Item;
 import client.util.StageUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,6 +10,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -30,6 +32,7 @@ import client.service.ClientNetworkService;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
+import shared.enums.ItemStatus;
 
 public class SellerDashboardController {
 
@@ -147,11 +150,11 @@ public class SellerDashboardController {
         HBox actionRow = new HBox(12);
         String status = item.getStatus()!= null ? item.getStatus().name() : "";
         if ("PENDING".equals(status)) {
-            Button editButton = new Button("Edit");
+            Button editButton = new Button("Chỉnh sửa");
             editButton.getStyleClass().add("edit-button");
-            editButton.setOnAction(e -> handleEditProduct(item.getName()));
+            editButton.setOnAction(e -> handleEditProduct(item));
 
-            Button deleteButton = new Button("Delete");
+            Button deleteButton = new Button("Xóa");
             deleteButton.getStyleClass().add("delete-button");
             deleteButton.setOnAction(e -> handleDeleteProduct(item));
 
@@ -168,11 +171,10 @@ public class SellerDashboardController {
             actionRow.getChildren().add(waitingLabel);
 
         } else if ("ACTIVE".equals(status)) {
-            Button createAuctionButton = new Button("Tạo đấu giá");
-            createAuctionButton.getStyleClass().add("edit-button");
-            createAuctionButton.setOnAction(e -> handleCreateAuction(item));
+            Label approvedLabel = new Label("Đã được admin duyệt");
+            approvedLabel.getStyleClass().add("status-pill");
+            actionRow.getChildren().add(approvedLabel);
 
-            actionRow.getChildren().addAll(createAuctionButton);
 
         } else if ("SOLD".equals(status)) {
             Button viewButton = new Button("Xem chi tiết");
@@ -204,7 +206,7 @@ public class SellerDashboardController {
     private String getStatusDescription(String status) {
         return switch (status) {
             case "PENDING" -> "Sản phẩm đang chờ admin kiểm duyệt.";
-            case "ACTIVE" -> "Sản phẩm đã được duyệt, có thể tạo phiên đấu giá.";
+            case "ACTIVE" -> "Phiên đấu giá của sản phẩm đã được admin duyệt.";
             case "SOLD" -> "Sản phẩm đã bán thành công.";
             case "CANCELLED" -> "Sản phẩm hoặc phiên đấu giá đã bị hủy.";
             default -> "";
@@ -263,16 +265,53 @@ public class SellerDashboardController {
         loadProductsFromServer();
     }
 
-    private void handleEditProduct(String productName) {
-        System.out.println("Edit product: " + productName);
+    private void handleEditProduct(ItemDTO item) {
+        if (!canManageItem(item)) {
+            showCannotActionAlert("chỉnh sửa", item);
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/edit-product-view.fxml"));
+            Parent root = loader.load();
+
+            EditProductController controller = loader.getController();
+            controller.setData(item, this);
+
+            Stage stage = new Stage();
+            stage.setTitle("Chỉnh sửa sản phẩm");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleDeleteProduct(ItemDTO item) {
-        itemList.remove(item);
-        loadProductsFromServer();
+        if (!canManageItem(item)) {
+            showCannotActionAlert("xóa", item);
+            return;
+        }
+        if (item.getId() == null) {
+            System.out.println("Khong co id san pham de xoa");
+            return;
+        }
+
+        BaseResponse response = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest(Action.DELETE_ITEM, item.getId()));
+
+        if (response != null && response.isSuccess()) {
+            refreshProducts();
+        } else {
+            System.out.println(response != null ? response.getMessage() : "Khong ket noi duoc server");
+        }
     }
     //Hàm nối với SetupAuctionView khi admin duyệt
     private void handleCreateAuction(ItemDTO item) {
+        if (!canManageItem(item)) {
+            showCannotActionAlert("tạo đấu giá cho", item);
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/setup-auction-view.fxml"));
             Parent root = loader.load();
@@ -290,6 +329,31 @@ public class SellerDashboardController {
 
     }
     public void refreshProducts() {
+
         loadProductsFromServer();
+    }
+    //Hàm để ktra có tạo đấu giá được không
+    private boolean canManageItem(ItemDTO item) {
+        return ItemStatus.PENDING.equals(item.getStatus())
+                || ItemStatus.CANCELLED.equals(item.getStatus());
+    }
+
+    private void showCannotActionAlert(String action, ItemDTO item) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Không thể " + action);
+        alert.setHeaderText(null);
+        alert.setContentText("Không thể " + action + " sản phẩm khi sản phẩm "
+                + getStatusDescriptionForAlert(item.getStatus()) + ".");
+        alert.showAndWait();
+    }
+    private String getStatusDescriptionForAlert(ItemStatus status) {
+        return switch (status) {
+            case ItemStatus.WAITING_APPROVAL -> "Đang chờ admin duyệt";
+            case ItemStatus.ACTIVE -> "Đang được đấu giá";
+            case ItemStatus.SOLD -> "Đã bán";
+            case ItemStatus.CANCELLED -> "Đã bị hủy";
+            case ItemStatus.PENDING -> "Đã được tạo";
+            default -> "Ở trạng thái " + status;
+        };
     }
 }

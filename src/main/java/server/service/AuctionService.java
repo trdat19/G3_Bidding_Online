@@ -119,6 +119,14 @@ public class AuctionService {
         if (item == null) {
             throw new RuntimeException("Sản phẩm không tồn tại!");
         }
+        //Kiểm tra xem sản phẩm còn được phép tạo phiên đấu giá không?
+        if (item.getStatusItem() != ItemStatus.PENDING) {
+            throw new RuntimeException("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING!");
+        }
+
+        if (auctionDAO.existsAuctionByItemId(itemId)) {
+            throw new RuntimeException("Sản phẩm này đã có yêu cầu/phiên đấu giá, không thể tạo thêm!");
+        }
 
         //kiểm tra rằng item chưa ở phiên đấu giá nào khác
         if (auctionDAO.existsOpenAuctionByItemId(itemId)) {
@@ -169,10 +177,18 @@ public class AuctionService {
             throw new RuntimeException("Chỉ duyệt được yêu cầu đang chờ duyệt");
 
         }
-        auctionDAO.updateStatus(auctionId, AuctionStatus.OPEN);
-        itemDAO.updateStatus(auction.getItemId(), ItemStatus.ACTIVE);
+        LocalDateTime now = LocalDateTime.now();
 
-        auction.setStatus(AuctionStatus.OPEN);
+        if (auction.getEndTime() != null && !now.isBefore(auction.getEndTime())) {
+            throw new RuntimeException("Không thể duyệt phiên đã quá thời gian kết thúc!");
+        }
+        AuctionStatus nextStatus = AuctionStatus.OPEN;
+        if (auction.getStartTime() != null && !now.isBefore(auction.getStartTime())) {
+            nextStatus = AuctionStatus.RUNNING;
+        }
+        auctionDAO.updateStatus(auctionId, nextStatus);
+        itemDAO.updateStatus(auction.getItemId(), ItemStatus.ACTIVE);
+        auction.setStatus(nextStatus);
 
         Item item = itemDAO.findById(auction.getItemId());
         return toDTO(auction, item);
@@ -187,7 +203,7 @@ public class AuctionService {
            throw new RuntimeException("Chỉ duyệt được yêu cầu đang chờ duyệt");
         }
         auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELLED);
-        itemDAO.updateStatus(auction.getItemId(), ItemStatus.PENDING);
+        itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
 
         auction.setStatus(AuctionStatus.CANCELLED);
         Item item = itemDAO.findById(auction.getItemId());
@@ -329,6 +345,7 @@ public class AuctionService {
     /** Lấy tất cả phiên đang OPEN */
     public List<AuctionDTO> getOpenAuctions() {
         List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN);
+        auctions.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.RUNNING));
         List<AuctionDTO> dtos = new ArrayList<>();
         for (Auction a : auctions) {
             Item item = itemDAO.findById(a.getItemId());

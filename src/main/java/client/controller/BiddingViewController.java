@@ -11,11 +11,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class BiddingViewController {
     @FXML private Label nameLabel;
@@ -29,8 +32,15 @@ public class BiddingViewController {
     @FXML private TextField bidAmountField;
     @FXML private TableView<?> bidTable;
     @FXML private Label statusTextLabel;
+    @FXML private ImageView productImageView;
+    @FXML private Label imagePlaceholderLabel;
+    @FXML private Label startTimeLabel;
+    @FXML private Label endTimeLabel;
+
     private Item currentItem;
     private Timeline countdownTimeLine;
+    private static final DateTimeFormatter TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     public void setItem(Item item) {
         this.currentItem = item;
 
@@ -41,6 +51,9 @@ public class BiddingViewController {
         leaderLabel.setText(item.getLeader());
         bidCountLabel.setText(String.valueOf(item.getBidCount()));
         startCountDown(item.getEndTime());
+        setProductImage(item.getImageUrl());
+        startTimeLabel.setText(formatDateTime(item.getStartTime()));
+        endTimeLabel.setText(formatDateTime(item.getEndTime()));
     }
     private void startCountDown(LocalDateTime endTime) {
         if (countdownTimeLine != null) {
@@ -71,6 +84,22 @@ public class BiddingViewController {
         long secs = seconds % 60;
 
         timeLeftLabel.setText(String.format("%02d:%02d:%02d", hours, minutes, secs));
+    }
+    private void setProductImage(String imageUrl) {
+        boolean hasImage = imageUrl != null && !imageUrl.isBlank();
+
+        productImageView.setVisible(hasImage);
+        productImageView.setManaged(hasImage);
+        imagePlaceholderLabel.setVisible(!hasImage);
+        imagePlaceholderLabel.setManaged(!hasImage);
+
+        if (hasImage) {
+            productImageView.setImage(new Image(imageUrl, true));
+        }
+    }
+
+    private String formatDateTime(LocalDateTime time) {
+        return time != null ? time.format(TIME_FORMATTER) : "--/--/---- --:--";
     }
     @FXML
     private void handleBack() {

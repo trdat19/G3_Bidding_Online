@@ -63,10 +63,27 @@ public class BidService {
      */
     public synchronized boolean placeBid(Long auctionId, Long bidderId, BigDecimal amount) {
 
-        // 1. Lấy phiên đấu giá từ DB
+        // 1. Lấy phiên đấu giá từ DB + kiểm tra thời gian
         Auction auction = auctionDAO.findById(auctionId);
-        if (auction == null) {
-            throw new AuctionNotFoundException(auctionId);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (auction.getStartTime() != null && now.isBefore(auction.getStartTime())) {
+            throw new RuntimeException("Phiên đấu giá chưa bắt đầu!");
+        }
+
+        if (auction.getEndTime() != null && now.isAfter(auction.getEndTime())) {
+            auctionService.finishAuction(auctionId);
+            throw new InvalidAuctionTimeException(now);
+        }
+
+        if (auction.getStatus() == AuctionStatus.OPEN) {
+            auctionDAO.updateStatus(auctionId, AuctionStatus.RUNNING);
+            auction.setStatus(AuctionStatus.RUNNING);
+        }
+
+        if (auction.getStatus() != AuctionStatus.RUNNING) {
+            throw new AuctionClosedException();
         }
 
         // 2. Kiểm tra trạng thái của phiên xem có đang mở không

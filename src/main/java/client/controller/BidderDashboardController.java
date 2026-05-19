@@ -2,7 +2,10 @@ package client.controller;
 
 import client.model.Item;
 import client.service.ClientNetworkService;
+import client.state.ClientSession;
 import client.util.StageUtils;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -19,6 +22,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import javafx.event.ActionEvent;
+import javafx.util.Duration;
 import shared.dto.common.AuctionDTO;
 import shared.dto.response.BaseResponse;
 import shared.dto.request.BaseRequest;
@@ -38,9 +42,12 @@ public class BidderDashboardController {
     private Label bidderNameLabel;
 
     private final List<Item> itemList = new ArrayList<>();
+    private final List<CountdownView> countdownViews = new ArrayList<>();
+    private Timeline countdownTimeline;
+
     @FXML
     public void initialize() {
-        bidderNameLabel.setText("");
+        bidderNameLabel.setText(ClientSession.getFullName());
         loadAuctionsFromServer();
     }
     public void setFullName(String fullName) {
@@ -55,7 +62,9 @@ public class BidderDashboardController {
         BaseRequest request = new BaseRequest(Action.GET_AUCTION_LIST, null);
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
         itemList.clear();
-        if (response != null || !response.isSuccess() || response.getData() == null) {
+        countdownViews.clear();
+        if (response == null || !response.isSuccess() || response.getData() == null) {
+            stopCountdownTimer();
             auctionContainer.getChildren().clear();
             auctionContainer.getChildren().add (new Label(
                     response != null ? response.getMessage() : "Khong ket noi duoc server"
@@ -66,6 +75,15 @@ public class BidderDashboardController {
         for (AuctionDTO auction : auctions) {
             itemList.add(toItem(auction));
         }
+        loadAuctions();
+    }
+    private void loadAuctions() {
+        auctionContainer.getChildren().clear();
+        countdownViews.clear();
+        for (Item item : itemList) {
+            auctionContainer.getChildren().add(createProductCard(item));
+        }
+        startCountdownTimer();
     }
     private Item toItem(AuctionDTO auction) {
         Item item = new Item(
@@ -73,7 +91,7 @@ public class BidderDashboardController {
                 auction.getItemCategory(),
                 auction.getItemDescription(),
                 auction.getStartPrice()!= null ? auction.getStartPrice().doubleValue(): 0,
-                auction.getDisplayPrice()!= null ? auction.getStartPrice().doubleValue() : 0,
+                auction.getDisplayPrice()!= null ? auction.getDisplayPrice().doubleValue() : 0,
                 auction.getLeaderName()!= null ? auction.getLeaderName() : "Chưa có",
                 auction.getStartTime(),
                 auction.getEndTime(),
@@ -105,7 +123,7 @@ public class BidderDashboardController {
         StackPane.setAlignment(statusBadge, Pos.TOP_RIGHT);
         StackPane.setMargin(statusBadge, new Insets(12, 12, 0, 0));
 
-        if(item.getImageUrl() != null && item.getImageUrl().isBlank()) {
+        if(item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
             ImageView imageView = new ImageView(new Image(item.getImageUrl(), true));
             imageView.setFitWidth(330);
             imageView.setFitHeight(210);
@@ -158,8 +176,9 @@ public class BidderDashboardController {
         Label timeText = new Label("CÒN LẠI");
         timeText.getStyleClass().add("meta-label");
 
-        Label timeValue = new Label(formatTimeLeft(item.getEndTime()));
+        Label timeValue = new Label(formatTimeLeft(getCountdownTarget(item)));
         timeValue.getStyleClass().add("time-left");
+        countdownViews.add(new CountdownView(timeText, timeValue, item));
 
         timeBox.getChildren().addAll(timeText, timeValue);
 
@@ -179,7 +198,36 @@ public class BidderDashboardController {
 
         return card;
     }
+    private void startCountdownTimer() {
+        stopCountdownTimer();
+        if (countdownViews.isEmpty()) {
+            return;
+        }
+
+        countdownTimeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), event -> updateCountdowns())
+        );
+        countdownTimeline.setCycleCount(Timeline.INDEFINITE);
+        countdownTimeline.play();
+        updateCountdowns();
+    }
+    private void updateCountdowns() {
+        for (CountdownView countdownView : countdownViews) {
+            countdownView.label.setText(getCountdownTitle(countdownView.item));
+            countdownView.valueLabel.setText(formatTimeLeft(getCountdownTarget(countdownView.item)));
+        }
+    }
+    private void stopCountdownTimer() {
+        if (countdownTimeline != null) {
+            countdownTimeline.stop();
+            countdownTimeline = null;
+        }
+    }
     private String formatTimeLeft(LocalDateTime endTime) {
+        if (endTime == null) {
+            return "--:--:--";
+        }
+
         java.time.Duration remaining = java.time.Duration.between(
                 LocalDateTime.now(),
                 endTime
@@ -200,6 +248,7 @@ public class BidderDashboardController {
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
+            stopCountdownTimer();
             Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             StageUtils.setMaximizedScene(stage, root);
@@ -211,6 +260,7 @@ public class BidderDashboardController {
     @FXML
     private void viewDetail(Item item) {
         try {
+            stopCountdownTimer();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/auction-detail.fxml"));
             Parent root = loader.load();
 
@@ -224,5 +274,29 @@ public class BidderDashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static class CountdownView {
+        private final Label label;
+        private final Label valueLabel;
+        private final Item item;
+
+        private CountdownView(Label label, Label valueLabel, Item item) {
+            this.label = label;
+            this.valueLabel = valueLabel;
+            this.item = item;
+        }
+    }
+    //Các helper để đổi UI theo từng trường hợp khi chưa bắt đầu đấu giá, khi đã bdau
+    private boolean isBeforeStart(Item item) {
+        return item.getStartTime() != null && LocalDateTime.now().isBefore(item.getStartTime());
+    }
+
+    private LocalDateTime getCountdownTarget(Item item) {
+        return isBeforeStart(item) ? item.getStartTime() : item.getEndTime();
+    }
+
+    private String getCountdownTitle(Item item) {
+        return isBeforeStart(item) ? "BẮT ĐẦU SAU" : "CÒN LẠI";
     }
 }

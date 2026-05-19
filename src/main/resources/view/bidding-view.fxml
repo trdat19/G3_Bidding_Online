@@ -3,6 +3,8 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+
 
 <BorderPane styleClass="root" stylesheets="@../css/bidding-view.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="client.controller.BiddingViewController">
 
@@ -29,7 +31,14 @@
             <VBox maxWidth="430" prefWidth="430" spacing="18">
 
                 <StackPane prefHeight="330" styleClass="image-card">
-                    <Label styleClass="image-placeholder" text="Ảnh sản phẩm" />
+                    <ImageView fx:id="productImageView"
+                               fitWidth="430"
+                               fitHeight="330"
+                               preserveRatio="true"
+                               smooth="true"/>
+                    <Label fx:id="imagePlaceholderLabel"
+                           styleClass="image-placeholder"
+                           text="Ảnh sản phẩm" />
                 </StackPane>
 
                 <VBox spacing="10" styleClass="info-card">
@@ -71,6 +80,15 @@
                     <VBox spacing="8" styleClass="info-card-small" HBox.hgrow="ALWAYS">
                         <Label styleClass="stat-label" text="Trạng thái phiên" />
                         <Label fx:id="statusTextLabel" styleClass="stat-value" text="RUNNING" />
+                    </VBox>
+                    <VBox spacing="8" styleClass="info-card-small" HBox.hgrow="ALWAYS">
+                        <Label styleClass="stat-label" text="Bắt đầu" />
+                        <Label fx:id="startTimeLabel" styleClass="stat-value" text="--/--/---- --:--" />
+                    </VBox>
+
+                    <VBox spacing="8" styleClass="info-card-small" HBox.hgrow="ALWAYS">
+                        <Label styleClass="stat-label" text="Kết thúc" />
+                        <Label fx:id="endTimeLabel" styleClass="stat-value" text="--/--/---- --:--" />
                     </VBox>
                 </HBox>
 

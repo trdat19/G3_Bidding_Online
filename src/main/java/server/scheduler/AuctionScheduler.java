@@ -54,21 +54,21 @@ public class AuctionScheduler {
             LocalDateTime now = LocalDateTime.now();
 
             // 1. Lấy các phiên tới startTime, mở
-            List<Auction> preparing = auctionDAO.getAllAuctionsByStatus(AuctionStatus.PREPARING);
+            List<Auction> approved = auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN);
 
-            for (Auction auction : preparing) {
+            for (Auction auction : approved) {
                 if (auction.getStartTime() != null && !now.isBefore(auction.getStartTime())) {
-                    auctionService.startAuction(auction.getId());
+                    auctionDAO.updateStatus(auction.getId(),  AuctionStatus.RUNNING);
                     System.out.println(">>> Đã mở phiên đấu giá: " + auction.getId());
                 }
             }
 
             // 2. Đóng phiên quá endTime
             // Lấy các phiên đang chạy hoặc đã mở, kiểm tra endTime
-            List<Auction> running = auctionDAO.getAllAuctionsByStatus(AuctionStatus.RUNNING);
-            running.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN));
+            List<Auction> activeAuctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN);
+            activeAuctions.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.RUNNING));
 
-            for (Auction auction : running) {
+            for (Auction auction : activeAuctions) {
                 if (auction.getEndTime() != null && now.isAfter(auction.getEndTime())) {
                     auctionService.finishAuction(auction.getId());
                     System.out.println(">>> Đã đóng phiên đấu giá: " + auction.getId());
