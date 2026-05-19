@@ -15,6 +15,7 @@ public class Item {
     private LocalDateTime endTime;
     private String status;
     private int bidCount;
+    private String imageUrl;
 
     public Item(String title, String category, String description,
                 double startPrice, double currentPrice,
@@ -72,6 +73,9 @@ public class Item {
 
         this.bidCount = bidCount;
     }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     //getter
     public String getTitle() {
@@ -112,5 +116,9 @@ public class Item {
 
     public int getBidCount() {
         return bidCount;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 }

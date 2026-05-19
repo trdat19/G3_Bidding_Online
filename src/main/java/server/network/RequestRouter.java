@@ -93,7 +93,15 @@ public class RequestRouter {
                     }
                 }
 
-                //case SEND_CREATE_AUCTION_REQUEST: {}
+                case Action.GET_SELLER_ITEMS: {
+                    requireRole(handler, UserRole.SELLER);
+                    return SellerServerController.getInstance().getItemsBySeller(handler);
+                }
+                case Action.SEND_CREATE_AUCTION_REQUEST: {
+                    requireRole(handler, UserRole.SELLER);
+                    return AuctionServerController.getInstance().createAuction(request, handler);
+
+                }
 
                 /**
                  * Thao tác của Bidder
@@ -154,10 +162,18 @@ public class RequestRouter {
                     return AdminServerController.getInstance().disableUser(request);
                 }
 
-                //case ACCEPT_CREATE_AUCTION_REQUEST: {}
-
-                //case EJECT_CREATE_AUCTION_REQUEST: {}
-
+                case Action.GET_CREATE_AUCTION_REQUESTS: {
+                    requireRole(handler, UserRole.ADMIN);
+                    return AuctionServerController.getInstance().getCreateAuctionRequests();
+                }
+                case Action.ACCEPT_CREATE_AUCTION_REQUEST: {
+                    requireRole(handler, UserRole.ADMIN);
+                    return AuctionServerController.getInstance().approveCreateAuctionRequest(request);
+                }
+                case Action.REJECT_CREATE_AUCTION_REQUEST: {
+                    requireRole(handler, UserRole.ADMIN);
+                    return AuctionServerController.getInstance().rejectCreateAuctionRequest(request);
+                }
                 default: {
                     return new BaseResponse(false,
                             "Hành động '" + action + "' không tồn tại trên hệ thống", null);

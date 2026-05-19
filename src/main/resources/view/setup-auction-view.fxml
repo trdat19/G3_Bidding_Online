@@ -83,7 +83,7 @@
                     <Label text="Bid Count"
                            styleClass="section-label"/>
 
-                    <Spinner fx:id="bidCountSpinner"
+                    <Spinner fx:id="minIncrementSpinner"
                              prefHeight="46"
                              editable="true"/>
 

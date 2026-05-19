@@ -2,6 +2,7 @@ package shared.dto.common;
 
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
+import shared.enums.AuctionStatus;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -32,6 +33,8 @@ public class ItemDTO implements Serializable {
     private BigDecimal priceStart;
     private String imageUrl;
     private LocalDateTime createdAt;
+
+
 
     // ─── CONSTRUCTORS ─────────────────────────────────────────────────────────
 
@@ -78,6 +81,7 @@ public class ItemDTO implements Serializable {
     public String getImageUrl()       { return imageUrl; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
+
     // ─── SETTERS ──────────────────────────────────────────────────────────────
 
     public void setId(Long id)                     { this.id = id; }
@@ -90,6 +94,7 @@ public class ItemDTO implements Serializable {
     public void setPriceStart(BigDecimal price)    { this.priceStart = price; }
     public void setImageUrl(String imageUrl)       { this.imageUrl = imageUrl; }
     public void setCreatedAt(LocalDateTime t)      { this.createdAt = t; }
+
 
     @Override
     public String toString() {

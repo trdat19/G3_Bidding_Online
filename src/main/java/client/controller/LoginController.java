@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 import server.model.user.User;
+import shared.dto.common.UserDTO;
 import shared.dto.response.BaseResponse;
 import shared.enums.UserRole;
 import shared.dto.request.BaseRequest;
@@ -29,6 +30,9 @@ public class LoginController {
     @FXML
     private Label errorLabel;
 
+    private BidderDashboardController bidderController;
+    private SellerDashboardController sellerController;
+
     @FXML
     private void handleLogin(ActionEvent event) {
 
@@ -43,14 +47,16 @@ public class LoginController {
         if (response != null && response.isSuccess()) {
             User LogginUser = (User) response.getData();
             UserRole role = LogginUser.getRole();
+            String fullName = LogginUser.getFullName();
             if (role == UserRole.BIDDER) {
-                loadScene("/view/bidder-dashboard.fxml", event);
+                loadScene("/view/bidder-dashboard.fxml", event, fullName);
+
             }
             else if(role == UserRole.SELLER) {
-                loadScene("/view/seller-dashboard.fxml", event);
+                loadScene("/view/seller-dashboard.fxml", event, fullName);
             }
             else if(role == UserRole.ADMIN)  {
-                loadScene("/view/admin/admin-dashboard.fxml", event);
+                loadScene("/view/admin/admin-dashboard.fxml", event, fullName);
             }
         }
         else {
@@ -59,9 +65,20 @@ public class LoginController {
             errorLabel.setText(message);
         }
     }
-    private void loadScene(String fxmlPath, ActionEvent event) {
+    private void loadScene(String fxmlPath, ActionEvent event, String fullname) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+
+            Object controller = loader.getController();
+            if (controller instanceof BidderDashboardController) {
+                bidderController = (BidderDashboardController) controller;
+                bidderController.setFullName(fullname);
+            }
+            else if (controller instanceof SellerDashboardController) {
+                sellerController = (SellerDashboardController) controller;
+                sellerController.setFullName(fullname);
+            }
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             StageUtils.setMaximizedScene(stage,root);
             stage.show();

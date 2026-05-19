@@ -78,11 +78,14 @@ public class AdminDashboardController {
     private void showSettings() {
         loadPage(SETTINGS_PAGE);
     }
+    @FXML
+    private void showProductRequests() {
+        loadPage(REQUEST_PAGE);
+    }
     private void loadPage(String fxmlPath) {
         if (fxmlPath.equals(currentPage)) {
             return;
         }
-
         try {
             Parent page = pageCache.get(fxmlPath);
             if (page == null) {
@@ -103,6 +106,7 @@ public class AdminDashboardController {
     }
     @FXML
     private void showPeoductRequests() {
+
         loadPage(REQUEST_PAGE);
     }
 }

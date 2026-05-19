@@ -1,6 +1,12 @@
 package client.controller;
 
-import client.model.Item;
+import client.service.ClientNetworkService;
+import shared.dto.common.ItemDTO;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
+import shared.enums.Action;
+
+import java.math.BigDecimal;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -8,6 +14,8 @@ import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /*Đây laf màn hình khi admin đã duyệt sản phầm
   Seller sẽ nhập startPrice, startTime, endTime, bidCount
@@ -19,7 +27,7 @@ public class SetupAuctionViewController {
     @FXML private Label productCategoryLabel;
 
     @FXML private TextField startPriceField;
-    @FXML private Spinner<Integer> bidCountSpinner;
+    @FXML private Spinner<Integer> minIncrementSpinner;
 
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
@@ -31,15 +39,15 @@ public class SetupAuctionViewController {
 
     @FXML private Label errorLabel;
 
-    private Item item;
+    private ItemDTO item;
     private SellerDashboardController sellerDashboardController;
 
-    public void setData(Item item, SellerDashboardController sellerDashboardController) {
+    public void setData(ItemDTO item, SellerDashboardController sellerDashboardController) {
         this.item = item;
         this.sellerDashboardController = sellerDashboardController;
 
-        productNameLabel.setText(item.getTitle());
-        productCategoryLabel.setText(item.getCategory());
+        productNameLabel.setText(item.getName());
+        productCategoryLabel.setText(item.getCategory().name());
     }
 
     @FXML
@@ -61,8 +69,8 @@ public class SetupAuctionViewController {
         endHourBox.setValue(20);
         endMinuteBox.setValue(0);
 
-        bidCountSpinner.setValueFactory(
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 999, 0)
+        minIncrementSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 999, 1)
         );
 
         startDatePicker.setValue(LocalDate.now());
@@ -126,19 +134,25 @@ public class SetupAuctionViewController {
             errorLabel.setText("Thời gian bắt đầu phải trước thời gian kết thúc");
             return;
         }
+        Map<String, Object> data = new HashMap<>();
+        data.put("itemId", item.getId());
+        data.put("startPrice", BigDecimal.valueOf(startPrice));
+        data.put("minIncrement", BigDecimal.valueOf(minIncrementSpinner.getValue()));
+        data.put("buyNowPrice", null);
+        data.put("startTime", startDateTime);
+        data.put("endTime", endDateTime);
 
-        item.setStartPrice(startPrice);
-        item.setCurrentPrice(startPrice);
-        item.setBidCount(bidCountSpinner.getValue());
-        item.setStartTime(startDateTime);
-        item.setEndTime(endDateTime);
-        item.setStatus("ACTIVE");
+        BaseRequest request = new BaseRequest(Action.SEND_CREATE_AUCTION_REQUEST, data);
+        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
-        if (sellerDashboardController != null) {
-            sellerDashboardController.refreshProducts();
+        if (response != null && response.isSuccess()) {
+            if (sellerDashboardController != null) {
+                sellerDashboardController.refreshProducts();
+            }
+            closeWindow();
+        } else {
+            errorLabel.setText(response != null ? response.getMessage() : "Không gửi được yêu cầu đấu giá");
         }
-
-        closeWindow();
     }
 
     @FXML

@@ -12,6 +12,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -37,8 +39,16 @@ public class BidderDashboardController {
     private final List<Item> itemList = new ArrayList<>();
     @FXML
     public void initialize() {
-        bidderNameLabel.setText("Bidder");
+        bidderNameLabel.setText("");
         loadAuctionsFromServer();
+    }
+    public void setFullName(String fullName) {
+        if (fullName == null || fullName.isBlank()) {
+            bidderNameLabel.setText("Bidder");
+        }
+        else {
+            bidderNameLabel.setText(fullName);
+        }
     }
     private void loadAuctionsFromServer() {
         BaseRequest request = new BaseRequest("GET_AUCTION_LIST", null);
@@ -57,7 +67,7 @@ public class BidderDashboardController {
         }
     }
     private Item toItem(AuctionDTO auction) {
-        return new Item(
+        Item item = new Item(
                 auction.getItemName(),
                 auction.getItemCategory(),
                 auction.getItemDescription(),
@@ -69,6 +79,8 @@ public class BidderDashboardController {
                 auction.getStatus()!= null ? auction.getStatus().name() : "",
                 auction.getBidCount()
         );
+        item.setImageUrl(auction.getItemImageUrl());
+        return item;
     }
 
     private VBox createProductCard(Item item) {
@@ -92,10 +104,21 @@ public class BidderDashboardController {
         StackPane.setAlignment(statusBadge, Pos.TOP_RIGHT);
         StackPane.setMargin(statusBadge, new Insets(12, 12, 0, 0));
 
-        Label imagePlaceholder = new Label("Image");
-        imagePlaceholder.getStyleClass().add("image-placeholder");
+        if(item.getImageUrl() != null && item.getImageUrl().isBlank()) {
+            ImageView imageView = new ImageView(new Image(item.getImageUrl(), true));
+            imageView.setFitWidth(330);
+            imageView.setFitHeight(210);
+            imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
+            imageBox.getChildren().add(imageView);
+        }
+        else {
+            Label imagePlaceholder = new Label("Image");
+            imagePlaceholder.getStyleClass().add("image-placeholder");
+            imageBox.getChildren().add(imagePlaceholder);
+        }
 
-        imageBox.getChildren().addAll(categoryBadge, statusBadge, imagePlaceholder);
+        imageBox.getChildren().addAll(categoryBadge, statusBadge);
 
         VBox infoBox = new VBox();
         infoBox.setSpacing(8);

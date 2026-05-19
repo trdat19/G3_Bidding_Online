@@ -7,7 +7,7 @@
 <AnchorPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.controller.AdminRequestController"
-            stylesheets="@admin-product-requests.css"
+            stylesheets="@../../css/admin-dashboard.css"
             styleClass="page">
 
     <VBox spacing="24"
@@ -84,6 +84,21 @@
                     <TableColumn fx:id="statusColumn"
                                  text="Trạng thái"
                                  prefWidth="160"/>
+                    <TableColumn fx:id="startPriceColumn"
+                                 text="Giá khởi điểm"
+                                 prefWidth="130"/>
+
+                    <TableColumn fx:id="minIncrementColumn"
+                                 text="Bước nhảy"
+                                 prefWidth="120"/>
+
+                    <TableColumn fx:id="startTimeColumn"
+                                 text="Bắt đầu"
+                                 prefWidth="170"/>
+
+                    <TableColumn fx:id="endTimeColumn"
+                                 text="Kết thúc"
+                                 prefWidth="170"/>
 
                     <TableColumn fx:id="actionColumn"
                                  text="Action"

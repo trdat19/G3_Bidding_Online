@@ -1,10 +1,10 @@
 package server.controller;
 
 import server.service.AuctionService;
+import server.network.ClientConnectionHandler;
 import shared.dto.common.AuctionDTO;
 import shared.dto.common.BidDTO;
 import shared.dto.request.BaseRequest;
-import shared.dto.request.CreateAuctionRequest;
 import shared.dto.response.BaseResponse;
 
 import java.util.List;
@@ -77,9 +77,14 @@ public class AuctionServerController {
     }
 
     /** createAuction – Seller tạo phiên mới */
-    public BaseResponse createAuction(BaseRequest request) {
+    public BaseResponse createAuction(BaseRequest request, ClientConnectionHandler handler) {
         try {
             Map<String, Object> data = (Map<String, Object>) request.getData();
+            if (data == null) {
+                return new BaseResponse(false,
+                        "Thieu thong tin can thiet de tao phien dau gia!", null);
+            }
+            data.put("sellerId", handler.getUser().getId());
 
             if (!(data.containsKey("startPrice")
                     && data.containsKey("minIncrement")
@@ -87,7 +92,7 @@ public class AuctionServerController {
                     && data.containsKey("startTime")
                     && data.containsKey("endTime")
                     && data.containsKey("itemId")
-                    && data.containsKey("sellerId")))
+            ))
             {
                 return new BaseResponse(false,
                         "Thiếu thông tin cần thiết để tạo phiên đấu giá!", null);
@@ -98,7 +103,8 @@ public class AuctionServerController {
                             auctionService.createAuction(data));
 
         } catch (Exception e) {
-            return new BaseResponse(false, "Dữ liệu phiên không hợp lệ!", null);
+            e.printStackTrace();
+            return new BaseResponse(false, "Loi tao yeu cau dau gia: " + e.getMessage(), null);
         }
     }
 
@@ -143,4 +149,38 @@ public class AuctionServerController {
                     null);
         }
     }
+    /** getCreateAuctionRequests - Admin lấy request seller gửi */
+    public BaseResponse getCreateAuctionRequests() {
+        List<AuctionDTO> requests = auctionService.getCreateAuctionRequests();
+        return new BaseResponse(true, "Danh sách yêu cầu tạo đấu giá", requests);
+    }
+    /** approveCreateAuctionRequest -Admin duyệt request seller gửi */
+    public BaseResponse approveCreateAuctionRequest(BaseRequest request) {
+        try {
+            Long auctionId = Long.parseLong(request.getData().toString());
+            return new BaseResponse(
+                    true,
+                    "Đã duyệt đấu giá",
+                    auctionService.approveCreateAuctionRequest(auctionId)
+            );
+        }catch (Exception e) {
+            return new BaseResponse(false, "Lỗi từ chối yêu cầu: " + e.getMessage(), null);
+
+        }
+    }
+    /** rejectCreateAuctionRequest -Admin huy request seller gửi */
+    public BaseResponse rejectCreateAuctionRequest(BaseRequest request) {
+        try {
+            Long auctionId = Long.parseLong(request.getData().toString());
+
+            return new BaseResponse(
+                    true,
+                    "Đã từ chối yêu cầu đấu giá",
+                    auctionService.rejectCreateAuctionRequest(auctionId)
+            );
+        } catch (Exception e) {
+            return new BaseResponse(false, "Lỗi từ chối yêu cầu: " + e.getMessage(), null);
+        }
+    }
+
 }

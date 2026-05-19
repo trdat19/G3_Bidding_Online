@@ -1,5 +1,5 @@
 package client.controller;
-import client.model.Item;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -9,7 +9,15 @@ import javafx.stage.Stage;
 import shared.enums.ItemCategory;
 
 import java.io.File;
-import java.time.LocalDateTime;
+import client.service.ClientNetworkService;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
+import shared.enums.Action;
+
+import java.util.HashMap;
+import java.util.Map;
+
+
 
 public class AddProductController {
     @FXML private TextField nameField;
@@ -76,23 +84,25 @@ public class AddProductController {
             errorLabel.setText("Vui lòng chọn ảnh sản phẩm");
             return;
         }
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", title);
+        data.put("category", category.name());
+        data.put("description", description);
+        data.put("imageUrl", selectedImageFile.toURI().toString());
 
-        Item item = new Item(
-                title,
-                category.name(),
-                description,
-                0,
-                0,
-                "",
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                "PENDING",
-                0
-        );
-        if (sellerDashboardController != null) {
-            sellerDashboardController.addNewProduct(item);
+
+        BaseRequest request = new BaseRequest(Action.CREATE_ITEM, data);
+        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+
+        if (response != null && response.isSuccess() && response.getData() != null)  {
+            if (sellerDashboardController != null) {
+                sellerDashboardController.refreshProducts();
+            }
+            closeWindow();
         }
-        closeWindow();
+        else {
+            errorLabel.setText(response != null ? response.getMessage() : "Không kết nối được server");
+        }
     }
 
     @FXML

@@ -1,6 +1,5 @@
 package client.controller;
 
-import client.model.Item;
 import client.util.StageUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +11,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -19,10 +20,16 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import shared.dto.common.ItemDTO;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import client.service.ClientNetworkService;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 
 public class SellerDashboardController {
 
@@ -32,60 +39,41 @@ public class SellerDashboardController {
     @FXML
     private FlowPane productContainer;
 
-    private final List<Item> itemList = new ArrayList<>();
+    private final List<ItemDTO> itemList = new ArrayList<>();
 
     @FXML
     public void initialize() {
-        sellerNameLabel.setText("Nguyễn Việt Anh");
-        itemList.add(new Item(
-                "MacBook Pro M3 Max",
-                "Electronics",
-                "Laptop hiệu năng cao dành cho đồ họa và lập trình",
-                2000,
-                2500,
-                "user123",
-                LocalDateTime.parse("2024-04-18T19:00"),
-                LocalDateTime.parse("2026-04-18T20:00"),
-                "ACTIVE",
-                12
-        ));
+        loadProductsFromServer();
+    }
+    public void setFullName(String fullName) {
+        if (fullName == null || fullName.isBlank()) {
+            sellerNameLabel.setText("Bidder");
+        }
+        else {
+            sellerNameLabel.setText(fullName);
+        }
+    }
+    private void loadProductsFromServer() {
+        BaseRequest request = new BaseRequest(Action.GET_SELLER_ITEMS, null);
+        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
-        itemList.add(new Item(
-                "Bức tranh Hoa hướng dương",
-                "Art",
-                "Tác phẩm nghệ thuật phong cách cổ điển",
-                30000000,
-                40000000,
-                "bidder02",
-                LocalDateTime.parse("2024-04-18T19:00"),
-                LocalDateTime.parse("2026-04-18T20:00"),
-                "PENDING",
-                8
-        ));
-
-        itemList.add(new Item(
-                "Ferrari 250 GTO 1962",
-                "Hypercar",
-                "Mẫu siêu xe sưu tầm phiên bản hiếm",
-                50000000,
-                51000000,
-                "bidder07",
-                LocalDateTime.parse("2024-04-18T19:00"),
-                LocalDateTime.parse("2026-04-18T20:00"),
-                "CANCELLED",
-                20
-        ));
+        itemList.clear();
+        if (response != null && response.isSuccess() && response.getData() != null)  {
+            itemList.addAll((List<ItemDTO>) response.getData());
+        }
+        else {
+        System.out.println(response != null ? response.getMessage() : "Không kết nối được server");
+       }
         loadProducts();
     }
-
     private void loadProducts() {
         productContainer.getChildren().clear();
-        for (Item items : itemList) {
-            productContainer.getChildren().add(createProductCard(items));
+        for (ItemDTO item :itemList) {
+            productContainer.getChildren().add(createProductCard(item));
         }
     }
 
-    private VBox createProductCard(Item item) {
+    private VBox createProductCard(ItemDTO item) {
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
         card.setPrefWidth(360);
@@ -95,20 +83,31 @@ public class SellerDashboardController {
         imageBox.getStyleClass().add("product-image");
         imageBox.setPrefHeight(150);
 
-        Label imageText = new Label("Image");
-        imageText.setStyle("-fx-font-size: 48px; -fx-text-fill: #cbd5e1;");
+        if (item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
+            ImageView imageView = new ImageView(new Image(item.getImageUrl(), true));
+            imageView.setFitWidth(360);
+            imageView.setFitHeight(150);
+            imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
+            imageBox.getChildren().add(imageView);
+        }
+        else {
+            Label imageText = new Label("Image");
+            imageText.setStyle("-fx-font-size: 48px; -fx-text-fill: #cbd5e1;");
+            imageBox.getChildren().add(imageText);
+        }
 
-        Label categoryBadge = new Label(item.getCategory());
+        Label categoryBadge = new Label(item.getCategory().name());
         categoryBadge.getStyleClass().add("category-badge");
         StackPane.setMargin(categoryBadge, new Insets(14, 0, 0, 14));
         StackPane.setAlignment(categoryBadge, javafx.geometry.Pos.TOP_LEFT);
 
-        imageBox.getChildren().addAll(imageText, categoryBadge);
+        imageBox.getChildren().add(categoryBadge);
 
         VBox body = new VBox(10);
         body.setPadding(new Insets(18));
 
-        Label titleLabel = new Label(item.getTitle());
+        Label titleLabel = new Label(item.getName());
         titleLabel.getStyleClass().add("product-title");
         titleLabel.setWrapText(true);
         titleLabel.setMaxWidth(324);
@@ -123,7 +122,7 @@ public class SellerDashboardController {
         priceBox.setPrefWidth(140);
         Label priceLabel = new Label("GIÁ KHỞI ĐIỂM");
         priceLabel.getStyleClass().add("meta-label");
-        Label priceValue = new Label(String.valueOf(item.getStartPrice() + "$"));
+        Label priceValue = new Label(item.getPriceStart() + "$");
         priceValue.getStyleClass().add("meta-value");
         priceBox.getChildren().addAll(priceLabel, priceValue);
 
@@ -131,9 +130,9 @@ public class SellerDashboardController {
         statusBox.setPrefWidth(150);
         Label statusLabel = new Label("TRẠNG THÁI");
         statusLabel.getStyleClass().add("meta-label");
-        Label statusValue = new Label(getStatusText(item.getStatus()));
-        statusValue.getStyleClass().addAll("status-pill", getStatusStyleClass(item.getStatus()));
-        Label statusDesc = new Label(getStatusDescription(item.getStatus()));
+        Label statusValue = new Label(getStatusText(item.getStatus().name()));
+        statusValue.getStyleClass().addAll("status-pill", getStatusStyleClass(item.getStatus().name()));
+        Label statusDesc = new Label(getStatusDescription(item.getStatus().name()));
         statusDesc.getStyleClass().add("status-desc");
         statusDesc.setWrapText(true);
         statusDesc.setMaxWidth(324);
@@ -146,28 +145,34 @@ public class SellerDashboardController {
 
         //Doi UI theo tung status
         HBox actionRow = new HBox(12);
-        String status = item.getStatus();
+        String status = item.getStatus()!= null ? item.getStatus().name() : "";
         if ("PENDING".equals(status)) {
             Button editButton = new Button("Edit");
             editButton.getStyleClass().add("edit-button");
-            editButton.setOnAction(e -> handleEditProduct(item.getTitle()));
+            editButton.setOnAction(e -> handleEditProduct(item.getName()));
 
             Button deleteButton = new Button("Delete");
             deleteButton.getStyleClass().add("delete-button");
             deleteButton.setOnAction(e -> handleDeleteProduct(item));
 
-            actionRow.getChildren().addAll(editButton, deleteButton);
+            Button createAuctionButton = new Button("Tạo đấu giá");
+            createAuctionButton.getStyleClass().add("edit-button");
+            createAuctionButton.setOnAction(e -> handleCreateAuction(item));
+
+            actionRow.getChildren().addAll(editButton, deleteButton, createAuctionButton);
+
+        }
+        else if ("WAITING_APPROVAL".equals(status)) {
+            Label waitingLabel = new Label("Chờ admin duyệt");
+            waitingLabel.getStyleClass().add("status-pill");
+            actionRow.getChildren().add(waitingLabel);
 
         } else if ("ACTIVE".equals(status)) {
             Button createAuctionButton = new Button("Tạo đấu giá");
             createAuctionButton.getStyleClass().add("edit-button");
             createAuctionButton.setOnAction(e -> handleCreateAuction(item));
 
-            Button editButton = new Button("Edit");
-            editButton.getStyleClass().add("edit-button");
-            editButton.setOnAction(e -> handleEditProduct(item.getTitle()));
-
-            actionRow.getChildren().addAll(createAuctionButton, editButton);
+            actionRow.getChildren().addAll(createAuctionButton);
 
         } else if ("SOLD".equals(status)) {
             Button viewButton = new Button("Xem chi tiết");
@@ -252,27 +257,22 @@ public class SellerDashboardController {
             e.printStackTrace();
         }
     }
-    public void addNewProduct(Item item) {
-        itemList.add(item);
-        loadProducts();
-
-    }
     @FXML
     private void handleRefresh() {
         System.out.println("Refresh clicked");
-        loadProducts();
+        loadProductsFromServer();
     }
 
     private void handleEditProduct(String productName) {
         System.out.println("Edit product: " + productName);
     }
 
-    private void handleDeleteProduct(Item item) {
+    private void handleDeleteProduct(ItemDTO item) {
         itemList.remove(item);
-        loadProducts();
+        loadProductsFromServer();
     }
     //Hàm nối với SetupAuctionView khi admin duyệt
-    private void handleCreateAuction(Item item) {
+    private void handleCreateAuction(ItemDTO item) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/setup-auction-view.fxml"));
             Parent root = loader.load();
@@ -290,6 +290,6 @@ public class SellerDashboardController {
 
     }
     public void refreshProducts() {
-        loadProducts();
+        loadProductsFromServer();
     }
 }

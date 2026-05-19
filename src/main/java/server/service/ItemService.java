@@ -49,6 +49,7 @@ public class ItemService {
         String name          = data.get("name").toString();
         String description   = data.get("description").toString();
         ItemCategory category = ItemCategory.valueOf(data.get("category").toString());
+        String imageUrl = data.containsKey("imageUrl") ? data.get("imageUrl").toString() : null;
 
         //validate Item
         if (name == null || name.isBlank()) {
@@ -60,6 +61,7 @@ public class ItemService {
 
         //static factory tạo item theo category
         Item item = ItemFactory.createItem(category, name, description, sellerId, ItemStatus.PENDING);
+        item.setImageUrl(imageUrl);
 
         boolean ok = itemDAO.insertItem(item);
         return ok ? item : null;
