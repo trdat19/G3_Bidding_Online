@@ -1,4 +1,4 @@
-package server.database;
+package server.Database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -6,7 +6,7 @@ import java.sql.SQLException;
 public class TestConection {
     public static void main(String[] args) {
         try {
-            Connection con = server.database.DBconnection.getInstance().getConnection();
+            Connection con = server.Database.DBconnection.getInstance().getConnection();
             System.out.println("Database connected");
         } catch (SQLException e)
         {

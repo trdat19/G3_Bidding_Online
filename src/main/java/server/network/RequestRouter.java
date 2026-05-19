@@ -41,7 +41,7 @@ public class RequestRouter {
         Action action;
 
         try {
-            action = Action.valueOf(request.getAction());
+            action = request.getAction();
         } catch (IllegalArgumentException e) {
             return new BaseResponse(false, "Action không hợp lệ: " + request.getAction(), null);
         }

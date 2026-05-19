@@ -22,6 +22,7 @@ import javafx.event.ActionEvent;
 import shared.dto.common.AuctionDTO;
 import shared.dto.response.BaseResponse;
 import shared.dto.request.BaseRequest;
+import shared.enums.Action;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -51,7 +52,7 @@ public class BidderDashboardController {
         }
     }
     private void loadAuctionsFromServer() {
-        BaseRequest request = new BaseRequest("GET_AUCTION_LIST", null);
+        BaseRequest request = new BaseRequest(Action.GET_AUCTION_LIST, null);
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
         itemList.clear();
         if (response != null || !response.isSuccess() || response.getData() == null) {

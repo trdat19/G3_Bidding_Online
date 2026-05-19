@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import server.model.user.User;
 import shared.dto.common.UserDTO;
 import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 import shared.enums.UserRole;
 import shared.dto.request.BaseRequest;
 
@@ -41,7 +42,7 @@ public class LoginController {
         Map<String, String> loginData = new HashMap<>();
         loginData.put("username", user);
         loginData.put("password", pass);
-        BaseRequest request = new BaseRequest("LOGIN", loginData);
+        BaseRequest request = new BaseRequest(Action.LOGIN, loginData);
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
         if (response != null && response.isSuccess()) {

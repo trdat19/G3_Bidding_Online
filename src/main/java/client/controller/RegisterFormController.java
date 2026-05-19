@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import shared.enums.Action;
 import shared.enums.UserRole;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
@@ -65,7 +66,7 @@ public class RegisterFormController {
 
         try
         {
-            BaseRequest request = new BaseRequest("REGISTER", data);
+            BaseRequest request = new BaseRequest(Action.REGISTER, data);
             BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
             if(response != null && response.isSuccess())
