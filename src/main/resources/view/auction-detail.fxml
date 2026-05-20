@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.image.ImageView?>
 <BorderPane xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.controller.AuctionDetailController"
@@ -51,7 +52,13 @@
                 <StackPane prefWidth="430"
                            prefHeight="330"
                            styleClass="hero-image">
-                    <Label text="Image"
+                    <ImageView fx:id="imageView"
+                               fitWidth="430"
+                               fitHeight="330"
+                               preserveRatio="true"
+                               smooth="true"/>
+                    <Label fx:id="imagePlaceholderLabel"
+                           text="Ảnh sản phẩm"
                            styleClass="image-placeholder"/>
                 </StackPane>
 

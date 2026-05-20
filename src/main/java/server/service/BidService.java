@@ -35,10 +35,10 @@ public class BidService {
     // Sử dụng Singleton để đảm bảo mọi luồng đều dùng chung một đối tượng xử lý giá
     private static BidService instance;
 
-    private AuctionService auctionService = AuctionService.getInstance();
-    private AuctionDAO auctionDAO = new AuctionDAO();
-    private BidDAO bidDAO = new BidDAO();
-    private UserDAO userDAO =  new UserDAO();
+    private final AuctionService auctionService = AuctionService.getInstance();
+    private final AuctionDAO auctionDAO = new AuctionDAO();
+    private final BidDAO bidDAO = new BidDAO();
+    private final UserDAO userDAO =  new UserDAO();
 
     private BidService() {}
 
@@ -51,7 +51,6 @@ public class BidService {
                 }
             }
         }
-
         return instance;
     }
 
@@ -64,15 +63,27 @@ public class BidService {
      */
     public synchronized boolean placeBid(Long auctionId, Long bidderId, BigDecimal amount) {
 
-        // 1. Lấy phiên đấu giá từ DB
+        // 1. Lấy phiên đấu giá từ DB + kiểm tra thời gian
         Auction auction = auctionDAO.findById(auctionId);
-//        System.out.println("===== PLACE BID DEBUG =====");
-//        System.out.println("BID auctionId = " + auctionId);
-//        System.out.println("DB auction status = " + auction.getStatus());
-//        System.out.println("Amount = " + amount);
-//        System.out.println("===========================");
-        if (auction == null) {
-            throw new AuctionNotFoundException(auctionId);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (auction.getStartTime() != null && now.isBefore(auction.getStartTime())) {
+            throw new RuntimeException("Phiên đấu giá chưa bắt đầu!");
+        }
+
+        if (auction.getEndTime() != null && now.isAfter(auction.getEndTime())) {
+            auctionService.finishAuction(auctionId);
+            throw new InvalidAuctionTimeException(now);
+        }
+
+        if (auction.getStatus() == AuctionStatus.OPEN) {
+            auctionDAO.updateStatus(auctionId, AuctionStatus.RUNNING);
+            auction.setStatus(AuctionStatus.RUNNING);
+        }
+
+        if (auction.getStatus() != AuctionStatus.RUNNING) {
+            throw new AuctionClosedException();
         }
 
         // 2. Kiểm tra trạng thái của phiên xem có đang mở không
@@ -82,15 +93,9 @@ public class BidService {
         }
 
         // 3. Kiểm tra thời gian
-        LocalDateTime now = LocalDateTime.now();
-
-        if (auction.getStartTime() != null && now.isBefore(auction.getStartTime())) {
-            throw new InvalidAuctionTimeException(now);
-        }
-
-        if (auction.getEndTime() != null && now.isAfter(auction.getEndTime())) {
-            auctionService.finishAuction(auctionId);
-            throw new InvalidAuctionTimeException(now);
+        if (LocalDateTime.now().isAfter(auction.getEndTime())) {
+            auctionService.finishAuction(auctionId); // Kết thúc phiên nếu chưa kịp đóng!
+            throw new InvalidAuctionTimeException(LocalDateTime.now());
         }
 
         // 4. Tính mức giá tối thiểu hợp lệ
@@ -147,10 +152,7 @@ public class BidService {
         // 12. Push realtime tới tất cả client đang xem phiên này
         BidDTO bidDTO = new BidDTO(bid.getId(), auctionId, bidderId,
                 bidderName, amount, bid.getTimestamp());
-
         BaseResponse bidEvent = new BaseResponse(true, "NEW_BID", bidDTO);
-        bidEvent.setAction("NEW_BID");
-
         RealtimePushServer.pushToAuctionSubscribers(auctionId, bidEvent);
 
         System.out.printf(">>> [BidService] %s đặt giá %s cho phiên #%d%n",

@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.service.ClientNetworkService;
+import client.state.ClientSession;
 import client.util.StageUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -49,6 +50,7 @@ public class LoginController {
             User LogginUser = (User) response.getData();
             UserRole role = LogginUser.getRole();
             String fullName = LogginUser.getFullName();
+            ClientSession.setFullName(fullName);
             if (role == UserRole.BIDDER) {
                 loadScene("/view/bidder-dashboard.fxml", event, fullName);
 
@@ -70,16 +72,6 @@ public class LoginController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
-
-            Object controller = loader.getController();
-            if (controller instanceof BidderDashboardController) {
-                bidderController = (BidderDashboardController) controller;
-                bidderController.setFullName(fullname);
-            }
-            else if (controller instanceof SellerDashboardController) {
-                sellerController = (SellerDashboardController) controller;
-                sellerController.setFullName(fullname);
-            }
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             StageUtils.setMaximizedScene(stage,root);
             stage.show();
