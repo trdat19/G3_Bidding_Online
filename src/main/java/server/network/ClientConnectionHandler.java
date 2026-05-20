@@ -55,7 +55,7 @@ public class ClientConnectionHandler implements Runnable {
         sendResponse(response);
     }
 
-    public void sendResponse(Object response) {
+    public synchronized void sendResponse(Object response) {
         try {
             if (out != null) {
                 out.writeObject(response);
