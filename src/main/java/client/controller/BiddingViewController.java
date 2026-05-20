@@ -19,6 +19,8 @@ import shared.dto.common.BidDTO;
 import java.util.function.Consumer;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -35,12 +37,16 @@ public class BiddingViewController {
     @FXML private TextField bidAmountField;
     @FXML private TableView<?> bidTable;
     @FXML private Label statusTextLabel;
+    @FXML private ImageView productImageView;
+    @FXML private Label imagePlaceholderLabel;
+
     private Item currentItem;
     private Timeline countdownTimeLine;
     private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
 
     public void setItem(Item item) {
         this.currentItem = item;
+        setProductImage(item.getImageUrl());
 
         nameLabel.setText(item.getTitle());
         categoryLabel.setText(item.getCategory());
@@ -175,6 +181,18 @@ public class BiddingViewController {
             leaderLabel.setText(currentItem.getLeader());
             bidCountLabel.setText(currentItem.getBidCount() + " bids");
         });
+    }
+
+    private void setProductImage(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) {
+            productImageView.setImage(null);
+            imagePlaceholderLabel.setVisible(true);
+            return;
+        }
+
+        Image image = new Image(imageUrl, true);
+        productImageView.setImage(image);
+        imagePlaceholderLabel.setVisible(false);
     }
 
 }

@@ -12,6 +12,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -29,6 +31,8 @@ public class AuctionDetailController {
     @FXML private Label statusLabel;
     @FXML private Label bidCountLabel;
     @FXML private Label timeLeftLabel;
+    @FXML private ImageView productImageView;
+    @FXML private Label imagePlaceholderLabel;
 
     private Timeline countdownTimeline;
 
@@ -47,7 +51,7 @@ public class AuctionDetailController {
         endTimeLabel.setText(formatDateTime(item.getEndTime()));
         bidCountLabel.setText(item.getBidCount() + " bids");
         startCountdown(item.getStartTime(), item.getEndTime());
-
+        setProductImage(item.getImageUrl());
         this.currentItem = item;
     }
 
@@ -171,5 +175,17 @@ public class AuctionDetailController {
         long secs = seconds % 60;
 
         return String.format("%02d:%02d:%02d", hours, minutes, secs);
+    }
+
+    private void setProductImage(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) {
+            productImageView.setImage(null);
+            imagePlaceholderLabel.setVisible(true);
+            return;
+        }
+
+        Image image = new Image(imageUrl, true);
+        productImageView.setImage(image);
+        imagePlaceholderLabel.setVisible(false);
     }
 }

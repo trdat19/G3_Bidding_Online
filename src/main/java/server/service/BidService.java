@@ -65,11 +65,6 @@ public class BidService {
 
         // 1. Lấy phiên đấu giá từ DB
         Auction auction = auctionDAO.findById(auctionId);
-//        System.out.println("===== PLACE BID DEBUG =====");
-//        System.out.println("BID auctionId = " + auctionId);
-//        System.out.println("DB auction status = " + auction.getStatus());
-//        System.out.println("Amount = " + amount);
-//        System.out.println("===========================");
         if (auction == null) {
             throw new AuctionNotFoundException(auctionId);
         }
@@ -95,11 +90,14 @@ public class BidService {
         // 4. Tính mức giá tối thiểu hợp lệ
         Bid currentHighest = bidDAO.getHighestBidByAuctionId(auctionId);
         BigDecimal minBid;
+
+        BigDecimal minIncrement = auction.getMinIncrement() != null ? auction.getMinIncrement() : BigDecimal.ZERO;
+
         if (currentHighest == null) {
-            minBid = auction.getStartPrice();
+            minBid = auction.getStartPrice().add(minIncrement);
         }
         else {
-            minBid = currentHighest.getAmount().add(auction.getMinIncrement());
+            minBid = currentHighest.getAmount().add(minIncrement);
         }
 
         if (amount.compareTo(minBid) < 0) {

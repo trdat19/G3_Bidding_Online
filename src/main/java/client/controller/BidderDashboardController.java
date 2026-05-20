@@ -72,15 +72,13 @@ public class BidderDashboardController
             AuctionDTO auction = (AuctionDTO) obj;
 
             Item item = toItem(auction);
-            item.setId(auction.getId());
-            item.setImageUrl(auction.getItemImageUrl());
 
             itemList.add(item);
             auctionContainer.getChildren().add(createProductCard(item));
         }
     }
     private Item toItem(AuctionDTO auction) {
-        return new Item(
+        Item item = new Item(
                 auction.getItemName(),
                 auction.getItemCategory(),
                 auction.getItemDescription(),
@@ -92,6 +90,9 @@ public class BidderDashboardController
                 auction.getStatus()!= null ? auction.getStatus().name() : "",
                 auction.getBidCount()
         );
+        item.setId(auction.getId());
+        item.setImageUrl(auction.getItemImageUrl());
+        return item;
     }
 
     private VBox createProductCard(Item item) {

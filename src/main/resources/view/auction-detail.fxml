@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -52,6 +53,15 @@
                            prefHeight="330"
                            styleClass="hero-image">
                     <Label text="Image"
+                           styleClass="image-placeholder"/>
+                    <ImageView fx:id="productImageView"
+                               fitWidth="430"
+                               fitHeight="330"
+                               preserveRatio="true"
+                               smooth="true"/>
+
+                    <Label fx:id="imagePlaceholderLabel"
+                           text="Image"
                            styleClass="image-placeholder"/>
                 </StackPane>
 

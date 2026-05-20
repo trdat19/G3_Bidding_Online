@@ -10,9 +10,14 @@ public class DBconnection {
     private static DBconnection instance;
     private final HikariDataSource dataSource;
 
-    private String url = "jdbc:mysql://localhost:3307/new_db";
-    private String user = "root";
-    private String pass = "123456";
+//    Database Local
+//    private String url = "jdbc:mysql://localhost:3307/new_db";
+//    private String user = "root";
+//    private String pass = "123456";
+
+    private String url = "jdbc:mysql://gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/new_db";
+    private String user = "2RZiMXNpgzAb2Zf.root";
+    private String pass = "QUGAicy63NlmSGfY";
 
     private DBconnection() {
         HikariConfig config = new HikariConfig();

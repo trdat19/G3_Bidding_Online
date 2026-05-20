@@ -138,6 +138,10 @@ public class AuctionService {
             throw new RuntimeException("Lỗi lưu phiên đấu giá vào hệ thống");
         }
 
+        if (minIncrement == null || minIncrement.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Bước nhảy giá phải lớn hơn 0");
+        }
+
         //Chuển trạng thái của item trong Dao
         itemDAO.updateStatus(itemId, ItemStatus.WAITING_APPROVAL);
         System.out.println(">>> [AuctionService] Tạo auction #" + auction.getId() + " cho item #" + itemId);
