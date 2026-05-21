@@ -79,17 +79,17 @@ public class SellerDashboardController {
     private VBox createProductCard(ItemDTO item) {
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
-        card.setPrefWidth(360);
+        card.setPrefWidth(310);
         card.setSpacing(0);
 
         StackPane imageBox = new StackPane();
         imageBox.getStyleClass().add("product-image");
-        imageBox.setPrefHeight(150);
+        imageBox.setPrefHeight(125);
 
         if (item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
             ImageView imageView = new ImageView(new Image(item.getImageUrl(), true));
-            imageView.setFitWidth(360);
-            imageView.setFitHeight(150);
+            imageView.setFitWidth(310);
+            imageView.setFitHeight(125);
             imageView.setPreserveRatio(true);
             imageView.setSmooth(true);
             imageBox.getChildren().add(imageView);
@@ -107,18 +107,18 @@ public class SellerDashboardController {
 
         imageBox.getChildren().add(categoryBadge);
 
-        VBox body = new VBox(10);
-        body.setPadding(new Insets(18));
+        VBox body = new VBox(8);
+        body.setPadding(new Insets(14));
 
         Label titleLabel = new Label(item.getName());
         titleLabel.getStyleClass().add("product-title");
         titleLabel.setWrapText(true);
-        titleLabel.setMaxWidth(324);
+        titleLabel.setMaxWidth(282);
 
         Label descLabel = new Label(item.getDescription());
         descLabel.getStyleClass().add("product-desc");
         descLabel.setWrapText(true);
-        descLabel.setMaxWidth(324);
+        descLabel.setMaxWidth(282);
 
         HBox priceRow = new HBox(12);
         VBox priceBox = new VBox(6);
@@ -138,7 +138,7 @@ public class SellerDashboardController {
         Label statusDesc = new Label(getStatusDescription(item.getStatus().name()));
         statusDesc.getStyleClass().add("status-desc");
         statusDesc.setWrapText(true);
-        statusDesc.setMaxWidth(324);
+        statusDesc.setMaxWidth(282);
         statusBox.getChildren().addAll(statusLabel, statusValue);
 
         Region spacer = new Region();
@@ -147,19 +147,22 @@ public class SellerDashboardController {
         priceRow.getChildren().addAll(priceBox, spacer, statusBox);
 
         //Doi UI theo tung status
-        HBox actionRow = new HBox(12);
+        FlowPane actionRow = new FlowPane(8, 8);
         String status = item.getStatus()!= null ? item.getStatus().name() : "";
         if ("PENDING".equals(status)) {
             Button editButton = new Button("Chỉnh sửa");
             editButton.getStyleClass().add("edit-button");
+            editButton.setMinWidth(92);
             editButton.setOnAction(e -> handleEditProduct(item));
 
             Button deleteButton = new Button("Xóa");
             deleteButton.getStyleClass().add("delete-button");
+            deleteButton.setMinWidth(58);
             deleteButton.setOnAction(e -> handleDeleteProduct(item));
 
             Button createAuctionButton = new Button("Tạo đấu giá");
             createAuctionButton.getStyleClass().add("edit-button");
+            createAuctionButton.setMinWidth(112);
             createAuctionButton.setOnAction(e -> handleCreateAuction(item));
 
             actionRow.getChildren().addAll(editButton, deleteButton, createAuctionButton);
@@ -285,6 +288,20 @@ public class SellerDashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    @FXML
+    private void handleOpenSellerWalletPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/seller-wallet-popup.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Thiết lập phiên đấu giá");
+            stage.setScene(new Scene(root));
+            stage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void handleDeleteProduct(ItemDTO item) {
