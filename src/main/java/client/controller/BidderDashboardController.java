@@ -12,13 +12,16 @@ import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javafx.event.ActionEvent;
@@ -29,6 +32,8 @@ import shared.dto.request.BaseRequest;
 import shared.enums.Action;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,6 +45,15 @@ public class BidderDashboardController {
 
     @FXML
     private Label bidderNameLabel;
+
+    @FXML
+    private Label walletBalanceLabel;
+
+    @FXML
+    private TextField depositAmountField;
+
+    @FXML
+    private Label walletMessageLabel;
 
     private final List<Item> itemList = new ArrayList<>();
     private final List<CountdownView> countdownViews = new ArrayList<>();
@@ -198,6 +212,23 @@ public class BidderDashboardController {
 
         return card;
     }
+    @FXML private void handleOpenWalletPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/wallet-popup.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Ví");
+            stage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    @FXML private void handleRefresh() {
+        loadAuctionsFromServer();
+    }
+
     private void startCountdownTimer() {
         stopCountdownTimer();
         if (countdownViews.isEmpty()) {
@@ -249,6 +280,7 @@ public class BidderDashboardController {
     private void handleLogout(ActionEvent event) {
         try {
             stopCountdownTimer();
+            ClientSession.clear();
             Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             StageUtils.setMaximizedScene(stage, root);
@@ -268,8 +300,14 @@ public class BidderDashboardController {
             controller.setItemData(item);
 
             Stage stage = (Stage) auctionContainer.getScene().getWindow();
-            StageUtils.setMaximizedScene(stage, root);
-            stage.show();
+            Stage popup = new Stage();
+            popup.initOwner(stage);
+            popup.initModality(Modality.WINDOW_MODAL);
+            popup.setTitle("Chi tiết phiên đấu giá");
+            popup.setScene(new Scene(root, 1040, 760));
+            popup.setMinWidth(960);
+            popup.setMinHeight(680);
+            popup.showAndWait();
 
         } catch (IOException e) {
             e.printStackTrace();

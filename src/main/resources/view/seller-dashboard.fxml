@@ -1,92 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="900.0" prefWidth="1400.0" stylesheets="@../css/seller-dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.SellerDashboardController">
+<BorderPane prefHeight="900.0" prefWidth="1400.0" styleClass="root-container" stylesheets="@../css/seller-dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.SellerDashboardController">
+    <left>
+        <VBox prefWidth="360.0" spacing="28.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="14.0">
+                    <children>
+                        <Label styleClass="sidebar-logo-icon" text="⚖" />
+                        <Label styleClass="sidebar-logo-text" text="BidZone" />
+                    </children>
+                </HBox>
 
-    <children>
-        <VBox spacing="0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <HBox alignment="CENTER_LEFT" prefHeight="90.0" styleClass="top-bar">
-                <padding>
-                    <Insets bottom="20" left="30" right="30" top="20" />
-                </padding>
+                <VBox spacing="16.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="sidebar-title" text="Quản lý gian hàng đấu giá của bạn" wrapText="true" />
+                        <Label styleClass="sidebar-subtitle" text="Thêm sản phẩm, gửi yêu cầu duyệt và thiết lập phiên đấu giá sau khi admin chấp nhận." wrapText="true" />
 
-                <children>
-                    <HBox alignment="CENTER_LEFT" spacing="12">
-                        <children>
-                            <StackPane prefHeight="42" prefWidth="42" styleClass="logo-box">
-                                <children>
-                                    <Label styleClass="logo-icon" text="⚖" />
-                                </children>
-                            </StackPane>
-                            <Label styleClass="logo-text" text="BidZone" />
-                        </children>
-                    </HBox>
+                        <VBox spacing="14.0" styleClass="sidebar-feature-box">
+                            <children>
+                                <Label styleClass="sidebar-feature" text="✓ Quản lý sản phẩm của Seller" />
+                                <Label styleClass="sidebar-feature" text="✓ Theo dõi trạng thái duyệt" />
+                                <Label styleClass="sidebar-feature" text="✓ Tạo phiên đấu giá sau khi được duyệt" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
 
-                    <Region HBox.hgrow="ALWAYS" />
-
-                    <HBox alignment="CENTER_RIGHT" spacing="18">
-                        <children>
-
-                            <VBox alignment="CENTER_RIGHT" spacing="4">
-                                <children>
-                                    <Label fx:id="sellerNameLabel" text="Nguyễn Việt Anh" styleClass="user-name"/>
-                                    <Label text="SELLER" styleClass="user-role"/>
-                                </children>
-                            </VBox>
-
-                            <VBox alignment="CENTER_LEFT" spacing="4" styleClass="wallet-box">
-                                <children>
-                                    <Label text="Ví của tôi" styleClass="wallet-title"/>
-                                    <Label fx:id="walletBalanceLabel" text="\$0.00" styleClass="wallet-balance"/>
-                                </children>
-                            </VBox>
-
-                        </children>
-                    </HBox>
-               <Button mnemonicParsing="false" onAction="#handleLogout" styleClass="logout-button" text="🚪" />
-                </children>
-            </HBox>
-
-            <!-- HERO -->
-            <VBox spacing="10" styleClass="hero-section">
-                <padding>
-                    <Insets bottom="25" left="30" right="30" top="35" />
-                </padding>
-
-                <children>
-                    <Label styleClass="hero-title" text="Quản lý sản phẩm đấu giá" />
-                    <Label styleClass="hero-subtitle" text="Thêm, sửa, xóa và theo dõi các sản phẩm bạn đang đăng bán" />
-
-                    <HBox alignment="CENTER_LEFT" spacing="12">
-                        <children>
-                            <Button onAction="#handleAddProduct" styleClass="primary-button" text="+ Thêm sản phẩm" />
-                            <Button onAction="#handleRefresh" styleClass="secondary-button" text="Làm mới" />
-                        </children>
-                    </HBox>
-                </children>
-            </VBox>
-            <ScrollPane fitToWidth="true" styleClass="main-scroll" VBox.vgrow="ALWAYS">
-                <content>
-                    <VBox spacing="20" styleClass="content-wrapper">
-                        <padding>
-                            <Insets bottom="30" left="30" right="30" top="25" />
-                        </padding>
-
-                        <children>
-                            <HBox alignment="CENTER_LEFT">
-                                <children>
-                                    <Label styleClass="section-title" text="Sản phẩm của bạn" />
-                                </children>
-                            </HBox>
-
-                            <FlowPane fx:id="productContainer" hgap="20" prefWrapLength="1200" vgap="20" />
-                        </children>
-                    </VBox>
-                </content>
-            </ScrollPane>
+                <VBox spacing="12.0" styleClass="sidebar-menu">
+                    <children>
+                        <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="sidebar-menu-button-active" text="⌂  Sản phẩm" />
+                        <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleAddProduct" styleClass="sidebar-menu-button" text="＋  Thêm sản phẩm" />
+                        <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleRefresh" styleClass="sidebar-menu-button" text="↻  Làm mới" />
+                        <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleOpenSellerWalletPopup" styleClass="sidebar-menu-button" text="💰  Ví bán hàng" />
+                        <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleLogout" styleClass="sidebar-logout-button" text="🚪  Đăng xuất" />
+                    </children>
+                </VBox>
+            </children>
         </VBox>
-    </children>
-</AnchorPane>
+    </left>
+
+    <center>
+        <VBox styleClass="dashboard-main">
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="top-header">
+                    <children>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label styleClass="page-title" text="Trang Seller" />
+                                <Label styleClass="page-subtitle" text="Quản lý sản phẩm, trạng thái duyệt và phiên đấu giá của bạn." />
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_RIGHT" spacing="4.0">
+                            <children>
+                                <Label fx:id="sellerNameLabel" styleClass="user-name" text="Seller" />
+                                <Label styleClass="user-role" text="SELLER" />
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" spacing="4.0" styleClass="seller-wallet-mini-card">
+                            <children>
+                                <Label styleClass="seller-wallet-mini-title" text="Ví bán hàng" />
+                                <Label fx:id="sellerWalletBalanceLabel" styleClass="seller-wallet-mini-balance" text="/$0.00" />
+                            </children>
+                        </VBox>
+                        <Button mnemonicParsing="false" onAction="#handleOpenSellerWalletPopup" styleClass="primary-button" text="Mở ví" />
+                    </children>
+                </HBox>
+
+                <ScrollPane fitToWidth="true" styleClass="main-scroll" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox spacing="22.0" styleClass="content-wrapper">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="18.0" styleClass="hero-section">
+                                    <children>
+                                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label styleClass="section-title" text="Sản phẩm của bạn" />
+                                                <Label styleClass="section-subtitle" text="Thêm mới, chỉnh sửa, xóa hoặc tạo đấu giá tùy theo trạng thái sản phẩm." />
+                                            </children>
+                                        </VBox>
+                                        <Button mnemonicParsing="false" onAction="#handleAddProduct" styleClass="primary-button" text="+ Thêm sản phẩm" />
+                                        <Button mnemonicParsing="false" onAction="#handleOpenSellerWalletPopup" styleClass="wallet-button" text="💰 Ví bán hàng" />
+                                        <Button mnemonicParsing="false" onAction="#handleRefresh" styleClass="secondary-button" text="Làm mới" />
+                                    </children>
+                                </HBox>
+
+                                <FlowPane fx:id="productContainer" hgap="28.0" prefWrapLength="980.0" vgap="18.0" />
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>
