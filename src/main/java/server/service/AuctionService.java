@@ -287,6 +287,10 @@ public class AuctionService {
         if (highestBid != null) {
             itemDAO.updateStatus(auction.getItemId(), ItemStatus.SOLD);
         }
+        else
+        {
+            itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
+        }
 
         String winnerMsg;
         if (highestBid != null) {

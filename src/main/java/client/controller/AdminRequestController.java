@@ -1,12 +1,15 @@
 package client.controller;
 
 import client.service.ClientNetworkService;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.util.Duration;
 import shared.dto.common.AuctionDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
@@ -30,6 +33,7 @@ public class AdminRequestController {
     @FXML private TableColumn<AuctionDTO, String> endTimeColumn;
 
     private final ObservableList<AuctionDTO> requests = FXCollections.observableArrayList();
+    private Timeline refreshTimeline;
 
     @FXML
     private void initialize() {
@@ -60,6 +64,7 @@ public class AdminRequestController {
         requestTable.setItems(requests);
         setupActionColumn();
         loadRequests();
+        startAutoRefresh();
     }
 
     private void setupActionColumn() {
@@ -135,5 +140,13 @@ public class AdminRequestController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void startAutoRefresh() {
+        refreshTimeline = new Timeline(
+                new KeyFrame(Duration.seconds(5), event -> loadRequests())
+        );
+        refreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        refreshTimeline.play();
     }
 }

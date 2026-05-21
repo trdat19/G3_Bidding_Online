@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="640.0" prefWidth="720.0" stylesheets="@../css/add-product-view.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AddProductController">
+<AnchorPane prefHeight="640.0" prefWidth="720.0" stylesheets="@../css/edit-product-view.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.EditProductController">
 
     <children>
 
@@ -19,7 +19,7 @@
 
             <!-- HEADER -->
             <VBox alignment="CENTER" spacing="8">
-                <Label styleClass="form-title" text="Tạo sản phẩm mới" />
+                <Label styleClass="form-title" text="Chỉnh sửa sản phẩm" />
 
                 <Label styleClass="form-subtitle" />
             </VBox>
@@ -80,7 +80,7 @@
                     <VBox spacing="4">
                         <Label styleClass="pending-title" text="Sản phẩm sẽ ở trạng thái PENDING" />
 
-                        <Label styleClass="pending-desc" text="Sản phẩm sẽ ở trang seller cho đến khi seller gửi yêu câuf tạo phiên đấu giá" />
+                        <Label styleClass="pending-desc" text="Admin sẽ duyệt trước khi sản phẩm xuất hiện cho bidder" />
                     </VBox>
                 </HBox>
 

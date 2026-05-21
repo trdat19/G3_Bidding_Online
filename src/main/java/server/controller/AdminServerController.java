@@ -128,4 +128,32 @@ public class AdminServerController {
             return new BaseResponse(false, "Lỗi lấy dữ liệu thống kê: " + e.getMessage(), null);
         }
     }
+
+    public BaseResponse getCreateAuctionRequests() {
+        return new BaseResponse(
+                true,
+                "Danh sách yêu cầu tạo đấu giá",
+                auctionService.getAuctionApprovalRequests()
+        );
+    }
+
+    public BaseResponse acceptCreateAuctionRequest(BaseRequest request) {
+        Long auctionId = Long.parseLong(request.getData().toString());
+
+        boolean ok = auctionService.approveAuctionRequest(auctionId);
+
+        return ok
+                ? new BaseResponse(true, "Đã duyệt yêu cầu tạo đấu giá", null)
+                : new BaseResponse(false, "Không thể duyệt yêu cầu này", null);
+    }
+
+    public BaseResponse rejectCreateAuctionRequest(BaseRequest request) {
+        Long auctionId = Long.parseLong(request.getData().toString());
+
+        boolean ok = auctionService.rejectAuctionRequest(auctionId);
+
+        return ok
+                ? new BaseResponse(true, "Đã từ chối yêu cầu tạo đấu giá", null)
+                : new BaseResponse(false, "Không thể từ chối yêu cầu này", null);
+    }
 }

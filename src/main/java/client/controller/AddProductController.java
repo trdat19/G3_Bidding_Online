@@ -6,6 +6,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 import shared.enums.ItemCategory;
 
 import java.io.File;
@@ -18,6 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddProductController {
     @FXML private TextField nameField;
