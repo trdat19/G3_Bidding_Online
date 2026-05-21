@@ -1,8 +1,10 @@
 package server.model.core;
 
+import com.mysql.cj.jdbc.jmx.LoadBalanceConnectionGroupManager;
 import server.model.Entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class AutoBidRule extends Entity {
 
@@ -11,6 +13,10 @@ public class AutoBidRule extends Entity {
     private BigDecimal maxAmount;
     private BigDecimal stepAmount;
     private boolean isActive;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public AutoBidRule() {}
 
     public AutoBidRule(Long auctionId, Long bidderId, BigDecimal maxAmount, BigDecimal stepAmount) {
         super();
@@ -27,6 +33,8 @@ public class AutoBidRule extends Entity {
     public BigDecimal getMaxAmount() { return maxAmount; }
     public BigDecimal getStepAmount() { return stepAmount; }
     public boolean getIsActive() { return isActive; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 
     //setter
     public void setAuctionId(Long auctionId) { this.auctionId = auctionId; }
@@ -34,6 +42,8 @@ public class AutoBidRule extends Entity {
     public void setMaxAmount(BigDecimal maxAmount) { this.maxAmount = maxAmount; }
     public void setStepAmount(BigDecimal stepAmount) { this.stepAmount = stepAmount; }
     public void setIsActive(boolean state) { isActive = state; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
     @Override
     public String getInfo() {

@@ -13,10 +13,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -280,11 +277,27 @@ public class BidderDashboardController {
     private void handleLogout(ActionEvent event) {
         try {
             stopCountdownTimer();
-            ClientSession.clear();
-            Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            StageUtils.setMaximizedScene(stage, root);
-            stage.show();
+
+            BaseRequest logoutRequest = new BaseRequest(Action.LOGOUT, null);
+            BaseResponse response = ClientNetworkService.getInstance().sendRequest(logoutRequest);
+
+            if (response != null && response.isSuccess()) {
+                ClientSession.clear();
+
+                Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                StageUtils.setMaximizedScene(stage, root);
+                stage.show();
+            }
+            else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Đăng xuất thất bại!");
+                alert.setHeaderText(null);
+                alert.setContentText(response != null
+                                    ? response.getMessage()
+                                    : "Không kết nối được server!");
+                alert.showAndWait();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

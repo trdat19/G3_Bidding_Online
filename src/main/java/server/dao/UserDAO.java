@@ -7,6 +7,8 @@ import server.model.user.Seller;
 import server.model.user.User;
 import shared.enums.UserRole;
 import shared.enums.UserStatus;
+
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,8 @@ import java.util.List;
 public class UserDAO {
 
     public boolean insertUser(User user) {
-        String sql = "INSERT INTO users(username, password, full_name, email, role, status) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users(username, password, full_name, email, role, status, balance) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DBconnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
@@ -26,6 +28,7 @@ public class UserDAO {
             ps.setString(4, user.getEmail());
             ps.setString(5, user.getRole().name());
             ps.setString(6, user.getStatus().name());
+            ps.setBigDecimal(7, BigDecimal.ZERO);
 
             int rowsAffected = ps.executeUpdate(); // 1 nếu insert thành công, 0 nếu thất bại
             if (rowsAffected > 0) {
@@ -243,19 +246,22 @@ public class UserDAO {
 
         User user = null;
         switch (role) {
-            case "ADMIN":
+            case "ADMIN": {
                 user = new Admin();
                 break;
-            case "SELLER":
+            }
+            case "SELLER": {
                 user = new Seller();
-                //user.setTotalEarning();
+                ((Seller) user).setTotalEarnings(rs.getBigDecimal("balance"));
                 break;
-            default:
+            }
+            default: {
                 user = new Bidder();
-                //user.setBalance()
+                ((Bidder) user).setBalance(rs.getBigDecimal("balance"));
                 //user.setMaxBid();
                 //user.setBidIncrement();
                 break;
+            }
         }
 
         user.setId(rs.getLong("id"));

@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.model.Item;
+import client.state.ClientSession;
 import client.util.StageUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -227,10 +228,27 @@ public class SellerDashboardController {
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            StageUtils.setMaximizedScene(stage, root);
-            stage.show();
+            BaseRequest logoutRequest = new BaseRequest(Action.LOGOUT, null);
+            BaseResponse response = ClientNetworkService.getInstance().sendRequest(logoutRequest);
+
+            if (response != null && response.isSuccess()) {
+                ClientSession.clear();
+
+                Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                StageUtils.setMaximizedScene(stage, root);
+                stage.show();
+            }
+            else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Đăng xuất thất bại");
+                alert.setHeaderText(null);
+                alert.setContentText(response != null
+                        ? response.getMessage()
+                        : "Không kết nối được server");
+                alert.showAndWait();
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
