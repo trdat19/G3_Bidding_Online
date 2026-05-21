@@ -5,25 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/test/java/server/service/AuctionServiceTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/server/service/BidServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_13_2026_1_16_AM_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_13_2026_1_16_AM__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_13_2026_8_30_AM_[Changes]1/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_13_2026_8_30_AM__Changes_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_14_2026_1_05_PM_[Changes]1/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_14_2026_1_05_PM__Changes_1.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/server/dao/AutoBidRuleDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/server/model/core/AutoBidRule.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dependency-reduced-pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/dependency-reduced-pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BidderDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BidderDashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/database/DBconnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/database/DBconnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/SocketSever.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/SocketServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/css/bidder-dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/css/bidder-dashboard.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/bidder-dashboard.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/bidder-dashboard.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/BidDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/BidDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/Bid.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/Bid.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shared/enums/Action.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/enums/Action.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -281,6 +269,7 @@
     </configuration>
     <list>
       <item itemvalue="Application.MainApplication" />
+      <item itemvalue="Application.SocketSever" />
       <item itemvalue="Application.SocketServer" />
     </list>
     <recent_temporary>
@@ -335,7 +324,7 @@
       <workItem from="1779176029506" duration="11094000" />
       <workItem from="1779298711867" duration="826000" />
       <workItem from="1779329678435" duration="5125000" />
-      <workItem from="1779343639822" duration="2868000" />
+      <workItem from="1779343639822" duration="10441000" />
     </task>
     <servers />
   </component>

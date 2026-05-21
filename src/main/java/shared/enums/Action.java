@@ -24,6 +24,10 @@ public enum Action {
     SUBSCRIBE_AUCTION,
     UNSUBSCRIBE_AUCTION,
 
+    REGISTER_AUTO_BID,
+    REMOVE_AUTO_BID,
+    GET_AUTO_BID_RULE,
+
     /**
      * Admin
      */

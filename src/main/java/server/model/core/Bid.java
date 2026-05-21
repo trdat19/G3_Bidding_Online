@@ -13,7 +13,7 @@ public class Bid extends Entity { //thông tin 1 lần đặt giá
     private Long bidderId;
     private BigDecimal amount;
     private LocalDateTime timestamp;
-    //private boolean isAutoBid;
+    private boolean isAutoBid;
 
     public Bid() {}
 
@@ -21,6 +21,7 @@ public class Bid extends Entity { //thông tin 1 lần đặt giá
         this.auctionId = auctionId;
         this.bidderId = bidderId;
         this.amount = amount;
+        isAutoBid = false;
     }
 
     //getter
@@ -30,12 +31,11 @@ public class Bid extends Entity { //thông tin 1 lần đặt giá
     public Long getBidderId() {
         return bidderId;
     }
-    public BigDecimal getAmount() {
-        return amount;
-    }
+    public BigDecimal getAmount() { return amount; }
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
+    public boolean getIsAutoBid() { return isAutoBid; }
 
     //setter
     public void setAuctionId(Long auctionId) {
@@ -50,6 +50,7 @@ public class Bid extends Entity { //thông tin 1 lần đặt giá
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
+    public void setIsAutoBid(boolean state) { isAutoBid = state; }
 
     @Override
     public String getInfo() {
