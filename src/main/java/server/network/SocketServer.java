@@ -7,7 +7,7 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class SocketSever {
+public class SocketServer {
     private static final int PORT = 8888;
     public boolean isRunning = false;
     public ServerSocket serverSocket;
@@ -33,7 +33,7 @@ public class SocketSever {
         }
         catch (BindException e) {
             System.err.println("Khong the khoi dong server: cong " + PORT + " dang bi su dung.");
-            System.err.println("Hay tat process dang chay tren cong " + PORT + " roi chay lai SocketSever.");
+            System.err.println("Hay tat process dang chay tren cong " + PORT + " roi chay lai SocketServer.");
         }
         catch (IOException e) {
             System.err.println("Loi khi khoi dong server: " + e.getMessage());
@@ -78,7 +78,7 @@ public class SocketSever {
         }
     }
     public static void main(String[] args) {
-        SocketSever server = new SocketSever();
+        SocketServer server = new SocketServer();
         server.start(); // Gọi hàm start để kích hoạt toàn bộ hệ thống
     }
 }

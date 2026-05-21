@@ -6,19 +6,18 @@ import client.state.ClientSession;
 import client.util.StageUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import javafx.event.ActionEvent;
@@ -28,8 +27,9 @@ import shared.dto.response.BaseResponse;
 import shared.dto.request.BaseRequest;
 import shared.enums.Action;
 
+import shared.enums.Action;
+
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +41,13 @@ public class BidderDashboardController {
     @FXML
     private Label bidderNameLabel;
 
+    @FXML
+    private Button refreshButton;
+
     private final List<Item> itemList = new ArrayList<>();
     private final List<CountdownView> countdownViews = new ArrayList<>();
     private Timeline countdownTimeline;
+    private boolean loadingAuctions;
 
     @FXML
     public void initialize() {
@@ -57,10 +61,43 @@ public class BidderDashboardController {
         else {
             bidderNameLabel.setText(fullName);
         }
+    }    private void loadAuctionsFromServer() {
+        if (loadingAuctions) {
+            return;
+        }
+
+        loadingAuctions = true;
+        setRefreshLoading(true);
+
+        Task<BaseResponse> loadTask = new Task<>() {
+            @Override
+            protected BaseResponse call() {
+                BaseRequest request = new BaseRequest(Action.GET_AUCTION_LIST, null);
+                return ClientNetworkService.getInstance().sendRequest(request);
+            }
+        };
+
+        loadTask.setOnSucceeded(event -> {
+            loadingAuctions = false;
+            setRefreshLoading(false);
+            applyAuctionResponse(loadTask.getValue());
+        });
+
+        loadTask.setOnFailed(event -> {
+            loadingAuctions = false;
+            setRefreshLoading(false);
+            stopCountdownTimer();
+            auctionContainer.getChildren().clear();
+            auctionContainer.getChildren().add(new Label("Khong ket noi duoc server"));
+            loadTask.getException().printStackTrace();
+        });
+
+        Thread loadThread = new Thread(loadTask, "bidder-auction-refresh");
+        loadThread.setDaemon(true);
+        loadThread.start();
     }
-    private void loadAuctionsFromServer() {
-        BaseRequest request = new BaseRequest(Action.GET_AUCTION_LIST, null);
-        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+
+    private void applyAuctionResponse(BaseResponse response) {
         itemList.clear();
         countdownViews.clear();
         if (response == null || !response.isSuccess() || response.getData() == null) {
@@ -76,6 +113,13 @@ public class BidderDashboardController {
             itemList.add(toItem(auction));
         }
         loadAuctions();
+    }
+    private void setRefreshLoading(boolean loading) {
+        if (refreshButton == null) {
+            return;
+        }
+        refreshButton.setDisable(loading);
+        refreshButton.setText(loading ? "\u0110ang t\u1ea3i..." : "L\u00e0m m\u1edbi");
     }
     private void loadAuctions() {
         auctionContainer.getChildren().clear();
@@ -258,12 +302,16 @@ public class BidderDashboardController {
         }
     }
     @FXML
+    private void handleRefresh() {
+        loadAuctionsFromServer();
+    }
+
+    @FXML
     private void viewDetail(Item item) {
         try {
             stopCountdownTimer();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/auction-detail.fxml"));
             Parent root = loader.load();
-
             AuctionDetailController controller = loader.getController();
             controller.setItemData(item);
 

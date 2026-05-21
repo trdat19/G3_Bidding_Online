@@ -72,6 +72,11 @@
                                  </children></TilePane>
                            </graphic>
                         </Label>
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                           <children>
+                              <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#handleRefresh" styleClass="secondary-button" text="Làm mới" />
+                           </children>
+                        </HBox>
                      </children></VBox>
                   <FlowPane fx:id="auctionContainer" hgap="28.0" prefHeight="200.0" prefWidth="200.0" prefWrapLength="1200.0" vgap="28.0" />
                </children>

@@ -69,7 +69,7 @@
               <shadedClassifierName>server</shadedClassifierName>
               <transformers>
                 <transformer>
-                  <mainClass>server.network.SocketSever</mainClass>
+                  <mainClass>server.network.SocketServer</mainClass>
                 </transformer>
               </transformers>
             </configuration>

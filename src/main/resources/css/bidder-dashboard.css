@@ -239,3 +239,19 @@
     -fx-background-color: linear-gradient(to right, #4338ca, #3730a3);
 
 }
+
+.secondary-button {
+    -fx-background-color: white;
+    -fx-text-fill: #374151;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 12;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 12;
+    -fx-padding: 12 22;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #f9fafb;
+}

@@ -5,59 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b2eef1a4-41bd-4aaf-b744-e1f162b63323" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/client/controller/EditProductController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/client/session/ClientSession.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/server/config/DBconnection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/server/config/TestConection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/server/dao/TestUserDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/server/database/TestConection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/server/database/database.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/server/exception/AuctionClosedException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/server/exception/AuctionException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/server/exception/InvalidBidException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/server/exception/exception.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/shared/exception/test.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/css/edit-product-view.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/view/edit-product-view.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/server/service/AuctionServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/server/service/BidServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_13_2026_1_16_AM_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_13_2026_1_16_AM__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_13_2026_8_30_AM_[Changes]1/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_13_2026_8_30_AM__Changes_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_14_2026_1_05_PM_[Changes]1/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_14_2026_1_05_PM__Changes_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dependency-reduced-pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/dependency-reduced-pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AddProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AddProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AdminDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AdminDashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AdminRequestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AdminRequestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AdminUsersController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AdminUsersController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AuctionDetailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AuctionDetailController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BidderDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BidderDashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BiddingViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BiddingViewController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BidingViewController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/LoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/SellerDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/SellerDashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/SetupAuctionViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/SetupAuctionViewController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/model/Item.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/model/Item.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuctionServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuctionServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/BidServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/SellerServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/SellerServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/ItemDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/ItemDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/database/DBconnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/database/DBconnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/AuctionManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/ItemService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/ItemService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/enums/Action.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/enums/Action.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/enums/AuctionStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/enums/AuctionStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shared/enums/ItemStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shared/enums/ItemStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/css/setup-auction-view.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/css/setup-auction-view.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/add-product-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/add-product-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/admin/admin-dashboard.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-dashboard.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/admin/admin-request.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-request.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/auction-detail.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/SocketSever.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/SocketServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/css/bidder-dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/css/bidder-dashboard.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/view/bidder-dashboard.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/bidder-dashboard.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/bidding-view.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/seller-dashboard.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/seller-dashboard.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/setup-auction-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/setup-auction-view.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +33,7 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="1d20d766-8086-4dbc-b77a-01dd874d886c" />
+        <option name="activeSessionId" value="160c4d58-6744-455c-be0b-0548f55852cf" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
@@ -119,6 +85,14 @@
             <option name="status" value="Completed" />
             <option name="targetType" value="LOCAL" />
           </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="160c4d58-6744-455c-be0b-0548f55852cf" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
         </option>
         <option name="type" value="PANEL" />
       </chat>
@@ -126,6 +100,7 @@
   </component>
   <component name="CopilotPersistence">
     <persistenceIdMap>
+      <entry key="_D:/G3_Bidding_Online" value="3DzxTzrc8Yqc0fTCH5E177b3C0u" />
       <entry key="_D:/UET/LTNC/javaFX/G3_BiddingOnline" value="3CfCJrYpUewYWR28PzbpCOw4LaV" />
     </persistenceIdMap>
   </component>
@@ -136,7 +111,7 @@
     </selectedModels>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="168" />
+    <option name="cachedIndexableFilesCount" value="174" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -198,37 +173,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.MainApplication.executor": "Run",
-    "Application.SocketSever.executor": "Run",
-    "Application.client.MainApplication.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "Merging trdat",
-    "ignore.virus.scanning.warn.message": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/UET/LTNC/javaFX/G3_BiddingOnline",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.17931035",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "to.speed.mode.migration.done": "true",
-    "two.files.diff.last.used.file": "C:/Users/truon/Downloads/G3_Bidding_Online-trdat/G3_Bidding_Online-trdat/src/main/resources/view/add-product-view.fxml",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.MainApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.SocketSever.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestConection.executor&quot;: &quot;Run&quot;,
+    &quot;Application.client.MainApplication.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;trdat&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/UET/LTNC/javaFX/G3_BiddingOnline&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.17931035&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;two.files.diff.last.used.file&quot;: &quot;C:/Users/truon/Downloads/G3_Bidding_Online-trdat/G3_Bidding_Online-trdat/src/main/resources/view/add-product-view.fxml&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\UET\LTNC\javaFX\G3_BiddingOnline\docs" />
@@ -252,7 +228,7 @@
       <option name="filePath" />
       <method v="2" />
     </configuration>
-    <configuration name="MainApplication" type="Application" factoryName="Application">
+    <configuration name="MainApplication" type="Application" factoryName="Application" singleton="false">
       <option name="MAIN_CLASS_NAME" value="client.MainApplication" />
       <module name="G3_BiddingOnline" />
       <method v="2">
@@ -266,8 +242,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="SocketSever" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="server.network.SocketSever" />
+    <configuration name="SocketServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="server.network.SocketServer" />
       <module name="G3_BiddingOnline" />
       <extension name="coverage">
         <pattern>
@@ -305,11 +281,11 @@
     </configuration>
     <list>
       <item itemvalue="Application.MainApplication" />
-      <item itemvalue="Application.SocketSever" />
+      <item itemvalue="Application.SocketServer" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.SocketSever" />
+        <item itemvalue="Application.SocketServer" />
       </list>
     </recent_temporary>
   </component>
@@ -357,6 +333,9 @@
       <workItem from="1779117412289" duration="9005000" />
       <workItem from="1779160822147" duration="3633000" />
       <workItem from="1779176029506" duration="11094000" />
+      <workItem from="1779298711867" duration="826000" />
+      <workItem from="1779329678435" duration="5125000" />
+      <workItem from="1779343639822" duration="2868000" />
     </task>
     <servers />
   </component>
