@@ -3,6 +3,11 @@ package client.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import client.service.ClientNetworkService;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
+
+import java.math.BigDecimal;
 
 public class SellerWalletPopupController {
 
@@ -14,11 +19,24 @@ public class SellerWalletPopupController {
 
     @FXML
     private void initialize() {
-        balanceLabel.setText("$0.00");
+        loadWallet();
         soldRevenueLabel.setText("$0.00");
         soldCountLabel.setText("0");
         productCountLabel.setText("0");
         walletMessageLabel.setText("");
+    }
+
+    private void loadWallet() {
+        BaseResponse response = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest("GET_WALLET", null));
+
+        if (response != null && response.isSuccess() && response.getData() != null) {
+            BigDecimal balance = new BigDecimal(response.getData().toString());
+            balanceLabel.setText("$" + balance.toPlainString());
+        } else {
+            balanceLabel.setText("$0.00");
+            walletMessageLabel.setText(response != null ? response.getMessage() : "Không kết nối được server");
+        }
     }
 
     @FXML

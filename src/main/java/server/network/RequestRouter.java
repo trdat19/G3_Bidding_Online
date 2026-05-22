@@ -70,7 +70,7 @@ public class RequestRouter {
                  */
 
                 case GET_WALLET: {
-                    requireRole(handler, UserRole.BIDDER);
+                    requireLogin(handler);
                     return WalletServerController.getInstance().getWallet(handler);
                 }
 

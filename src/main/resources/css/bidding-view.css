@@ -201,3 +201,48 @@
 .separator .line {
     -fx-border-color: #e2e8f0;
 }
+
+
+/*=====AUTO_BIDDING=====*/
+.auto-bid-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 2;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0.25, 0, 4);
+}
+
+
+
+.auto-bid-panel {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: #a5b4fc;
+    -fx-border-width: 1.5;
+    -fx-padding: 20;
+}
+
+.auto-bid-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #3730a3;
+    -fx-alignment: center;
+}
+
+.auto-bid-enable-button,
+.auto-bid-disable-button {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: 900;
+    -fx-background-radius: 8;
+    -fx-padding: 7 12;
+}
+
+.auto-bid-enable-button:hover,
+.auto-bid-disable-button:hover {
+    -fx-background-color: #1d4ed8;
+}

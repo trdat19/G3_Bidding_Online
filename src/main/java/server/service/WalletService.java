@@ -52,4 +52,30 @@ public class WalletService {
 
         return userDAO.getBalance(userId);
     }
+
+    public BigDecimal addSellerRevenue(Long sellerId, BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Số tiền cộng cho seller phải lớn hơn 0");
+        }
+
+        boolean ok = userDAO.increaseBalance(sellerId, amount);
+
+        if (!ok) {
+            throw new RuntimeException("Không thể cộng tiền cho seller");
+        }
+
+        return userDAO.getBalance(sellerId);
+    }
+
+    public void payWinnerToSeller(Long bidderId, Long sellerId, BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Số tiền thanh toán phải lớn hơn 0");
+        }
+
+        boolean ok = userDAO.transferBalanceIfEnough(bidderId, sellerId, amount);
+
+        if (!ok) {
+            throw new InsufficientBalanceException(userDAO.getBalance(bidderId));
+        }
+    }
 }

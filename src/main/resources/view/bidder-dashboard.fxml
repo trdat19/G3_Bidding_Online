@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -74,7 +73,21 @@
                                     <Label styleClass="section-subtitle" text="Cạnh tranh ngay để sở hữu những sản phẩm tốt nhất." />
                                  </children>
                               </VBox>
-                              <Button mnemonicParsing="false" onAction="#handleOpenWalletPopup" styleClass="wallet-open-button" text="💳 Mở ví" />
+
+                              <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                 <children>
+                                    <VBox alignment="CENTER" prefHeight="42.0" prefWidth="188.0" spacing="4.0" styleClass="bidder-wallet-mini-card">
+                                       <children>
+                                          <Label styleClass="bidder-wallet-mini-title" text="Ví của tôi" />
+                                          <Label fx:id="bidderWalletBalanceLabel" styleClass="bidder-wallet-mini-balance" text="\$0.00" />
+                                       </children>
+                                    </VBox>
+
+                                    <Button mnemonicParsing="false" onAction="#handleOpenWalletPopup" styleClass="wallet-open-button" text="💳 Mở ví" />
+                                 </children>
+                              </HBox>
+
+
                            </children>
                         </HBox>
                         <FlowPane fx:id="auctionContainer" hgap="28.0" prefWrapLength="980.0" vgap="28.0" />

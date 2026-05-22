@@ -28,6 +28,7 @@ import javafx.stage.Stage;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
@@ -41,6 +42,9 @@ public class SellerDashboardController {
     @FXML
     private FlowPane productContainer;
 
+    @FXML
+    private Label sellerWalletBalanceLabel;
+
     private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
 
     private final List<Item> itemList = new ArrayList<>();
@@ -50,6 +54,7 @@ public class SellerDashboardController {
     public void initialize() {
         sellerNameLabel.setText(ClientSession.getCurrentUserFullName());
         refreshProducts();
+        loadSellerWalletBalance();
 
         ClientNetworkService.getInstance().addEventListener(realtimeListener);
     }
@@ -382,7 +387,21 @@ public class SellerDashboardController {
             return;
         }
 
-        Platform.runLater(this::refreshProducts);
+        Platform.runLater(() -> {
+            refreshProducts();
+            loadSellerWalletBalance();
+        });
     }
 
+    private void loadSellerWalletBalance() {
+        BaseResponse response = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest("GET_WALLET", null));
+
+        if (response != null && response.isSuccess() && response.getData() != null) {
+            BigDecimal balance = new BigDecimal(response.getData().toString());
+            sellerWalletBalanceLabel.setText("$" + balance.toPlainString());
+        } else {
+            sellerWalletBalanceLabel.setText("$0.00");
+        }
+    }
 }

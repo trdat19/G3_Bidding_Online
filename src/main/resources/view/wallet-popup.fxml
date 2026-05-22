@@ -24,17 +24,17 @@
         <VBox spacing="6.0" styleClass="wallet-balance-card">
             <children>
                 <Label styleClass="wallet-title" text="SỐ DƯ HIỆN TẠI" />
-                <Label fx:id="walletBalanceLabel" styleClass="wallet-balance" text="/$0.00" />
+                <Label fx:id="walletBalanceLabel" styleClass="wallet-balance" text="\$0.00" />
             </children>
         </VBox>
 
         <Label styleClass="wallet-title" text="NẠP NHANH" />
         <HBox spacing="10.0">
             <children>
-                <Button mnemonicParsing="false" onAction="#handleQuickDeposit50" styleClass="quick-amount-button" text="/$50" />
-                <Button mnemonicParsing="false" onAction="#handleQuickDeposit100" styleClass="quick-amount-button" text="/$100" />
-                <Button mnemonicParsing="false" onAction="#handleQuickDeposit500" styleClass="quick-amount-button" text="/$500" />
-                <Button mnemonicParsing="false" onAction="#handleQuickDeposit1000" styleClass="quick-amount-button" text="/$1000" />
+                <Button mnemonicParsing="false" onAction="#handleQuickDeposit50" styleClass="quick-amount-button" text="\$50" />
+                <Button mnemonicParsing="false" onAction="#handleQuickDeposit100" styleClass="quick-amount-button" text="\$100" />
+                <Button mnemonicParsing="false" onAction="#handleQuickDeposit500" styleClass="quick-amount-button" text="\$500" />
+                <Button mnemonicParsing="false" onAction="#handleQuickDeposit1000" styleClass="quick-amount-button" text="\$1000" />
             </children>
         </HBox>
 

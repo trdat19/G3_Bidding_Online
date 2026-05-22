@@ -17,6 +17,7 @@ public class Item {
     private int bidCount;
     private Long id;
     private String imageUrl;
+    private double minIncrement;
 
 
     public Item(String title, String category, String description,
@@ -75,6 +76,8 @@ public class Item {
 
     public void setImageUrl(String imageUrl) {this.imageUrl = imageUrl;}
 
+    public void setMinIncrement(double minIncrement) {this.minIncrement = minIncrement;}
+
     //getter
     public String getTitle() {
         return title;
@@ -119,4 +122,6 @@ public class Item {
     public Long getId() {return id;}
 
     public String getImageUrl() {return imageUrl;}
+
+    public double getMinIncrement() {return minIncrement;}
 }

@@ -235,36 +235,63 @@ public class AuctionService {
             return null;
         }
 
+        Item item = itemDAO.findById(auction.getItemId());
+
         //check trạng thái
-        if (auction.getStatus() == AuctionStatus.FINISHED ||
-            auction.getStatus() == AuctionStatus.CANCELLED) {
-                return null;
+        if (auction.getStatus() == AuctionStatus.CANCELLED) {
+            return null;
+        }
+
+        if (auction.getStatus() == AuctionStatus.FINISHED
+                && (item == null || item.getStatusItem() != ItemStatus.ACTIVE)) {
+            return null;
         }
 
         //cập nhật
-        auctionDAO.updateStatus(auctionId, AuctionStatus.FINISHED);
-
         //Xác định winner từ highestBid, có rồi thì là item đã bán
         Bid highestBid = bidDAO.getHighestBidByAuctionId(auctionId);
-        if (highestBid != null) {
-            WalletService.getInstance().payForWinningBid(
-                    highestBid.getBidderId(),
-                    highestBid.getAmount()
-            );
 
-            itemDAO.updateStatus(auction.getItemId(), ItemStatus.SOLD);
+        try {
+            if (highestBid != null) {
+                WalletService.getInstance().payWinnerToSeller(
+                        highestBid.getBidderId(),
+                        auction.getSellerId(),
+                        highestBid.getAmount()
+                );
+
+                if (!itemDAO.updateStatus(auction.getItemId(), ItemStatus.SOLD)) {
+                    throw new RuntimeException("Khong cap nhat duoc trang thai item SOLD");
+                }
+            } else {
+                if (!itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED)) {
+                    throw new RuntimeException("Khong cap nhat duoc trang thai item CANCELLED");
+                }
+            }
+
+            if (auction.getStatus() != AuctionStatus.FINISHED
+                    && !auctionDAO.updateStatus(auctionId, AuctionStatus.FINISHED)) {
+                throw new RuntimeException("Khong cap nhat duoc trang thai auction FINISHED");
+            }
+        } catch (Exception e) {
+            System.err.println(">>> [AuctionService] Loi ket thuc phien #" + auctionId + ": " + e.getMessage());
+            data.put("message", e.getMessage());
+            data.put("highestBid", highestBid);
+            return data;
         }
-        else
-        {
-            itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
-        }
+
+        BaseResponse sellerEvent = new BaseResponse(
+                true,
+                "Phiên đấu giá đã kết thúc, trạng thái sản phẩm đã thay đổi",
+                auction.getItemId()
+        );
+        sellerEvent.setAction("SELLER_ITEMS_CHANGED");
+
+        RealtimePushServer.pushToUser(auction.getSellerId(), sellerEvent);
 
         String winnerMsg;
         if (highestBid != null) {
             User winner = userDAO.findById(highestBid.getBidderId());
 
-            //Nếu mà tìm thấy thì hiển thị tên, không thì hiển thị ID (trường hợp user đã bị xoá)
-            // vì bid vẫn còn lưu bidderId
             String winnerName = (winner != null)
                     ? winner.getFullName()
                     : String.format("ID: %d", highestBid.getBidderId());

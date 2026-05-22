@@ -361,3 +361,26 @@
     -fx-border-color: #dbeafe;
     -fx-padding: 16;
 }
+
+
+.bidder-wallet-mini-card {
+    -fx-background-color: #ecfdf5;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #a7f3d0;
+    -fx-border-width: 1.5;
+    -fx-padding: 10 18;
+    -fx-min-width: 145;
+}
+
+.bidder-wallet-mini-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #475569;
+}
+
+.bidder-wallet-mini-balance {
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #047857;
+}
