@@ -2,21 +2,25 @@ package client.controller;
 
 import client.model.Item;
 import client.service.ClientNetworkService;
-import client.state.ClientSession;
+import client.session.ClientSession;
 import client.util.StageUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -35,6 +39,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class BidderDashboardController {
     @FXML
@@ -53,31 +60,61 @@ public class BidderDashboardController {
     private Label walletMessageLabel;
 
     private final List<Item> itemList = new ArrayList<>();
-    private final List<CountdownView> countdownViews = new ArrayList<>();
-    private Timeline countdownTimeline;
+    private final List<Timeline> countdownTimelines = new ArrayList<>();
+    private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
+    private Timeline refreshTimeLine;
 
     @FXML
     public void initialize() {
-        bidderNameLabel.setText(ClientSession.getFullName());
+        bidderNameLabel.setText(ClientSession.getCurrentUserFullName());
+        loadAuctionsFromServer();
+        startAutoRefresh();
+
+        ClientNetworkService.getInstance().addEventListener(realtimeListener);
+        ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest(Action.SUBSCRIBE_AUCTION_LIST, null));
+    }
+
+    @FXML
+    private void handleRefresh() {
         loadAuctionsFromServer();
     }
-    public void setFullName(String fullName) {
-        if (fullName == null || fullName.isBlank()) {
-            bidderNameLabel.setText("Bidder");
-        }
-        else {
-            bidderNameLabel.setText(fullName);
+
+    @FXML
+    private void handleOpenWalletPopup(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/wallet-popup.fxml"));
+
+            Stage popup = new Stage();
+            popup.setTitle("Ví của tôi");
+            popup.setScene(new Scene(root));
+            popup.initOwner(((Node) event.getSource()).getScene().getWindow());
+            popup.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
+    private void handleRealtimeEvent(BaseResponse response) {
+        if (!"AUCTION_LIST_CHANGED".equals(response.getAction()))
+        {
+            return;
+        }
+        Platform.runLater(this::loadAuctionsFromServer);
+    }
+
     private void loadAuctionsFromServer() {
         BaseRequest request = new BaseRequest(Action.GET_AUCTION_LIST, null);
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+
         itemList.clear();
-        countdownViews.clear();
+        stopCountdowns();
+        auctionContainer.getChildren().clear();
+//countdownViews.clear();
+
         if (response == null || !response.isSuccess() || response.getData() == null) {
-            stopCountdownTimer();
-            auctionContainer.getChildren().clear();
-            auctionContainer.getChildren().add (new Label(
+            auctionContainer.getChildren().add(new Label(
                     response != null ? response.getMessage() : "Khong ket noi duoc server"
             ));
             return;
@@ -88,6 +125,7 @@ public class BidderDashboardController {
         }
         loadAuctions();
     }
+
     private void loadAuctions() {
         auctionContainer.getChildren().clear();
         countdownViews.clear();
@@ -109,6 +147,7 @@ public class BidderDashboardController {
                 auction.getStatus()!= null ? auction.getStatus().name() : "",
                 auction.getBidCount()
         );
+        item.setId(auction.getId());
         item.setImageUrl(auction.getItemImageUrl());
         return item;
     }
@@ -134,15 +173,15 @@ public class BidderDashboardController {
         StackPane.setAlignment(statusBadge, Pos.TOP_RIGHT);
         StackPane.setMargin(statusBadge, new Insets(12, 12, 0, 0));
 
-        if(item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
+        if (item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
             ImageView imageView = new ImageView(new Image(item.getImageUrl(), true));
             imageView.setFitWidth(330);
             imageView.setFitHeight(210);
             imageView.setPreserveRatio(true);
             imageView.setSmooth(true);
+
             imageBox.getChildren().add(imageView);
-        }
-        else {
+        } else {
             Label imagePlaceholder = new Label("Image");
             imagePlaceholder.getStyleClass().add("image-placeholder");
             imageBox.getChildren().add(imagePlaceholder);
@@ -189,7 +228,7 @@ public class BidderDashboardController {
 
         Label timeValue = new Label(formatTimeLeft(getCountdownTarget(item)));
         timeValue.getStyleClass().add("time-left");
-        countdownViews.add(new CountdownView(timeText, timeValue, item));
+        startCountdown(timeText, timeValue, statusBadge, item.getStartTime(), item.getEndTime());
 
         timeBox.getChildren().addAll(timeText, timeValue);
 
@@ -209,58 +248,29 @@ public class BidderDashboardController {
 
         return card;
     }
-    @FXML private void handleOpenWalletPopup() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/wallet-popup.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Ví");
-            stage.show();
-        }catch (IOException e) {
-            e.printStackTrace();
+    private void stopCountdowns() {
+        for (Timeline timeline : countdownTimelines) {
+            timeline.stop();
         }
-
-    }
-    @FXML private void handleRefresh() {
-        loadAuctionsFromServer();
+        countdownTimelines.clear();
     }
 
-    private void startCountdownTimer() {
-        stopCountdownTimer();
-        if (countdownViews.isEmpty()) {
-            return;
-        }
+    private void startCountdown(Label titleLabel, Label valueLabel, Label statusLabel,
+                                LocalDateTime startTime, LocalDateTime endTime) {
+        updateAuctionTimeUI(titleLabel, valueLabel, statusLabel, startTime, endTime);
 
-        countdownTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), event -> updateCountdowns())
-        );
-        countdownTimeline.setCycleCount(Timeline.INDEFINITE);
-        countdownTimeline.play();
-        updateCountdowns();
-    }
-    private void updateCountdowns() {
-        for (CountdownView countdownView : countdownViews) {
-            countdownView.label.setText(getCountdownTitle(countdownView.item));
-            countdownView.valueLabel.setText(formatTimeLeft(getCountdownTarget(countdownView.item)));
-        }
-    }
-    private void stopCountdownTimer() {
-        if (countdownTimeline != null) {
-            countdownTimeline.stop();
-            countdownTimeline = null;
-        }
-    }
-    private String formatTimeLeft(LocalDateTime endTime) {
-        if (endTime == null) {
-            return "--:--:--";
-        }
-
-        java.time.Duration remaining = java.time.Duration.between(
-                LocalDateTime.now(),
-                endTime
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), event ->
+                        updateAuctionTimeUI(titleLabel, valueLabel, statusLabel, startTime, endTime)
+                )
         );
 
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+        countdownTimelines.add(timeline);
+    }
+    private String formatDuration(LocalDateTime from, LocalDateTime to) {
+        java.time.Duration remaining = java.time.Duration.between(from, to);
         long seconds = remaining.getSeconds();
 
         if (seconds <= 0) {
@@ -273,11 +283,38 @@ public class BidderDashboardController {
 
         return String.format("%02d:%02d:%02d", hours, minutes, secs);
     }
+    private void updateAuctionTimeUI(Label titleLabel, Label valueLabel, Label statusLabel,
+                                     LocalDateTime startTime, LocalDateTime endTime) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (startTime != null && now.isBefore(startTime)) {
+            statusLabel.setText("Sắp diễn ra");
+            titleLabel.setText("BẮT ĐẦU SAU");
+            valueLabel.setText(formatDuration(now, startTime));
+            return;
+        }
+
+        if (endTime != null && now.isBefore(endTime)) {
+            statusLabel.setText("Đang diễn ra");
+            titleLabel.setText("CÒN LẠI");
+            valueLabel.setText(formatDuration(now, endTime));
+            return;
+        }
+        statusLabel.setText("Đã kết thúc");
+        titleLabel.setText("ĐÃ KẾT THÚC");
+        valueLabel.setText("00:00:00");
+    }
+
     @FXML
     private void handleLogout(ActionEvent event) {
-        try {
-            stopCountdownTimer();
+        stopAutoRefresh();
+        stopCountdowns();
+        stopCountdownTimer();
 
+        BaseRequest logoutRequest = new BaseRequest(Action.LOGOUT, null);
+        BaseResponse response = ClientNetworkService.getInstance().sendRequest(logoutRequest);
+
+        try {
             BaseRequest logoutRequest = new BaseRequest(Action.LOGOUT, null);
             BaseResponse response = ClientNetworkService.getInstance().sendRequest(logoutRequest);
 
@@ -304,8 +341,9 @@ public class BidderDashboardController {
     }
     @FXML
     private void viewDetail(Item item) {
+        stopAutoRefresh();
+        stopCountdowns();
         try {
-            stopCountdownTimer();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/auction-detail.fxml"));
             Parent root = loader.load();
 
@@ -326,6 +364,25 @@ public class BidderDashboardController {
             e.printStackTrace();
         }
     }
+    public void setBidderName(String bidderName) {
+        bidderNameLabel.setText(bidderName);
+    }
+    private void startAutoRefresh()
+    {
+        refreshTimeLine = new Timeline(new KeyFrame(Duration.seconds(5), event -> loadAuctionsFromServer()));
+        refreshTimeLine.setCycleCount(Timeline.INDEFINITE);
+        refreshTimeLine.play();
+    }
+
+    private void stopAutoRefresh()
+    {
+        if(refreshTimeLine != null)
+        {
+            refreshTimeLine.stop();
+            refreshTimeLine = null;
+        }
+    }
+
 
     private static class CountdownView {
         private final Label label;
@@ -351,3 +408,5 @@ public class BidderDashboardController {
         return isBeforeStart(item) ? "BẮT ĐẦU SAU" : "CÒN LẠI";
     }
 }
+}
+

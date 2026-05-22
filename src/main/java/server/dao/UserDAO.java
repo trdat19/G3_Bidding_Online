@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.Database.DBconnection;
 import server.model.user.Admin;
 import server.model.user.Bidder;
 import server.model.user.Seller;
@@ -16,8 +16,8 @@ import java.util.List;
 public class UserDAO {
 
     public boolean insertUser(User user) {
-        String sql = "INSERT INTO users(username, password, full_name, email, role, status, balance) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users(username, password, full_name, email, role, status) " +
+                     "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DBconnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
@@ -246,22 +246,19 @@ public class UserDAO {
 
         User user = null;
         switch (role) {
-            case "ADMIN": {
+            case "ADMIN":
                 user = new Admin();
                 break;
-            }
-            case "SELLER": {
+            case "SELLER":
                 user = new Seller();
-                ((Seller) user).setTotalEarnings(rs.getBigDecimal("balance"));
+                //user.setTotalEarning();
                 break;
-            }
-            default: {
+            default:
                 user = new Bidder();
-                ((Bidder) user).setBalance(rs.getBigDecimal("balance"));
+                //user.setBalance()
                 //user.setMaxBid();
                 //user.setBidIncrement();
                 break;
-            }
         }
 
         user.setId(rs.getLong("id"));
@@ -271,6 +268,9 @@ public class UserDAO {
         user.setEmail(rs.getString("email"));
         user.setRole(UserRole.valueOf(rs.getString("role")));
         user.setStatus(UserStatus.valueOf(rs.getString("status")));
+        if (user instanceof Bidder bidder) {
+            bidder.setBalance(rs.getBigDecimal("balance"));
+        }
 
         Timestamp ts = rs.getTimestamp("created_at");
         if (ts != null) {
@@ -296,5 +296,63 @@ public class UserDAO {
             System.err.println("findAll error: " + e.getMessage());
         }
         return users;
+    }
+
+    public BigDecimal getBalance(long userId) {
+        String sql = "SELECT balance FROM users WHERE id = ?";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBigDecimal("balance");
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("getBalance error: " + e.getMessage());
+        }
+
+        return BigDecimal.ZERO;
+    }
+
+    public boolean increaseBalance(long userId, BigDecimal amount) {
+        String sql = "UPDATE users SET balance = balance + ? WHERE id = ?";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setBigDecimal(1, amount);
+            ps.setLong(2, userId);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("increaseBalance error: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    public boolean decreaseBalanceIfEnough(long userId, BigDecimal amount) {
+        String sql = "UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setBigDecimal(1, amount);
+            ps.setLong(2, userId);
+            ps.setBigDecimal(3, amount);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("decreaseBalanceIfEnough error: " + e.getMessage());
+        }
+
+        return false;
     }
 }

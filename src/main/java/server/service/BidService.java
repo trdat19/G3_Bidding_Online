@@ -65,11 +65,14 @@ public class BidService {
 
         // 1. Lấy phiên đấu giá từ DB + kiểm tra thời gian
         Auction auction = auctionDAO.findById(auctionId);
+        if (auction == null) {
+            throw new AuctionNotFoundException(auctionId);
+        }
 
         LocalDateTime now = LocalDateTime.now();
 
         if (auction.getStartTime() != null && now.isBefore(auction.getStartTime())) {
-            throw new RuntimeException("Phiên đấu giá chưa bắt đầu!");
+            throw new InvalidAuctionTimeException(now);
         }
 
         if (auction.getEndTime() != null && now.isAfter(auction.getEndTime())) {
@@ -101,16 +104,20 @@ public class BidService {
         // 4. Tính mức giá tối thiểu hợp lệ
         Bid currentHighest = bidDAO.getHighestBidByAuctionId(auctionId);
         BigDecimal minBid;
+
+        BigDecimal minIncrement = auction.getMinIncrement() != null ? auction.getMinIncrement() : BigDecimal.ZERO;
+
         if (currentHighest == null) {
-            minBid = auction.getStartPrice();
+            minBid = auction.getStartPrice().add(minIncrement);
         }
         else {
-            minBid = currentHighest.getAmount().add(auction.getMinIncrement());
+            minBid = currentHighest.getAmount().add(minIncrement);
         }
 
         if (amount.compareTo(minBid) < 0) {
             throw new BidTooLowException(minBid);
         }
+        WalletService.getInstance().checkCanBid(bidderId, amount);
 
         // 5. Kiểm tra Buy-Now: Nếu bid >= buyNow -> chốt ngay
         boolean buyNowTriggered = auction.getBuyNowPrice() != null
@@ -152,7 +159,10 @@ public class BidService {
         // 12. Push realtime tới tất cả client đang xem phiên này
         BidDTO bidDTO = new BidDTO(bid.getId(), auctionId, bidderId,
                 bidderName, amount, bid.getTimestamp());
+
         BaseResponse bidEvent = new BaseResponse(true, "NEW_BID", bidDTO);
+        bidEvent.setAction("NEW_BID");
+
         RealtimePushServer.pushToAuctionSubscribers(auctionId, bidEvent);
 
         System.out.printf(">>> [BidService] %s đặt giá %s cho phiên #%d%n",

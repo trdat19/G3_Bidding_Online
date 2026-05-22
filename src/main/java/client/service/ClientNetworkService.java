@@ -88,7 +88,7 @@ public class ClientNetworkService {
                     Object obj = in.readObject();
 
                     if (obj instanceof BaseResponse response) {
-                        if ("NEW_BID".equals(response.getAction())) {
+                        if (response.getAction() != null && !response.getAction().isBlank()) {
                             for (Consumer<BaseResponse> listener : eventListeners) {
                                 listener.accept(response);
                             }

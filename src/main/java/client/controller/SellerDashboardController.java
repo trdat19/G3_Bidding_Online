@@ -1,8 +1,11 @@
 package client.controller;
 
 import client.model.Item;
-import client.state.ClientSession;
+import client.service.ClientNetworkService;
+import client.session.ClientSession;
 import client.util.StageUtils;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,12 +26,17 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
 import shared.dto.common.ItemDTO;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import javafx.application.Platform;
+import java.util.function.Consumer;
 import client.service.ClientNetworkService;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
@@ -43,33 +51,35 @@ public class SellerDashboardController {
     @FXML
     private FlowPane productContainer;
 
+    private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
+
     private final List<ItemDTO> itemList = new ArrayList<>();
+    private Timeline refreshTimeline;
 
     @FXML
     public void initialize() {
-        loadProductsFromServer();
-    }
-    public void setFullName(String fullName) {
-        if (fullName == null || fullName.isBlank()) {
-            sellerNameLabel.setText("Bidder");
-        }
-        else {
-            sellerNameLabel.setText(fullName);
-        }
-    }
-    private void loadProductsFromServer() {
-        BaseRequest request = new BaseRequest(Action.GET_SELLER_ITEMS, null);
-        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+        sellerNameLabel.setText(ClientSession.getCurrentUserFullName());
+        refreshProducts();
 
-        itemList.clear();
-        if (response != null && response.isSuccess() && response.getData() != null)  {
-            itemList.addAll((List<ItemDTO>) response.getData());
-        }
-        else {
-        System.out.println(response != null ? response.getMessage() : "Không kết nối được server");
-       }
-        loadProducts();
+        ClientNetworkService.getInstance().addEventListener(realtimeListener);
     }
+
+    @FXML
+    private void handleOpenSellerWalletPopup(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/seller-wallet-popup.fxml"));
+
+            Stage popup = new Stage();
+            popup.setTitle("Ví bán hàng");
+            popup.setScene(new Scene(root));
+            popup.initOwner(((Node) event.getSource()).getScene().getWindow());
+            popup.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void loadProducts() {
         productContainer.getChildren().clear();
         for (ItemDTO item :itemList) {
@@ -80,46 +90,43 @@ public class SellerDashboardController {
     private VBox createProductCard(ItemDTO item) {
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
-        card.setPrefWidth(310);
+        card.setPrefWidth(360);
         card.setSpacing(0);
 
         StackPane imageBox = new StackPane();
         imageBox.getStyleClass().add("product-image");
-        imageBox.setPrefHeight(125);
+        Label categoryBadge = new Label(item.getCategory().name());
+        categoryBadge.getStyleClass().add("category-badge");
+        StackPane.setMargin(categoryBadge, new Insets(14, 0, 0, 14));
+        StackPane.setAlignment(categoryBadge, javafx.geometry.Pos.TOP_LEFT);
+        imageBox.setPrefHeight(150);
 
         if (item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
             ImageView imageView = new ImageView(new Image(item.getImageUrl(), true));
-            imageView.setFitWidth(310);
-            imageView.setFitHeight(125);
+            imageView.setFitWidth(340);
+            imageView.setFitHeight(150);
             imageView.setPreserveRatio(true);
-            imageView.setSmooth(true);
             imageBox.getChildren().add(imageView);
-        }
-        else {
+        } else {
             Label imageText = new Label("Image");
             imageText.setStyle("-fx-font-size: 48px; -fx-text-fill: #cbd5e1;");
             imageBox.getChildren().add(imageText);
         }
 
-        Label categoryBadge = new Label(item.getCategory().name());
-        categoryBadge.getStyleClass().add("category-badge");
-        StackPane.setMargin(categoryBadge, new Insets(14, 0, 0, 14));
-        StackPane.setAlignment(categoryBadge, javafx.geometry.Pos.TOP_LEFT);
-
         imageBox.getChildren().add(categoryBadge);
 
-        VBox body = new VBox(8);
-        body.setPadding(new Insets(14));
+        VBox body = new VBox(10);
+        body.setPadding(new Insets(18));
 
         Label titleLabel = new Label(item.getName());
         titleLabel.getStyleClass().add("product-title");
         titleLabel.setWrapText(true);
-        titleLabel.setMaxWidth(282);
+        titleLabel.setMaxWidth(324);
 
         Label descLabel = new Label(item.getDescription());
         descLabel.getStyleClass().add("product-desc");
         descLabel.setWrapText(true);
-        descLabel.setMaxWidth(282);
+        descLabel.setMaxWidth(324);
 
         HBox priceRow = new HBox(12);
         VBox priceBox = new VBox(6);
@@ -139,7 +146,7 @@ public class SellerDashboardController {
         Label statusDesc = new Label(getStatusDescription(item.getStatus().name()));
         statusDesc.getStyleClass().add("status-desc");
         statusDesc.setWrapText(true);
-        statusDesc.setMaxWidth(282);
+        statusDesc.setMaxWidth(324);
         statusBox.getChildren().addAll(statusLabel, statusValue);
 
         Region spacer = new Region();
@@ -148,51 +155,24 @@ public class SellerDashboardController {
         priceRow.getChildren().addAll(priceBox, spacer, statusBox);
 
         //Doi UI theo tung status
-        FlowPane actionRow = new FlowPane(8, 8);
-        String status = item.getStatus()!= null ? item.getStatus().name() : "";
-        if ("PENDING".equals(status)) {
-            Button editButton = new Button("Chỉnh sửa");
-            editButton.getStyleClass().add("edit-button");
-            editButton.setMinWidth(92);
-            editButton.setOnAction(e -> handleEditProduct(item));
+        HBox actionRow = new HBox(12);
 
-            Button deleteButton = new Button("Xóa");
-            deleteButton.getStyleClass().add("delete-button");
-            deleteButton.setMinWidth(58);
-            deleteButton.setOnAction(e -> handleDeleteProduct(item));
+        Button createAuctionButton = new Button("Tạo đấu giá");
+        createAuctionButton.getStyleClass().add("edit-button");
+        createAuctionButton.setOnAction(e -> handleCreateAuction(item));
 
-            Button createAuctionButton = new Button("Tạo đấu giá");
-            createAuctionButton.getStyleClass().add("edit-button");
-            createAuctionButton.setMinWidth(112);
-            createAuctionButton.setOnAction(e -> handleCreateAuction(item));
+        Button editButton = new Button("Edit");
+        editButton.getStyleClass().add("edit-button");
+        editButton.setOnAction(e -> handleEditProduct(item));
 
-            actionRow.getChildren().addAll(editButton, deleteButton, createAuctionButton);
-
-        }
-        else if ("WAITING_APPROVAL".equals(status)) {
-            Label waitingLabel = new Label("Chờ admin duyệt");
-            waitingLabel.getStyleClass().add("status-pill");
-            actionRow.getChildren().add(waitingLabel);
-
-        } else if ("ACTIVE".equals(status)) {
-            Label approvedLabel = new Label("Đã được admin duyệt");
-            approvedLabel.getStyleClass().add("status-pill");
-            actionRow.getChildren().add(approvedLabel);
+        Button deleteButton = new Button("Delete");
+        deleteButton.getStyleClass().add("delete-button");
+        deleteButton.setOnAction(e -> handleDeleteProduct(item));
 
 
-        } else if ("SOLD".equals(status)) {
-            Button viewButton = new Button("Xem chi tiết");
-            viewButton.getStyleClass().add("edit-button");
 
-            actionRow.getChildren().add(viewButton);
+        actionRow.getChildren().addAll(editButton, deleteButton, createAuctionButton);
 
-        } else if ("CANCELLED".equals(status)) {
-            Button deleteButton = new Button("Delete");
-            deleteButton.getStyleClass().add("delete-button");
-            deleteButton.setOnAction(e -> handleDeleteProduct(item));
-
-            actionRow.getChildren().add(deleteButton);
-        }
         body.getChildren().addAll(titleLabel, descLabel, priceRow, statusDesc, actionRow);
         card.getChildren().addAll(imageBox, body);
         return card;
@@ -200,8 +180,9 @@ public class SellerDashboardController {
     //các helper để setText theo từng Status: PENDING, ACTIVE SOLD,CANCELLED
     private String getStatusText(String status) {
         return switch (status) {
-            case "PENDING" -> "Chờ duyệt";
-            case "ACTIVE" -> "Đã duyệt";
+            case "PENDING" -> "Đã thêm";
+            case "WAITING_APPROVAL" -> "Chờ duyệt";
+            case "ACTIVE" -> "Đang được đấu giá";
             case "SOLD" -> "Đã bán";
             case "CANCELLED" -> "Đã hủy";
             default -> status;
@@ -209,16 +190,18 @@ public class SellerDashboardController {
     }
     private String getStatusDescription(String status) {
         return switch (status) {
-            case "PENDING" -> "Sản phẩm đang chờ admin kiểm duyệt.";
-            case "ACTIVE" -> "Phiên đấu giá của sản phẩm đã được admin duyệt.";
+            case "PENDING" -> "Sản phẩm đã được thêm, có thể tạo đấu giá.";
+            case "WAITING_APPROVAL" -> "Sản phẩm đang chờ admin duyệt phiên đấu giá.";
+            case "ACTIVE" -> "Sản phẩm đang được đấu giá, không thể chỉnh sửa.";
             case "SOLD" -> "Sản phẩm đã bán thành công.";
-            case "CANCELLED" -> "Sản phẩm hoặc phiên đấu giá đã bị hủy.";
+            case "CANCELLED" -> "Phiên đấu giá đã kết thúc nhưng không có ai đặt giá. Có thể tạo lại phiên đấu giá mới";
             default -> "";
         };
     }
     private String getStatusStyleClass(String status) {
         return switch (status) {
             case "PENDING" -> "status-pending";
+            case "WAITING_APPROVAL" -> "status-waiting";
             case "ACTIVE" -> "status-active";
             case "SOLD" -> "status-sold";
             case "CANCELLED" -> "status-cancelled";
@@ -227,6 +210,7 @@ public class SellerDashboardController {
     }
     @FXML
     private void handleLogout(ActionEvent event) {
+
         try {
             BaseRequest logoutRequest = new BaseRequest(Action.LOGOUT, null);
             BaseResponse response = ClientNetworkService.getInstance().sendRequest(logoutRequest);
@@ -280,10 +264,14 @@ public class SellerDashboardController {
             e.printStackTrace();
         }
     }
+    public void addNewProduct(ItemDTO item) {
+        itemList.add(item);
+        loadProducts();
+
+    }
     @FXML
     private void handleRefresh() {
-        System.out.println("Refresh clicked");
-        loadProductsFromServer();
+        refreshProducts();
     }
 
     private void handleEditProduct(ItemDTO item) {
@@ -316,10 +304,9 @@ public class SellerDashboardController {
             stage.setTitle("Thiết lập phiên đấu giá");
             stage.setScene(new Scene(root));
             stage.show();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private void handleDeleteProduct(ItemDTO item) {
@@ -364,10 +351,44 @@ public class SellerDashboardController {
 
     }
     public void refreshProducts() {
+        BaseResponse response = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest(Action.GET_SELLER_ITEMS, null));
 
-        loadProductsFromServer();
+        if (response == null || !response.isSuccess()) {
+            System.out.println(response != null ? response.getMessage() : "Khong ket noi duoc server");
+            return;
+        }
+
+        itemList.clear();
+
+        List<ItemDTO> serverItems = (List<ItemDTO>) response.getData();
+        for (Object obj : serverItems) {
+            server.model.item.Item serverItem = (server.model.item.Item) obj;
+
+            Item item = new Item(
+                    serverItem.getNameItem(),
+                    serverItem.getCategory().name(),
+                    serverItem.getDescription(),
+                    1,
+                    1,
+                    "",
+                    serverItem.getCreatedAtItem(),
+                    serverItem.getCreatedAtItem(),
+                    serverItem.getStatusItem().name(),
+                    0
+            );
+
+            item.setId(serverItem.getId());
+            item.setImageUrl(serverItem.getImageUrl());
+            itemList.add(item);
+        }
+
+        loadProducts();
     }
-    //Hàm để ktra có tạo đấu giá được không
+    public void setSellerName(String sellerName) {
+        sellerNameLabel.setText(sellerName);
+    }
+
     private boolean canManageItem(ItemDTO item) {
         return ItemStatus.PENDING.equals(item.getStatus())
                 || ItemStatus.CANCELLED.equals(item.getStatus());
@@ -381,6 +402,7 @@ public class SellerDashboardController {
                 + getStatusDescriptionForAlert(item.getStatus()) + ".");
         alert.showAndWait();
     }
+
     private String getStatusDescriptionForAlert(ItemStatus status) {
         return switch (status) {
             case ItemStatus.WAITING_APPROVAL -> "Đang chờ admin duyệt";
@@ -391,4 +413,13 @@ public class SellerDashboardController {
             default -> "Ở trạng thái " + status;
         };
     }
+
+    private void handleRealtimeEvent(BaseResponse response) {
+        if (!"SELLER_ITEMS_CHANGED".equals(response.getAction())) {
+            return;
+        }
+
+        Platform.runLater(this::refreshProducts);
+    }
+
 }
