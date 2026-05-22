@@ -362,25 +362,28 @@ public class SellerDashboardController {
         itemList.clear();
 
         List<ItemDTO> serverItems = (List<ItemDTO>) response.getData();
-        for (Object obj : serverItems) {
-            server.model.item.Item serverItem = (server.model.item.Item) obj;
-
-            Item item = new Item(
-                    serverItem.getNameItem(),
-                    serverItem.getCategory().name(),
-                    serverItem.getDescription(),
-                    1,
-                    1,
-                    "",
-                    serverItem.getCreatedAtItem(),
-                    serverItem.getCreatedAtItem(),
-                    serverItem.getStatusItem().name(),
-                    0
-            );
-
-            item.setId(serverItem.getId());
-            item.setImageUrl(serverItem.getImageUrl());
-            itemList.add(item);
+//        for (ItemDTO obj : serverItems) {
+//            server.model.item.Item serverItem = (server.model.item.Item) obj;
+//
+//            Item item = new Item(
+//                    serverItem.getNameItem(),
+//                    serverItem.getCategory().name(),
+//                    serverItem.getDescription(),
+//                    1,
+//                    1,
+//                    "",
+//                    serverItem.getCreatedAtItem(),
+//                    serverItem.getCreatedAtItem(),
+//                    serverItem.getStatusItem().name(),
+//                    0
+//            );
+//
+//            item.setId(serverItem.getId());
+//            item.setImageUrl(serverItem.getImageUrl());
+//            itemList.add(item);
+//        }
+        for (ItemDTO itemDTO : serverItems) {
+            itemList.add(itemDTO);
         }
 
         loadProducts();

@@ -12,6 +12,8 @@ import shared.dto.response.BaseResponse;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import shared.enums.Action;
+
 public class WalletPopupController {
 
     @FXML
@@ -28,7 +30,7 @@ public class WalletPopupController {
 
     private void loadBalance() {
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("GET_WALLET", null));
+                .sendRequest(new BaseRequest(Action.GET_WALLET, null));
 
         if (response != null && response.isSuccess() && response.getData() != null) {
             BigDecimal balance = (BigDecimal) response.getData();
@@ -69,7 +71,7 @@ public class WalletPopupController {
             }
 
             BaseResponse response = ClientNetworkService.getInstance()
-                    .sendRequest(new BaseRequest("DEPOSIT_WALLET", amount));
+                    .sendRequest(new BaseRequest(Action.DEPOSIT_WALLET, amount));
 
             if (response != null && response.isSuccess()) {
                 BigDecimal newBalance = (BigDecimal) response.getData();

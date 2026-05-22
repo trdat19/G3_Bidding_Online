@@ -58,18 +58,19 @@ public class AuctionDetailController {
 
         this.currentItem = item;
     }
-    private void setProductImage(String imageUrl) {
-        boolean hasImage = imageUrl != null && !imageUrl.isBlank();
 
-        imageView.setVisible(hasImage);
-        imageView.setManaged(hasImage);
-        imagePlaceholderLabel.setVisible(!hasImage);
-        imagePlaceholderLabel.setManaged(!hasImage);
-
-        if (hasImage) {
-            imageView.setImage(new Image(imageUrl, true));
-        }
-    }
+//    private void setProductImage(String imageUrl) {
+//        boolean hasImage = imageUrl != null && !imageUrl.isBlank();
+//
+//        imageView.setVisible(hasImage);
+//        imageView.setManaged(hasImage);
+//        imagePlaceholderLabel.setVisible(!hasImage);
+//        imagePlaceholderLabel.setManaged(!hasImage);
+//
+//        if (hasImage) {
+//            imageView.setImage(new Image(imageUrl, true));
+//        }
+//    }
 
     private void loadScene(String fxmlPath, ActionEvent event) {
         stopCountdown();

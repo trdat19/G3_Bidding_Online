@@ -20,8 +20,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.Scene;
-import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -33,15 +31,10 @@ import shared.dto.request.BaseRequest;
 import shared.enums.Action;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 public class BidderDashboardController {
     @FXML
@@ -68,7 +61,7 @@ public class BidderDashboardController {
     public void initialize() {
         bidderNameLabel.setText(ClientSession.getCurrentUserFullName());
         loadAuctionsFromServer();
-        startAutoRefresh();
+        //startAutoRefresh();
 
         ClientNetworkService.getInstance().addEventListener(realtimeListener);
         ClientNetworkService.getInstance()
@@ -128,11 +121,11 @@ public class BidderDashboardController {
 
     private void loadAuctions() {
         auctionContainer.getChildren().clear();
-        countdownViews.clear();
+        //countdownViews.clear();
         for (Item item : itemList) {
             auctionContainer.getChildren().add(createProductCard(item));
         }
-        startCountdownTimer();
+        //startCountdownTimer();
     }
     private Item toItem(AuctionDTO auction) {
         Item item = new Item(
@@ -226,7 +219,7 @@ public class BidderDashboardController {
         Label timeText = new Label("CÒN LẠI");
         timeText.getStyleClass().add("meta-label");
 
-        Label timeValue = new Label(formatTimeLeft(getCountdownTarget(item)));
+        Label timeValue = new Label();
         timeValue.getStyleClass().add("time-left");
         startCountdown(timeText, timeValue, statusBadge, item.getStartTime(), item.getEndTime());
 
@@ -309,10 +302,7 @@ public class BidderDashboardController {
     private void handleLogout(ActionEvent event) {
         stopAutoRefresh();
         stopCountdowns();
-        stopCountdownTimer();
-
-        BaseRequest logoutRequest = new BaseRequest(Action.LOGOUT, null);
-        BaseResponse response = ClientNetworkService.getInstance().sendRequest(logoutRequest);
+//        stopCountdownTimer();
 
         try {
             BaseRequest logoutRequest = new BaseRequest(Action.LOGOUT, null);
@@ -407,6 +397,5 @@ public class BidderDashboardController {
     private String getCountdownTitle(Item item) {
         return isBeforeStart(item) ? "BẮT ĐẦU SAU" : "CÒN LẠI";
     }
-}
 }
 
