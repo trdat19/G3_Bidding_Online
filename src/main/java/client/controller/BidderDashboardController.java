@@ -6,6 +6,7 @@ import client.session.ClientSession;
 import client.util.StageUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -14,9 +15,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import javafx.event.ActionEvent;
@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -43,14 +44,48 @@ public class BidderDashboardController
 
     private final List<Item> itemList = new ArrayList<>();
     private final List<Timeline> countdownTimelines = new ArrayList<>();
+    private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
     private Timeline refreshTimeLine;
 
     @FXML
     public void initialize() {
         bidderNameLabel.setText(ClientSession.getCurrentUserFullName());
         loadAuctionsFromServer();
-        startAutoRefresh();
+
+        ClientNetworkService.getInstance().addEventListener(realtimeListener);
+        ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest("SUBSCRIBE_AUCTION_LIST", null));
     }
+
+    @FXML
+    private void handleRefresh() {
+        loadAuctionsFromServer();
+    }
+
+    @FXML
+    private void handleOpenWalletPopup(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/wallet-popup.fxml"));
+
+            Stage popup = new Stage();
+            popup.setTitle("Ví của tôi");
+            popup.setScene(new Scene(root));
+            popup.initOwner(((Node) event.getSource()).getScene().getWindow());
+            popup.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleRealtimeEvent(BaseResponse response) {
+        if (!"AUCTION_LIST_CHANGED".equals(response.getAction()))
+        {
+            return;
+        }
+        Platform.runLater(this::loadAuctionsFromServer);
+    }
+
     private void loadAuctionsFromServer() {
         BaseRequest request = new BaseRequest("GET_AUCTION_LIST", null);
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
@@ -248,11 +283,14 @@ public class BidderDashboardController
         valueLabel.setText("00:00:00");
     }
 
-        @FXML
+    @FXML
     private void handleLogout(ActionEvent event) {
         stopAutoRefresh();
         stopCountdowns();
+        ClientNetworkService.getInstance().removeEventListener(realtimeListener);
+        ClientNetworkService.getInstance().sendRequest(new BaseRequest("LOGOUT", null));
         ClientSession.clear();
+
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

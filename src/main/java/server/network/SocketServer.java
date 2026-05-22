@@ -7,7 +7,7 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class SocketSever {
+public class SocketServer {
     private static final int PORT = 8888;
     public boolean isRunning = false;
     public ServerSocket serverSocket;
@@ -78,7 +78,7 @@ public class SocketSever {
         }
     }
     public static void main(String[] args) {
-        SocketSever server = new SocketSever();
+        SocketServer server = new SocketServer();
         server.start(); // Gọi hàm start để kích hoạt toàn bộ hệ thống
     }
 }

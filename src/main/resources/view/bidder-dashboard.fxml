@@ -1,82 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<?import javafx.geometry.Insets?>
 <BorderPane prefHeight="900.0" prefWidth="1400.0" styleClass="root-container" stylesheets="@../css/bidder-dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.BidderDashboardController">
-   <top>
-      <HBox alignment="CENTER_LEFT" prefHeight="90.0" styleClass="top-bar">
-         <padding>
-            <Insets bottom="20" left="30" right="30" top="20" />
-         </padding>
-
+   <left>
+      <VBox prefWidth="360.0" spacing="28.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER_LEFT" spacing="12">
+            <HBox alignment="CENTER_LEFT" spacing="14.0">
                <children>
-                  <StackPane prefHeight="42" prefWidth="42" styleClass="logo-box">
-                     <children>
-                        <Label styleClass="logo-icon" text="⚖" />
-                     </children>
-                  </StackPane>
-                  <Label styleClass="logo-text" text="BidZone" />
+                  <Label styleClass="sidebar-logo-icon" text="⚖" />
+                  <Label styleClass="sidebar-logo-text" text="BidZone" />
                </children>
             </HBox>
 
-            <Region HBox.hgrow="ALWAYS" />
-
-            <HBox alignment="CENTER_RIGHT" spacing="18">
+            <VBox spacing="16.0" VBox.vgrow="ALWAYS">
                <children>
+                  <Label styleClass="sidebar-title" text="Bắt đầu hành trình đấu giá của bạn" wrapText="true" />
+                  <Label styleClass="sidebar-subtitle" text="Theo dõi phiên đấu giá, đặt giá realtime và quản lý ví của bạn trên hệ thống." wrapText="true" />
 
-                  <VBox alignment="CENTER_RIGHT" spacing="4">
+                  <VBox spacing="14.0" styleClass="sidebar-feature-box">
                      <children>
-                        <Label fx:id="bidderNameLabel" text="" styleClass="user-name"/>
-                        <Label text="BIDDER" styleClass="user-role"/>
+                        <Label styleClass="sidebar-feature" text="✓ Tham gia phiên đấu giá realtime" />
+                        <Label styleClass="sidebar-feature" text="✓ Theo dõi giá và thời gian còn lại" />
+                        <Label styleClass="sidebar-feature" text="✓ Nạp ví nhanh bằng popup" />
                      </children>
                   </VBox>
-
-                  <VBox alignment="CENTER_LEFT" spacing="4" styleClass="wallet-box">
-                     <children>
-                        <Label text="Ví của tôi" styleClass="wallet-title"/>
-                        <Label fx:id="walletBalanceLabel" text="\$0.00" styleClass="wallet-balance"/>
-                     </children>
-                  </VBox>
-
-               </children>
-            </HBox>
-            <Button mnemonicParsing="false" onAction="#handleLogout" styleClass="logout-button" text="🚪" />
-         </children>
-      </HBox>
-   </top>
-   <center>
-      <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <content>
-            <VBox prefHeight="200.0" prefWidth="100.0" spacing="24.0" styleClass="content-wrapper">
-               <children>
-                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="6.0" styleClass="hero-section">
-                     <children>
-                        <Label styleClass="page-title" text="Phiên đấu giá đang diễn ra">
-                           <font>
-                              <Font size="17.0" />
-                           </font></Label>
-                        <Label contentDisplay="BOTTOM" prefHeight="133.0" prefWidth="560.0" styleClass="page-subtitle" text="Cạnh tranh ngay để sở hữu những sản phẩm tốt nhất" textFill="#1b1818">
-                           <graphic>
-                              <TilePane hgap="30.0" prefColumns="3" prefHeight="200.0" prefWidth="200.0" vgap="30.0">
-                                 <children>
-                                    <VBox prefHeight="200.0" prefWidth="100.0">
-                                       <children>
-                                          <StackPane prefHeight="150.0" prefWidth="200.0" />
-                                       </children>
-                                    </VBox>
-                                 </children></TilePane>
-                           </graphic>
-                        </Label>
-                     </children></VBox>
-                  <FlowPane fx:id="auctionContainer" hgap="28.0" prefHeight="200.0" prefWidth="200.0" prefWrapLength="1200.0" vgap="28.0" />
                </children>
             </VBox>
-         </content>
-      </ScrollPane>
+
+            <VBox spacing="12.0" styleClass="sidebar-menu">
+               <children>
+                  <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="sidebar-menu-button-active" text="⌂  Trang chủ" />
+                  <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleOpenWalletPopup" styleClass="sidebar-menu-button" text="💳  Ví" />
+                  <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleRefresh" styleClass="sidebar-menu-button" text="↻  Làm mới" />
+                  <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleLogout" styleClass="sidebar-logout-button" text="🚪  Đăng xuất" />
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </left>
+
+   <center>
+      <VBox styleClass="dashboard-main">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="top-header">
+               <children>
+                  <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label styleClass="page-title" text="Trang chủ đấu giá" />
+                        <Label styleClass="page-subtitle" text="Chọn một sản phẩm để xem chi tiết và tham gia đấu giá." />
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER_RIGHT" spacing="4.0">
+                     <children>
+                        <Label fx:id="bidderNameLabel" styleClass="user-name" text="Bidder" />
+                        <Label styleClass="user-role" text="BIDDER" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" styleClass="main-scroll" VBox.vgrow="ALWAYS">
+               <content>
+                  <VBox spacing="22.0" styleClass="content-wrapper">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="18.0" styleClass="hero-section">
+                           <children>
+                              <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label styleClass="section-title" text="Phiên đấu giá đang diễn ra" />
+                                    <Label styleClass="section-subtitle" text="Cạnh tranh ngay để sở hữu những sản phẩm tốt nhất." />
+                                 </children>
+                              </VBox>
+                              <Button mnemonicParsing="false" onAction="#handleOpenWalletPopup" styleClass="wallet-open-button" text="💳 Mở ví" />
+                           </children>
+                        </HBox>
+                        <FlowPane fx:id="auctionContainer" hgap="28.0" prefWrapLength="980.0" vgap="28.0" />
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+         </children>
+      </VBox>
    </center>
 </BorderPane>

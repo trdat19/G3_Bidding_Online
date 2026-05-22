@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import client.service.ClientNetworkService;
+import server.model.core.Bid;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.dto.common.AuctionDTO;
@@ -21,6 +22,13 @@ import java.util.HashMap;
 import java.util.Map;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.TableColumn;
+
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -35,14 +43,53 @@ public class BiddingViewController {
     @FXML private Label timeLeftLabel;
     @FXML private Label messageLabel;
     @FXML private TextField bidAmountField;
-    @FXML private TableView<?> bidTable;
+    @FXML private TableView<BidDTO> bidTable;
+    @FXML private TableColumn<BidDTO, Void> indexColumn;
+    @FXML private TableColumn<BidDTO, String> amountColumn;
+    @FXML private TableColumn<BidDTO, String> bidderColumn;
+    @FXML private TableColumn<BidDTO, String> timeColumn;
     @FXML private Label statusTextLabel;
     @FXML private ImageView productImageView;
     @FXML private Label imagePlaceholderLabel;
 
+
     private Item currentItem;
     private Timeline countdownTimeLine;
     private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
+    private final ObservableList<BidDTO> bidHistory = FXCollections.observableArrayList();
+    private final DateTimeFormatter bidTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+    @FXML
+    private void initialize()
+    {
+
+
+        bidderColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getBidderName())
+        );;
+        amountColumn.setCellValueFactory(cell->
+                new SimpleStringProperty(cell.getValue().getAmount().toPlainString())
+        );
+        timeColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(
+                        cell.getValue().getTimestamp() != null
+                        ? cell.getValue().getTimestamp().format(bidTimeFormatter) : ""
+                )
+        );
+        indexColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(String.valueOf(getIndex() + 1));
+                }
+            }
+        });
+        bidTable.setItems(bidHistory);
+    }
 
     public void setItem(Item item) {
         this.currentItem = item;
@@ -58,7 +105,21 @@ public class BiddingViewController {
         ClientNetworkService.getInstance().addEventListener(realtimeListener);
         ClientNetworkService.getInstance()
                 .sendRequest(new BaseRequest("SUBSCRIBE_AUCTION", currentItem.getId()));
+        loadBidHistory();
     }
+
+    private void loadBidHistory() {
+        BaseResponse response = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest("GET_BID_HISTORY", currentItem.getId()));
+
+        if (response == null || !response.isSuccess() || response.getData() == null) {
+            bidHistory.clear();
+            return;
+        }
+
+        bidHistory.setAll((List<BidDTO>) response.getData());
+    }
+
     private void startCountDown(LocalDateTime endTime) {
         if (countdownTimeLine != null) {
             countdownTimeLine.stop();
@@ -162,25 +223,65 @@ public class BiddingViewController {
     }
 
     private void handleRealtimeEvent(BaseResponse response) {
-        if (!"NEW_BID".equals(response.getAction())) {
+        if (response.getAction() == null || currentItem == null) {
             return;
         }
 
+        Platform.runLater(() -> {
+            switch (response.getAction()) {
+                case "NEW_BID" -> handleNewBidEvent(response);
+                case "AUCTION_EXTENDED" -> handleAuctionExtendedEvent(response);
+                case "AUCTION_FINISHED" -> handleAuctionFinishedEvent(response);
+                case "AUCTION_CANCELLED" -> handleAuctionCancelledEvent(response);
+                case "AUCTION_STARTED" -> statusTextLabel.setText("RUNNING");
+            }
+        });
+    }
+
+    private void handleNewBidEvent(BaseResponse response) {
         BidDTO bid = (BidDTO) response.getData();
 
         if (!bid.getAuctionId().equals(currentItem.getId())) {
             return;
         }
 
-        Platform.runLater(() -> {
-            currentItem.setCurrentPrice(bid.getAmount().doubleValue());
-            currentItem.setLeader(bid.getBidderName());
-            currentItem.setBidCount(currentItem.getBidCount() + 1);
+        currentItem.setCurrentPrice(bid.getAmount().doubleValue());
+        currentItem.setLeader(bid.getBidderName());
 
-            currentPriceLabel.setText(String.valueOf(currentItem.getCurrentPrice()));
-            leaderLabel.setText(currentItem.getLeader());
-            bidCountLabel.setText(currentItem.getBidCount() + " bids");
-        });
+        currentPriceLabel.setText(String.valueOf(currentItem.getCurrentPrice()));
+        leaderLabel.setText(currentItem.getLeader());
+
+        bidHistory.add(0, bid);
+
+        refreshAuctionDetail();
+    }
+
+    private void handleAuctionExtendedEvent(BaseResponse response) {
+        LocalDateTime newEndTime = (LocalDateTime) response.getData();
+
+        currentItem.setEndTime(newEndTime);
+        startCountDown(newEndTime);
+
+        messageLabel.setText(response.getMessage());
+    }
+
+    private void handleAuctionFinishedEvent(BaseResponse response) {
+        statusTextLabel.setText("FINISHED");
+        timeLeftLabel.setText("00:00:00");
+        messageLabel.setText(response.getMessage());
+
+        if (countdownTimeLine != null) {
+            countdownTimeLine.stop();
+        }
+    }
+
+    private void handleAuctionCancelledEvent(BaseResponse response) {
+        statusTextLabel.setText("CANCELLED");
+        messageLabel.setText(response.getMessage());
+
+        if (countdownTimeLine != null) {
+            countdownTimeLine.stop();
+        }
     }
 
     private void setProductImage(String imageUrl) {

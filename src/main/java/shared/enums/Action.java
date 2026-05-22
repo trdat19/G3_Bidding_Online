@@ -9,6 +9,12 @@ public enum Action {
     LOGOUT,
 
     /**
+    *  Ví
+    */
+    GET_WALLET,
+    DEPOSIT_WALLET,
+
+    /**
      * Seller
      */
     CREATE_ITEM,
@@ -41,4 +47,6 @@ public enum Action {
     UPDATE_USER_PROFILE,
     GET_LEADERBOARD,
     GET_NOTIFICATIONS,
+    SUBSCRIBE_AUCTION_LIST,
+    UNSUBSCRIBE_AUCTION_LIST,
 }

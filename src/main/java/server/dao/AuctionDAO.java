@@ -284,6 +284,7 @@ public class AuctionDAO {
         if (endTs != null) {
             auction.setEndTime(endTs.toLocalDateTime());
         }
+
         return auction;
     }
 

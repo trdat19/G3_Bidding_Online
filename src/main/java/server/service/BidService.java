@@ -103,6 +103,7 @@ public class BidService {
         if (amount.compareTo(minBid) < 0) {
             throw new BidTooLowException(minBid);
         }
+        WalletService.getInstance().checkCanBid(bidderId, amount);
 
         // 5. Kiểm tra Buy-Now: Nếu bid >= buyNow -> chốt ngay
         boolean buyNowTriggered = auction.getBuyNowPrice() != null

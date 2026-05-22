@@ -10,7 +10,7 @@ public class BidDAO {
 
     // thêm 1 lần bid mới vào bảng bids
     public boolean insertBid(Bid bid) {
-        String sql = "INSERT INTO bids(auction_id, bidder_id, bid_amount) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO bids(auction_id, bidder_id, bid_amount, is_auto_bid) VALUES (?, ?, ?, ?)";
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -18,6 +18,7 @@ public class BidDAO {
             ps.setLong(1, bid.getAuctionId());
             ps.setLong(2, bid.getBidderId());
             ps.setBigDecimal(3, bid.getAmount());
+            ps.setBoolean(4, bid.getIsAutoBid());
 
             int rowsAffected = ps.executeUpdate();
 
@@ -222,6 +223,8 @@ public class BidDAO {
         if (ts != null) {
             bid.setTimestamp(ts.toLocalDateTime());
         }
+
+        bid.setIsAutoBid(rs.getBoolean("is_auto_bid"));
         return bid;
     }
 }

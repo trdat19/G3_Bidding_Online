@@ -66,6 +66,20 @@ public class RequestRouter {
                 }
 
                 /**
+                 * Thao tác của ví
+                 */
+
+                case GET_WALLET: {
+                    requireRole(handler, UserRole.BIDDER);
+                    return WalletServerController.getInstance().getWallet(handler);
+                }
+
+                case DEPOSIT_WALLET: {
+                    requireRole(handler, UserRole.BIDDER);
+                    return WalletServerController.getInstance().deposit(request, handler);
+                }
+
+                /**
                  * Thao tác của Seller
                  */
                 case Action.CREATE_ITEM: {
@@ -134,6 +148,11 @@ public class RequestRouter {
                 case Action.GET_BID_HISTORY:
                     return AuctionServerController.getInstance().getBidHistory(request);
 
+
+                case Action.SUBSCRIBE_AUCTION_LIST:
+                    requireRole(handler, UserRole.BIDDER);
+                    RealtimePushServer.subscribeToAuctionList(handler);
+                    return new BaseResponse(true, "Đã subscribe danh sách phiên đấu giá ", null);
                 /**
                  * Thao tác của Admin
                  */

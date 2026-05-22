@@ -1,4 +1,6 @@
 package client.controller;
+import client.service.ClientNetworkService;
+import client.session.ClientSession;
 import client.util.StageUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +15,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import client.model.Item;
+import shared.dto.request.BaseRequest;
 
 public class AdminDashboardController {
     private static final String HOME_PAGE = "/view/admin/admin-home.fxml";
@@ -36,6 +39,9 @@ public class AdminDashboardController {
 
     @FXML
     private void handleLogout(ActionEvent event) {
+        ClientNetworkService.getInstance().sendRequest(new BaseRequest("LOGOUT", null));
+        ClientSession.clear();
+
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

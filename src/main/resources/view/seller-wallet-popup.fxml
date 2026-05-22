@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="560.0" prefWidth="520.0" spacing="18.0" styleClass="seller-wallet-popup-root" stylesheets="@../css/seller-dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.SellerWalletPopupController">
+    <padding>
+        <Insets bottom="26" left="26" right="26" top="26" />
+    </padding>
+
+    <children>
+        <HBox alignment="CENTER_LEFT" spacing="14.0">
+            <children>
+                <Label styleClass="seller-wallet-popup-icon" text="💰" />
+                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="seller-wallet-popup-title" text="Ví bán hàng" />
+                        <Label styleClass="seller-wallet-popup-subtitle" text="Theo dõi tiền nhận từ các sản phẩm đã bán." />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <VBox spacing="8.0" styleClass="seller-wallet-balance-card">
+            <children>
+                <Label styleClass="seller-wallet-label" text="Số dư khả dụng" />
+                <Label fx:id="balanceLabel" styleClass="seller-wallet-balance-big" text="/$0.00" />
+                <Label styleClass="seller-wallet-note" text="Số tiền seller có thể dùng/rút sau khi giao dịch hoàn tất." wrapText="true" />
+            </children>
+        </VBox>
+
+        <GridPane hgap="14.0" vgap="14.0">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50.0" />
+                <ColumnConstraints percentWidth="50.0" />
+            </columnConstraints>
+            <children>
+                <VBox spacing="6.0" styleClass="seller-wallet-stat-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <children>
+                        <Label styleClass="seller-wallet-label" text="Doanh thu đã bán" />
+                        <Label fx:id="soldRevenueLabel" styleClass="seller-wallet-stat-value" text="/$0.00" />
+                    </children>
+                </VBox>
+
+                <VBox spacing="6.0" styleClass="seller-wallet-stat-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <children>
+                        <Label styleClass="seller-wallet-label" text="Sản phẩm đã bán" />
+                        <Label fx:id="soldCountLabel" styleClass="seller-wallet-stat-value" text="0" />
+                    </children>
+                </VBox>
+
+                <VBox spacing="6.0" styleClass="seller-wallet-stat-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <children>
+                        <Label styleClass="seller-wallet-label" text="Tổng sản phẩm" />
+                        <Label fx:id="productCountLabel" styleClass="seller-wallet-stat-value" text="0" />
+                    </children>
+                </VBox>
+
+                <VBox spacing="6.0" styleClass="seller-wallet-stat-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <children>
+                        <Label styleClass="seller-wallet-label" text="Trạng thái" />
+                        <Label styleClass="seller-wallet-status" text="Đang hoạt động" />
+                    </children>
+                </VBox>
+            </children>
+        </GridPane>
+
+        <Label fx:id="walletMessageLabel" styleClass="seller-wallet-message" wrapText="true" />
+
+        <Region VBox.vgrow="ALWAYS" />
+
+        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#handleClose" styleClass="secondary-button" text="Đóng" />
+                <Button mnemonicParsing="false" onAction="#handleWithdraw" styleClass="primary-button" text="Rút tiền" />
+            </children>
+        </HBox>
+    </children>
+</VBox>

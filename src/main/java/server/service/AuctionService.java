@@ -157,10 +157,24 @@ public class AuctionService {
             auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELLED);
             itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
 
-            BaseResponse event = new BaseResponse(true,
+            BaseResponse event = new BaseResponse(
+                    true,
                     String.format("Phiên đấu giá #%d đã bị huỷ!", auctionId),
-                    null);
+                    null
+            );
+            event.setAction("AUCTION_CANCELLED");
+
             RealtimePushServer.pushToAuctionSubscribers(auctionId, event);
+
+            BaseResponse listEvent = new BaseResponse(
+                    true,
+                    "Danh sách phiên đấu giá đã thay đổi",
+                    null
+            );
+            listEvent.setAction("AUCTION_LIST_CHANGED");
+
+            RealtimePushServer.pushToAuctionListSubscribers(listEvent);
+
             return true;
         }
 
@@ -191,9 +205,19 @@ public class AuctionService {
             System.out.println(">>> [AuctionService] Đã mở auction #" + auctionId);
 
             //push thông báo cho tất cả client đang xem
-            BaseResponse event = new BaseResponse(true, "AUCTION_STARTED",
-                    "Phiên đấu giá #" + auctionId + " đã bắt đầu!");
+            BaseResponse event = new BaseResponse(true, "Phiên đấu giá đã bắt đầu", null);
+            event.setAction("AUCTION_STARTED");
             RealtimePushServer.pushToAuctionSubscribers(auctionId, event);
+
+            // Thông báo danh sách phiên đấu giá thay đổi
+            BaseResponse listEvent = new BaseResponse(
+                    true,
+                    "Danh sách phiên đấu giá đã thay đổi",
+                    null
+            );
+            listEvent.setAction("AUCTION_LIST_CHANGED");
+
+            RealtimePushServer.pushToAuctionListSubscribers(listEvent);
         }
         return checkOpenAuction;
     }
@@ -223,6 +247,11 @@ public class AuctionService {
         //Xác định winner từ highestBid, có rồi thì là item đã bán
         Bid highestBid = bidDAO.getHighestBidByAuctionId(auctionId);
         if (highestBid != null) {
+            WalletService.getInstance().payForWinningBid(
+                    highestBid.getBidderId(),
+                    highestBid.getAmount()
+            );
+
             itemDAO.updateStatus(auction.getItemId(), ItemStatus.SOLD);
         }
         else
@@ -249,8 +278,24 @@ public class AuctionService {
         System.out.println(">>> [AuctionService] " + winnerMsg);
 
         // Push cho tất cả client đang xem phiên này
-        BaseResponse finishEvent = new BaseResponse(true, "AUCTION_FINISHED", winnerMsg);
+        BaseResponse finishEvent = new BaseResponse(
+                true,
+                winnerMsg,
+                null
+        );
+        finishEvent.setAction("AUCTION_FINISHED");
+
         RealtimePushServer.pushToAuctionSubscribers(auctionId, finishEvent);
+
+
+        BaseResponse listEvent = new BaseResponse(
+                true,
+                "Danh sách phiên đấu giá đã thay đổi",
+                null
+        );
+        listEvent.setAction("AUCTION_LIST_CHANGED");
+
+        RealtimePushServer.pushToAuctionListSubscribers(listEvent);
 
         data.put("message", winnerMsg);
         data.put("highestBid", highestBid);
@@ -277,7 +322,13 @@ public class AuctionService {
                     auctionId, extraSeconds, newEnd);
             System.out.println(">>> [AuctionService] Anti-sniping: " + msg);
 
-            BaseResponse event = new BaseResponse(true, "AUCTION_EXTENDED", msg);
+            BaseResponse event = new BaseResponse(
+                    true,
+                    msg,
+                    newEnd
+            );
+            event.setAction("AUCTION_EXTENDED");
+
             RealtimePushServer.pushToAuctionSubscribers(auctionId, event);
         }
         return ok;
@@ -360,6 +411,15 @@ public class AuctionService {
         auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELLED);
         itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
 
+        BaseResponse sellerEvent = new BaseResponse(
+                true,
+                "Trạng thái sản phẩm của seller đã thay đổi",
+                auction.getItemId()
+        );
+        sellerEvent.setAction("SELLER_ITEMS_CHANGED");
+
+        RealtimePushServer.pushToUser(auction.getSellerId(), sellerEvent);
+
         return true;
     }
 
@@ -370,6 +430,25 @@ public class AuctionService {
         }
         boolean auctionUpdated = auctionDAO.updateStatus(auctionId, AuctionStatus.OPEN);
         boolean itemUpdated = itemDAO.updateStatus(auction.getItemId(), ItemStatus.ACTIVE);
-    return auctionUpdated && itemUpdated;
+
+        boolean ok = auctionUpdated && itemUpdated;
+
+        if(ok)
+        {
+            BaseResponse event = new BaseResponse(true, "Danh sách phiên đấu giá đã có sự thay đổi", null);
+            event.setAction("AUCTION_LIST_CHANGED");
+            RealtimePushServer.pushToAuctionListSubscribers(event);
+
+            BaseResponse sellerEvent = new BaseResponse(
+                    true,
+                    "Trạng thái sản phẩm của seller đã thay đổi",
+                    auction.getItemId()
+            );
+            sellerEvent.setAction("SELLER_ITEMS_CHANGED");
+
+            RealtimePushServer.pushToUser(auction.getSellerId(), sellerEvent);
+        }
+
+        return ok;
     }
 }

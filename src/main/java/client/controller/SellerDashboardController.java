@@ -4,7 +4,6 @@ import client.model.Item;
 import client.service.ClientNetworkService;
 import client.session.ClientSession;
 import client.util.StageUtils;
-import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,16 +25,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
-
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import javafx.application.Platform;
+import java.util.function.Consumer;
 
 public class SellerDashboardController {
 
@@ -45,6 +41,8 @@ public class SellerDashboardController {
     @FXML
     private FlowPane productContainer;
 
+    private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
+
     private final List<Item> itemList = new ArrayList<>();
     private Timeline refreshTimeline;
 
@@ -52,6 +50,24 @@ public class SellerDashboardController {
     public void initialize() {
         sellerNameLabel.setText(ClientSession.getCurrentUserFullName());
         refreshProducts();
+
+        ClientNetworkService.getInstance().addEventListener(realtimeListener);
+    }
+
+    @FXML
+    private void handleOpenSellerWalletPopup(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/seller-wallet-popup.fxml"));
+
+            Stage popup = new Stage();
+            popup.setTitle("Ví bán hàng");
+            popup.setScene(new Scene(root));
+            popup.initOwner(((Node) event.getSource()).getScene().getWindow());
+            popup.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadProducts() {
@@ -156,7 +172,7 @@ public class SellerDashboardController {
         return switch (status) {
             case "PENDING" -> "Đã thêm";
             case "WAITING_APPROVAL" -> "Chờ duyệt";
-            case "ACTIVE" -> "Đã duyệt";
+            case "ACTIVE" -> "Đang được đấu giá";
             case "SOLD" -> "Đã bán";
             case "CANCELLED" -> "Ế hàng";
             default -> status;
@@ -184,7 +200,10 @@ public class SellerDashboardController {
     }
     @FXML
     private void handleLogout(ActionEvent event) {
+        ClientNetworkService.getInstance().removeEventListener(realtimeListener);
+        ClientNetworkService.getInstance().sendRequest(new BaseRequest("LOGOUT", null));
         ClientSession.clear();
+
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -358,5 +377,12 @@ public class SellerDashboardController {
         };
     }
 
+    private void handleRealtimeEvent(BaseResponse response) {
+        if (!"SELLER_ITEMS_CHANGED".equals(response.getAction())) {
+            return;
+        }
+
+        Platform.runLater(this::refreshProducts);
+    }
 
 }
