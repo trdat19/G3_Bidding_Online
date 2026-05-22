@@ -145,71 +145,17 @@ public class AuctionService {
         if (!checkInsertAuction) {
             throw new RuntimeException("Lỗi lưu phiên đấu giá vào hệ thống");
         }
+        //Kiem tra logic buoc nhay gia
+        if (minIncrement == null || minIncrement.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Bước nhảy giá phải lớn hơn 0");
+        }
 
-        //Chuyển trạng thái của item trong Dao
-
+        //Chuển trạng thái của item trong Dao
         itemDAO.updateStatus(itemId, ItemStatus.WAITING_APPROVAL);
         System.out.println(">>> [AuctionService] Tạo auction #" + auction.getId() + " cho item #" + itemId);
 
         return toDTO(auction, item);
     }
-    //Thêm method admin lấy danh sách request
-    public List<AuctionDTO> getCreateAuctionRequests() {
-        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.PREPARING);
-        List<AuctionDTO> dtos = new ArrayList<>();
-
-        for (Auction auction : auctions) {
-            Item item = itemDAO.findById(auction.getItemId());
-            if (item != null) {
-                dtos.add(toDTO(auction, item));
-            }
-        }
-        return dtos;
-    }
-    //Thêm method admin duyệt request
-    public AuctionDTO approveCreateAuctionRequest(Long auctionId) {
-        Auction auction = auctionDAO.findById(auctionId);
-
-        if (auction == null) {
-            throw new RuntimeException("Không tìm thấy yêu cầu đấu giá");
-        }
-        if (auction.getStatus() != AuctionStatus.PREPARING) {
-            throw new RuntimeException("Chỉ duyệt được yêu cầu đang chờ duyệt");
-
-        }
-        LocalDateTime now = LocalDateTime.now();
-
-        if (auction.getEndTime() != null && !now.isBefore(auction.getEndTime())) {
-            throw new RuntimeException("Không thể duyệt phiên đã quá thời gian kết thúc!");
-        }
-        AuctionStatus nextStatus = AuctionStatus.OPEN;
-        if (auction.getStartTime() != null && !now.isBefore(auction.getStartTime())) {
-            nextStatus = AuctionStatus.RUNNING;
-        }
-        auctionDAO.updateStatus(auctionId, nextStatus);
-        itemDAO.updateStatus(auction.getItemId(), ItemStatus.ACTIVE);
-        auction.setStatus(nextStatus);
-
-        Item item = itemDAO.findById(auction.getItemId());
-        return toDTO(auction, item);
-    }
-    //Thêm method admin từ chối request
-    public AuctionDTO rejectCreateAuctionRequest(Long auctionId) {
-        Auction auction = auctionDAO.findById(auctionId);
-        if (auction == null) {
-           throw new RuntimeException("Không tìm thấy yêu cầu đấu giá");
-        }
-        if (auction.getStatus() != AuctionStatus.PREPARING)  {
-           throw new RuntimeException("Chỉ duyệt được yêu cầu đang chờ duyệt");
-        }
-        auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELLED);
-        itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
-
-        auction.setStatus(AuctionStatus.CANCELLED);
-        Item item = itemDAO.findById(auction.getItemId());
-        return toDTO(auction,item);
-    }
-
 
     //----------------CANCEL------------------
     public boolean cancelAuction(Long auctionId) {
@@ -219,10 +165,24 @@ public class AuctionService {
             auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELLED);
             itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
 
-            BaseResponse event = new BaseResponse(true,
+            BaseResponse event = new BaseResponse(
+                    true,
                     String.format("Phiên đấu giá #%d đã bị huỷ!", auctionId),
-                    null);
+                    null
+            );
+            event.setAction("AUCTION_CANCELLED");
+
             RealtimePushServer.pushToAuctionSubscribers(auctionId, event);
+
+            BaseResponse listEvent = new BaseResponse(
+                    true,
+                    "Danh sách phiên đấu giá đã thay đổi",
+                    null
+            );
+            listEvent.setAction("AUCTION_LIST_CHANGED");
+
+            RealtimePushServer.pushToAuctionListSubscribers(listEvent);
+
             return true;
         }
 
@@ -253,9 +213,19 @@ public class AuctionService {
             System.out.println(">>> [AuctionService] Đã mở auction #" + auctionId);
 
             //push thông báo cho tất cả client đang xem
-            BaseResponse event = new BaseResponse(true, "AUCTION_STARTED",
-                    "Phiên đấu giá #" + auctionId + " đã bắt đầu!");
+            BaseResponse event = new BaseResponse(true, "Phiên đấu giá đã bắt đầu", null);
+            event.setAction("AUCTION_STARTED");
             RealtimePushServer.pushToAuctionSubscribers(auctionId, event);
+
+            // Thông báo danh sách phiên đấu giá thay đổi
+            BaseResponse listEvent = new BaseResponse(
+                    true,
+                    "Danh sách phiên đấu giá đã thay đổi",
+                    null
+            );
+            listEvent.setAction("AUCTION_LIST_CHANGED");
+
+            RealtimePushServer.pushToAuctionListSubscribers(listEvent);
         }
         return checkOpenAuction;
     }
@@ -285,6 +255,11 @@ public class AuctionService {
         //Xác định winner từ highestBid, có rồi thì là item đã bán
         Bid highestBid = bidDAO.getHighestBidByAuctionId(auctionId);
         if (highestBid != null) {
+            WalletService.getInstance().payForWinningBid(
+                    highestBid.getBidderId(),
+                    highestBid.getAmount()
+            );
+
             itemDAO.updateStatus(auction.getItemId(), ItemStatus.SOLD);
         }
         else
@@ -311,8 +286,24 @@ public class AuctionService {
         System.out.println(">>> [AuctionService] " + winnerMsg);
 
         // Push cho tất cả client đang xem phiên này
-        BaseResponse finishEvent = new BaseResponse(true, "AUCTION_FINISHED", winnerMsg);
+        BaseResponse finishEvent = new BaseResponse(
+                true,
+                winnerMsg,
+                null
+        );
+        finishEvent.setAction("AUCTION_FINISHED");
+
         RealtimePushServer.pushToAuctionSubscribers(auctionId, finishEvent);
+
+
+        BaseResponse listEvent = new BaseResponse(
+                true,
+                "Danh sách phiên đấu giá đã thay đổi",
+                null
+        );
+        listEvent.setAction("AUCTION_LIST_CHANGED");
+
+        RealtimePushServer.pushToAuctionListSubscribers(listEvent);
 
         data.put("message", winnerMsg);
         data.put("highestBid", highestBid);
@@ -339,7 +330,13 @@ public class AuctionService {
                     auctionId, extraSeconds, newEnd);
             System.out.println(">>> [AuctionService] Anti-sniping: " + msg);
 
-            BaseResponse event = new BaseResponse(true, "AUCTION_EXTENDED", msg);
+            BaseResponse event = new BaseResponse(
+                    true,
+                    msg,
+                    newEnd
+            );
+            event.setAction("AUCTION_EXTENDED");
+
             RealtimePushServer.pushToAuctionSubscribers(auctionId, event);
         }
         return ok;
@@ -348,7 +345,8 @@ public class AuctionService {
     //---------------GET--------------
     /** Lấy tất cả phiên đang OPEN */
     public List<AuctionDTO> getOpenAuctions() {
-        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN);
+        List<Auction> auctions = new ArrayList<>();
+        auctions.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN));
         auctions.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.RUNNING));
         List<AuctionDTO> dtos = new ArrayList<>();
         for (Auction a : auctions) {
@@ -397,5 +395,68 @@ public class AuctionService {
         }
 
         return dtos;
+    }
+
+    public List<AuctionDTO> getAuctionApprovalRequests() {
+        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.PREPARING);
+        List<AuctionDTO> dtos = new ArrayList<>();
+
+        for (Auction auction : auctions) {
+            Item item = itemDAO.findById(auction.getItemId());
+            dtos.add(toDTO(auction, item));
+        }
+
+        return dtos;
+    }
+
+    public boolean rejectAuctionRequest(Long auctionId) {
+        Auction auction = auctionDAO.findById(auctionId);
+
+        if (auction == null || auction.getStatus() != AuctionStatus.PREPARING) {
+            return false;
+        }
+
+        auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELLED);
+        itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
+
+        BaseResponse sellerEvent = new BaseResponse(
+                true,
+                "Trạng thái sản phẩm của seller đã thay đổi",
+                auction.getItemId()
+        );
+        sellerEvent.setAction("SELLER_ITEMS_CHANGED");
+
+        RealtimePushServer.pushToUser(auction.getSellerId(), sellerEvent);
+
+        return true;
+    }
+
+    public boolean approveAuctionRequest(Long auctionId) {
+        Auction auction = auctionDAO.findById(auctionId);
+        if (auction == null || auction.getStatus() != AuctionStatus.PREPARING) {
+            return false;
+        }
+        boolean auctionUpdated = auctionDAO.updateStatus(auctionId, AuctionStatus.OPEN);
+        boolean itemUpdated = itemDAO.updateStatus(auction.getItemId(), ItemStatus.ACTIVE);
+
+        boolean ok = auctionUpdated && itemUpdated;
+
+        if(ok)
+        {
+            BaseResponse event = new BaseResponse(true, "Danh sách phiên đấu giá đã có sự thay đổi", null);
+            event.setAction("AUCTION_LIST_CHANGED");
+            RealtimePushServer.pushToAuctionListSubscribers(event);
+
+            BaseResponse sellerEvent = new BaseResponse(
+                    true,
+                    "Trạng thái sản phẩm của seller đã thay đổi",
+                    auction.getItemId()
+            );
+            sellerEvent.setAction("SELLER_ITEMS_CHANGED");
+
+            RealtimePushServer.pushToUser(auction.getSellerId(), sellerEvent);
+        }
+
+        return ok;
     }
 }

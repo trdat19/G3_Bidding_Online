@@ -109,9 +109,10 @@
 
                     <TableView fx:id="bidTable" prefHeight="270" VBox.vgrow="ALWAYS">
                         <columns>
-                            <TableColumn prefWidth="220" text="Người đấu" />
-                            <TableColumn prefWidth="220" text="Giá đấu" />
-                            <TableColumn prefWidth="260" text="Thời gian" />
+                            <TableColumn fx:id="indexColumn" prefWidth="70" text="STT" sortable="false" />
+                            <TableColumn fx:id="bidderColumn" prefWidth="220" text="Người đấu" />
+                            <TableColumn fx:id="amountColumn" prefWidth="220" text="Giá đấu" />
+                            <TableColumn fx:id="timeColumn" prefWidth="260" text="Thời gian" />
                         </columns>
                     </TableView>
                 </VBox>

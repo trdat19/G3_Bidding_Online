@@ -35,10 +35,10 @@ public class BidService {
     // Sử dụng Singleton để đảm bảo mọi luồng đều dùng chung một đối tượng xử lý giá
     private static BidService instance;
 
-    private final AuctionService auctionService = AuctionService.getInstance();
-    private final AuctionDAO auctionDAO = new AuctionDAO();
-    private final BidDAO bidDAO = new BidDAO();
-    private final UserDAO userDAO =  new UserDAO();
+    private AuctionService auctionService = AuctionService.getInstance();
+    private AuctionDAO auctionDAO = new AuctionDAO();
+    private BidDAO bidDAO = new BidDAO();
+    private UserDAO userDAO =  new UserDAO();
 
     private BidService() {}
 
@@ -63,27 +63,10 @@ public class BidService {
      */
     public synchronized boolean placeBid(Long auctionId, Long bidderId, BigDecimal amount) {
 
-        // 1. Lấy phiên đấu giá từ DB + kiểm tra thời gian
+        // 1. Lấy phiên đấu giá từ DB
         Auction auction = auctionDAO.findById(auctionId);
-
-        LocalDateTime now = LocalDateTime.now();
-
-        if (auction.getStartTime() != null && now.isBefore(auction.getStartTime())) {
-            throw new RuntimeException("Phiên đấu giá chưa bắt đầu!");
-        }
-
-        if (auction.getEndTime() != null && now.isAfter(auction.getEndTime())) {
-            auctionService.finishAuction(auctionId);
-            throw new InvalidAuctionTimeException(now);
-        }
-
-        if (auction.getStatus() == AuctionStatus.OPEN) {
-            auctionDAO.updateStatus(auctionId, AuctionStatus.RUNNING);
-            auction.setStatus(AuctionStatus.RUNNING);
-        }
-
-        if (auction.getStatus() != AuctionStatus.RUNNING) {
-            throw new AuctionClosedException();
+        if (auction == null) {
+            throw new AuctionNotFoundException(auctionId);
         }
 
         // 2. Kiểm tra trạng thái của phiên xem có đang mở không
@@ -93,24 +76,34 @@ public class BidService {
         }
 
         // 3. Kiểm tra thời gian
-        if (LocalDateTime.now().isAfter(auction.getEndTime())) {
-            auctionService.finishAuction(auctionId); // Kết thúc phiên nếu chưa kịp đóng!
-            throw new InvalidAuctionTimeException(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+
+        if (auction.getStartTime() != null && now.isBefore(auction.getStartTime())) {
+            throw new InvalidAuctionTimeException(now);
+        }
+
+        if (auction.getEndTime() != null && now.isAfter(auction.getEndTime())) {
+            auctionService.finishAuction(auctionId);
+            throw new InvalidAuctionTimeException(now);
         }
 
         // 4. Tính mức giá tối thiểu hợp lệ
         Bid currentHighest = bidDAO.getHighestBidByAuctionId(auctionId);
         BigDecimal minBid;
+
+        BigDecimal minIncrement = auction.getMinIncrement() != null ? auction.getMinIncrement() : BigDecimal.ZERO;
+
         if (currentHighest == null) {
-            minBid = auction.getStartPrice();
+            minBid = auction.getStartPrice().add(minIncrement);
         }
         else {
-            minBid = currentHighest.getAmount().add(auction.getMinIncrement());
+            minBid = currentHighest.getAmount().add(minIncrement);
         }
 
         if (amount.compareTo(minBid) < 0) {
             throw new BidTooLowException(minBid);
         }
+        WalletService.getInstance().checkCanBid(bidderId, amount);
 
         // 5. Kiểm tra Buy-Now: Nếu bid >= buyNow -> chốt ngay
         boolean buyNowTriggered = auction.getBuyNowPrice() != null
@@ -152,7 +145,10 @@ public class BidService {
         // 12. Push realtime tới tất cả client đang xem phiên này
         BidDTO bidDTO = new BidDTO(bid.getId(), auctionId, bidderId,
                 bidderName, amount, bid.getTimestamp());
+
         BaseResponse bidEvent = new BaseResponse(true, "NEW_BID", bidDTO);
+        bidEvent.setAction("NEW_BID");
+
         RealtimePushServer.pushToAuctionSubscribers(auctionId, bidEvent);
 
         System.out.printf(">>> [BidService] %s đặt giá %s cho phiên #%d%n",

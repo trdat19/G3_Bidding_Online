@@ -134,36 +134,28 @@ public class AdminServerController {
         return new BaseResponse(
                 true,
                 "Danh sách yêu cầu tạo đấu giá",
-                auctionService.getCreateAuctionRequests()
+                auctionService.getAuctionApprovalRequests()
         );
     }
 
     public BaseResponse acceptCreateAuctionRequest(BaseRequest request) {
         Long auctionId = Long.parseLong(request.getData().toString());
 
-        try {
-            AuctionDTO dto = auctionService.approveCreateAuctionRequest(auctionId);
-            if (dto == null) {
-                return new BaseResponse(false, "Không thể duyệt yêu cầu này!", null);
-            }
-            return new BaseResponse(true, "Đã duyệt yêu cầu tạo đấu giá!", dto);
-        } catch (Exception e) {
-            return new BaseResponse(false, "Lỗi duyệt yêu cầu: " + e.getMessage(), null);
-        }
+        boolean ok = auctionService.approveAuctionRequest(auctionId);
+
+        return ok
+                ? new BaseResponse(true, "Đã duyệt yêu cầu tạo đấu giá", null)
+                : new BaseResponse(false, "Không thể duyệt yêu cầu này", null);
 
     }
 
     public BaseResponse rejectCreateAuctionRequest(BaseRequest request) {
         Long auctionId = Long.parseLong(request.getData().toString());
 
-        try {
-            AuctionDTO dto = auctionService.rejectCreateAuctionRequest(auctionId);
-            if (dto == null) {
-                return new BaseResponse(false, "Không thể từ chối yêu cầu này!", null);
-            }
-            return new BaseResponse(true, "Đã từ chối yêu cầu tạo đấu giá!", dto);
-        } catch (Exception e) {
-            return new BaseResponse(false, "Lỗi từ chối yêu cầu: " + e.getMessage(), null);
-        }
+        boolean ok = auctionService.rejectAuctionRequest(auctionId);
+
+        return ok
+                ? new BaseResponse(true, "Đã từ chối yêu cầu tạo đấu giá", null)
+                : new BaseResponse(false, "Không thể từ chối yêu cầu này", null);
     }
 }

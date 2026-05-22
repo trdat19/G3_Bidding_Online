@@ -1,8 +1,10 @@
 package client.controller;
 
 import client.model.Item;
-import client.state.ClientSession;
+import client.service.ClientNetworkService;
+import client.session.ClientSession;
 import client.util.StageUtils;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -34,6 +36,8 @@ import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
 import shared.enums.ItemStatus;
+import javafx.application.Platform;
+import java.util.function.Consumer;
 
 public class SellerDashboardController {
 
@@ -43,18 +47,32 @@ public class SellerDashboardController {
     @FXML
     private FlowPane productContainer;
 
+    private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
+
+    private Timeline refreshTimeline;
     private final List<ItemDTO> itemList = new ArrayList<>();
 
     @FXML
     public void initialize() {
-        loadProductsFromServer();
+        sellerNameLabel.setText(ClientSession.getCurrentUserFullName());
+        refreshProducts();
+
+        ClientNetworkService.getInstance().addEventListener(realtimeListener);
     }
-    public void setFullName(String fullName) {
-        if (fullName == null || fullName.isBlank()) {
-            sellerNameLabel.setText("Bidder");
-        }
-        else {
-            sellerNameLabel.setText(fullName);
+
+    @FXML
+    private void handleOpenSellerWalletPopup(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/seller-wallet-popup.fxml"));
+
+            Stage popup = new Stage();
+            popup.setTitle("Ví bán hàng");
+            popup.setScene(new Scene(root));
+            popup.initOwner(((Node) event.getSource()).getScene().getWindow());
+            popup.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     private void loadProductsFromServer() {
@@ -200,25 +218,27 @@ public class SellerDashboardController {
     //các helper để setText theo từng Status: PENDING, ACTIVE SOLD,CANCELLED
     private String getStatusText(String status) {
         return switch (status) {
-            case "PENDING" -> "Chờ duyệt";
-            case "ACTIVE" -> "Đã duyệt";
+            case "PENDING" -> "Đã thêm";
+            case "WAITING_APPROVAL" -> "Chờ duyệt";
+            case "ACTIVE" -> "Đang được đấu giá";
             case "SOLD" -> "Đã bán";
-            case "CANCELLED" -> "Đã hủy";
+            case "CANCELLED" -> "Ế hàng";
             default -> status;
         };
     }
     private String getStatusDescription(String status) {
         return switch (status) {
-            case "PENDING" -> "Sản phẩm đang chờ admin kiểm duyệt.";
-            case "ACTIVE" -> "Phiên đấu giá của sản phẩm đã được admin duyệt.";
+            case "PENDING" -> "Sản phẩm đã được thêm, có thể tạo đấu giá";
+            case "ACTIVE" -> "Sản phẩm đang chờ admin duyệt phiên đấu giá";
             case "SOLD" -> "Sản phẩm đã bán thành công.";
-            case "CANCELLED" -> "Sản phẩm hoặc phiên đấu giá đã bị hủy.";
+            case "CANCELLED" -> "Phiên đấu giá đã kết thúc nhưng không có ai đặt giá. Có thể tạo lại phiên đấu giá mới";
             default -> "";
         };
     }
     private String getStatusStyleClass(String status) {
         return switch (status) {
             case "PENDING" -> "status-pending";
+            case "WAITING_APPROVAL" -> "status-waiting";
             case "ACTIVE" -> "status-active";
             case "SOLD" -> "status-sold";
             case "CANCELLED" -> "status-cancelled";
@@ -227,28 +247,15 @@ public class SellerDashboardController {
     }
     @FXML
     private void handleLogout(ActionEvent event) {
+        ClientNetworkService.getInstance().removeEventListener(realtimeListener);
+        ClientNetworkService.getInstance().sendRequest(new BaseRequest(Action.LOGOUT, null));
+        ClientSession.clear();
+
         try {
-            BaseRequest logoutRequest = new BaseRequest(Action.LOGOUT, null);
-            BaseResponse response = ClientNetworkService.getInstance().sendRequest(logoutRequest);
-
-            if (response != null && response.isSuccess()) {
-                ClientSession.clear();
-
-                Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                StageUtils.setMaximizedScene(stage, root);
-                stage.show();
-            }
-            else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Đăng xuất thất bại");
-                alert.setHeaderText(null);
-                alert.setContentText(response != null
-                        ? response.getMessage()
-                        : "Không kết nối được server");
-                alert.showAndWait();
-            }
-
+            Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            StageUtils.setMaximizedScene(stage, root);
+            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -279,6 +286,11 @@ public class SellerDashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public void addNewProduct(ItemDTO item) {
+        itemList.add(item);
+        loadProducts();
+
     }
     @FXML
     private void handleRefresh() {
@@ -364,6 +376,8 @@ public class SellerDashboardController {
 
     }
     public void refreshProducts() {
+        BaseResponse response = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest(Action.GET_SELLER_ITEMS, null));
 
         loadProductsFromServer();
     }
@@ -391,4 +405,13 @@ public class SellerDashboardController {
             default -> "Ở trạng thái " + status;
         };
     }
+
+    private void handleRealtimeEvent(BaseResponse response) {
+        if (!"SELLER_ITEMS_CHANGED".equals(response.getAction())) {
+            return;
+        }
+
+        Platform.runLater(this::refreshProducts);
+    }
+
 }
