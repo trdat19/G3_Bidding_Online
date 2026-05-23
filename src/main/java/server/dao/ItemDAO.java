@@ -18,8 +18,8 @@ public class ItemDAO {
 
     // thêm item mới
     public boolean insertItem(Item item) {
-        String sql = "INSERT INTO items(name_item, category, description, id_seller, price_start, status_item, image_url) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO items(name_item, category, description, id_seller, price_start, status_item, image_url, image_data, image_content_type) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
@@ -31,6 +31,8 @@ public class ItemDAO {
             ps.setBigDecimal(5, BigDecimal.ONE);
             ps.setString(6, item.getStatusItem().name());
             ps.setString(7, item.getImageUrl());
+            ps.setBytes(8, item.getImageBytes());
+            ps.setString(9, item.getImageContentType());
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
@@ -129,7 +131,7 @@ public class ItemDAO {
     // cập nhật toàn bộ item
     public boolean updateItem(Item item) {
         String sql = "UPDATE items SET name_item = ?, category = ?, description = ?, " +
-                "id_seller = ?, price_start = ?, status_item = ? WHERE id_item = ?";
+                "id_seller = ?, price_start = ?, status_item = ?,  image_url = ?, image_data = ?, image_content_type = ? WHERE id_item = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
@@ -140,7 +142,10 @@ public class ItemDAO {
             ps.setLong(4, item.getSellerId());
             ps.setBigDecimal(5, BigDecimal.ONE);
             ps.setString(6, item.getStatusItem().name());
-            ps.setLong(7, item.getId());
+            ps.setString(7, item.getImageUrl());
+            ps.setBytes(8, item.getImageBytes());
+            ps.setString(9, item.getImageContentType());
+            ps.setLong(10, item.getId());
 
             return ps.executeUpdate() > 0;
 
@@ -193,6 +198,8 @@ public class ItemDAO {
         ItemStatus statusItem = ItemStatus.valueOf(rs.getString("status_item"));
         Timestamp createdAtItem = rs.getTimestamp("created_atItem");
         String imageUrl = rs.getString("image_url");
+        byte[] imageBytes = rs.getBytes("image_data");
+        String imageContentType = rs.getString("image_content_type");
         switch (category) {
             case ART:
                 Art art = new Art(nameItem, description, sellerId, statusItem);
@@ -201,6 +208,8 @@ public class ItemDAO {
                     art.setCreatedAtItem(createdAtItem.toLocalDateTime());
                 }
                 art.setImageUrl(imageUrl);
+                art.setImageBytes(imageBytes);
+                art.setImageContentType(imageContentType);
                 return art;
 
             case ELECTRONICS:
@@ -208,6 +217,8 @@ public class ItemDAO {
                 electronics.setId(id);
                 electronics.setCreatedAtItem(createdAtItem.toLocalDateTime());
                 electronics.setImageUrl(imageUrl);
+                electronics.setImageBytes(imageBytes);
+                electronics.setImageContentType(imageContentType);
                 return electronics;
 
             case VEHICLE:
@@ -215,6 +226,8 @@ public class ItemDAO {
                 vehicle.setId(id);
                 vehicle.setCreatedAtItem(createdAtItem.toLocalDateTime());
                 vehicle.setImageUrl(imageUrl);
+                vehicle.setImageBytes(imageBytes);
+                vehicle.setImageContentType(imageContentType);
                 return vehicle;
 
             default:

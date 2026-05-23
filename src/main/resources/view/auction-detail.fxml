@@ -36,7 +36,7 @@
                   <HBox spacing="28" styleClass="hero-card">
       
                       <StackPane prefHeight="330" prefWidth="430" styleClass="hero-image">
-                          <ImageView fx:id="imageView" fitHeight="330" fitWidth="430" preserveRatio="true" smooth="true" />
+                          <ImageView fx:id="productImageView" fitHeight="330" fitWidth="430" preserveRatio="true" smooth="true" />
                           <Label fx:id="imagePlaceholderLabel" styleClass="image-placeholder" text="Ảnh sản phẩm" />
                       </StackPane>
       

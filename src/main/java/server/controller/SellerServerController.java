@@ -128,6 +128,8 @@ public class SellerServerController {
                 dto.setPriceStart(BigDecimal.ZERO);
                 dto.setImageUrl(item.getImageUrl());
                 dto.setCreatedAt(item.getCreatedAtItem());
+                dto.setImageBytes(item.getImageBytes());
+                dto.setImageContentType(item.getImageContentType());
 
                 dtos.add(dto);
             }

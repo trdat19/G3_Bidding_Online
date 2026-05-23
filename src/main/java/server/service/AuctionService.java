@@ -72,6 +72,8 @@ public class AuctionService {
         dto.setItemDescription(item.getDescription());
         dto.setItemCategory(item.getCategory().name());
         dto.setItemImageUrl(item.getImageUrl());
+        dto.setImageBytes(item.getImageBytes());
+        dto.setImageContentType(item.getImageContentType());
         dto.setStartPrice(auction.getStartPrice());
 
         Bid highestBid = bidDAO.getHighestBidByAuctionId(auction.getId());

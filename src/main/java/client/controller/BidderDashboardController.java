@@ -129,6 +129,8 @@ public class BidderDashboardController
         );
         item.setId(auction.getId());
         item.setImageUrl(auction.getItemImageUrl());
+        item.setImageBytes(auction.getImageBytes());
+        item.setImageContentType(auction.getImageContentType());
         return item;
     }
 
