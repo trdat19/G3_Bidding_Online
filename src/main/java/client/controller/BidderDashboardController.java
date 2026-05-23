@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import java.io.ByteArrayInputStream;
 import shared.enums.Action;
 
 public class BidderDashboardController
@@ -175,8 +176,13 @@ public class BidderDashboardController
         StackPane.setAlignment(statusBadge, Pos.TOP_RIGHT);
         StackPane.setMargin(statusBadge, new Insets(12, 12, 0, 0));
 
-        if(item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
-            ImageView imageView = new ImageView(new Image(item.getImageUrl(), true));
+        Image image = null;
+
+        if(item.getImageBytes() != null && item.getImageBytes().length > 0 ) {
+            image = new Image(new ByteArrayInputStream(item.getImageBytes()));
+        }
+        if (image != null) {
+            ImageView imageView = new ImageView(image);
             imageView.setFitWidth(330);
             imageView.setFitHeight(210);
             imageView.setPreserveRatio(true);

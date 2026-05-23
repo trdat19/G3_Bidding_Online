@@ -15,8 +15,8 @@ import java.math.BigDecimal;
 public class UserDAO {
 
     public boolean insertUser(User user) {
-        String sql = "INSERT INTO users(username, password, full_name, email, role, status) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users(username, password, full_name, email, role, status, balance) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DBconnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {

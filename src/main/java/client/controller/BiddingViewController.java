@@ -18,6 +18,8 @@ import shared.dto.response.BaseResponse;
 import shared.dto.common.AuctionDTO;
 import javafx.application.Platform;
 import shared.dto.common.BidDTO;
+
+import java.io.ByteArrayInputStream;
 import java.util.function.Consumer;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,7 +79,7 @@ public class BiddingViewController {
         timeColumn.setCellValueFactory(cell ->
                 new SimpleStringProperty(
                         cell.getValue().getTimestamp() != null
-                        ? cell.getValue().getTimestamp().format(bidTimeFormatter) : ""
+                                ? cell.getValue().getTimestamp().format(bidTimeFormatter) : ""
                 )
         );
         indexColumn.setCellFactory(column -> new TableCell<>() {
@@ -97,7 +99,7 @@ public class BiddingViewController {
 
     public void setItem(Item item) {
         this.currentItem = item;
-        setProductImage(item.getImageUrl());
+        setProductImage(item.getImageBytes());
 
         nameLabel.setText(item.getTitle());
         categoryLabel.setText(item.getCategory());
@@ -292,14 +294,14 @@ public class BiddingViewController {
         }
     }
 
-    private void setProductImage(String imageUrl) {
-        if (imageUrl == null || imageUrl.isBlank()) {
+    private void setProductImage(byte[] imageBytes) {
+        if (imageBytes == null || imageBytes.length < 0) {
             productImageView.setImage(null);
             imagePlaceholderLabel.setVisible(true);
             return;
         }
 
-        Image image = new Image(imageUrl, true);
+        Image image = new Image(new ByteArrayInputStream(imageBytes));
         productImageView.setImage(image);
         imagePlaceholderLabel.setVisible(false);
     }
