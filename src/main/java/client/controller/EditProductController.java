@@ -11,7 +11,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import shared.dto.common.ItemDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
@@ -22,28 +21,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EditProductController {
-    @FXML
-    private TextField nameField;
-    @FXML
-    private ComboBox<ItemCategory> categoryBox;
-    @FXML
-    private TextArea descriptionField;
-    @FXML
-    private Label errorLabel;
-    @FXML
-    private ImageView productImageView;
-    @FXML
-    private Label imageNameLabel;
-    private ItemDTO editingItem;
+    @FXML private TextField nameField;
+    @FXML private ComboBox<ItemCategory> categoryBox;
+    @FXML private TextArea descriptionField;
+    @FXML private Label errorLabel;
+    @FXML private ImageView productImageView;
+    @FXML private Label imageNameLabel;
+    private Item editingItem;
     private File selectedImageFile;
 
 
     private SellerDashboardController sellerDashboardController;
-
     public void setSellerDashboardController(SellerDashboardController sellerDashboardController) {
         this.sellerDashboardController = sellerDashboardController;
     }
-
     @FXML
     private void initialize() {     //tao lua chon ngay gio cho nguoi dung
         errorLabel.setText("");
@@ -76,7 +67,6 @@ public class EditProductController {
             imageNameLabel.setText(file.getName());
         }
     }
-
     @FXML
     private void handleSave() {
         errorLabel.setText("");
@@ -122,18 +112,17 @@ public class EditProductController {
     private void handleCancel() {
         closeWindow();
     }
-
     private void closeWindow() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
     }
 
-    public void setData(ItemDTO item, SellerDashboardController sellerDashboardController) {
+    public void setData(Item item, SellerDashboardController sellerDashboardController) {
         this.editingItem = item;
         this.sellerDashboardController = sellerDashboardController;
 
-        nameField.setText(item.getName());
-        categoryBox.setValue(item.getCategory());
+        nameField.setText(item.getTitle());
+        categoryBox.setValue(ItemCategory.valueOf(item.getCategory()));
         descriptionField.setText(item.getDescription());
         imageNameLabel.setText("Giữ ảnh hiện tại");
     }

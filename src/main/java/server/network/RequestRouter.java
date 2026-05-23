@@ -183,15 +183,15 @@ public class RequestRouter {
 
                 case Action.GET_CREATE_AUCTION_REQUESTS: {
                     requireRole(handler, UserRole.ADMIN);
-                    return AuctionServerController.getInstance().getCreateAuctionRequests();
+                    return AdminServerController.getInstance().getCreateAuctionRequests();
                 }
                 case Action.ACCEPT_CREATE_AUCTION_REQUEST: {
                     requireRole(handler, UserRole.ADMIN);
-                    return AuctionServerController.getInstance().approveCreateAuctionRequest(request);
+                    return AdminServerController.getInstance().acceptCreateAuctionRequest(request);
                 }
                 case Action.REJECT_CREATE_AUCTION_REQUEST: {
                     requireRole(handler, UserRole.ADMIN);
-                    return AuctionServerController.getInstance().rejectCreateAuctionRequest(request);
+                    return AdminServerController.getInstance().rejectCreateAuctionRequest(request);
                 }
                 default: {
                     return new BaseResponse(false,

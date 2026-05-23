@@ -72,6 +72,8 @@ public class AuctionService {
         dto.setItemDescription(item.getDescription());
         dto.setItemCategory(item.getCategory().name());
         dto.setItemImageUrl(item.getImageUrl());
+        dto.setImageBytes(item.getImageBytes());
+        dto.setImageContentType(item.getImageContentType());
         dto.setStartPrice(auction.getStartPrice());
 
         Bid highestBid = bidDAO.getHighestBidByAuctionId(auction.getId());
@@ -120,9 +122,17 @@ public class AuctionService {
             throw new RuntimeException("Sản phẩm không tồn tại!");
         }
         //Kiểm tra xem sản phẩm còn được phép tạo phiên đấu giá không?
-        if (item.getStatusItem() != ItemStatus.PENDING
-                && item.getStatusItem() != ItemStatus.CANCELLED) {
-            throw new RuntimeException("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING hoặc CANCELLED!");
+        if (item.getStatusItem() != ItemStatus.PENDING) {
+            throw new RuntimeException("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING!");
+        }
+
+        if (auctionDAO.existsAuctionByItemId(itemId)) {
+            throw new RuntimeException("Sản phẩm này đã có yêu cầu/phiên đấu giá, không thể tạo thêm!");
+        }
+
+        //kiểm tra rằng item chưa ở phiên đấu giá nào khác
+        if (auctionDAO.existsOpenAuctionByItemId(itemId)) {
+            throw new RuntimeException("Sản phẩm đang nằm ở phiên đấu giá khác!");
         }
 
         //kiểm tra logic thời gian start < end
@@ -138,10 +148,14 @@ public class AuctionService {
 
         Auction auction = new Auction(itemId, sellerId, startPrice, startPrice,
                                         minIncrement, buyNowPrice, startTime, endTime);
-
+        auction.setStatus(AuctionStatus.WAITING_APPROVAL);
         boolean checkInsertAuction = auctionDAO.insertAuction(auction);
         if (!checkInsertAuction) {
             throw new RuntimeException("Lỗi lưu phiên đấu giá vào hệ thống");
+        }
+
+        if (minIncrement == null || minIncrement.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Bước nhảy giá phải lớn hơn 0");
         }
 
         //Chuển trạng thái của item trong Dao

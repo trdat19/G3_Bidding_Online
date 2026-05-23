@@ -1,65 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<StackPane styleClass="root" stylesheets="@../css/login.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.LoginController">
-   <children>
-      <HBox alignment="CENTER" prefWidth="1200.0">
-         <children>
-            <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="600.0" spacing="20.0" styleClass="brand-title" stylesheets="@../css/login.css">
-               <children>
-                  <StackPane styleClass="icon-circle">
-                     <children>
-                        <Label maxWidth="1.7976931348623157E308" text="⚖" textAlignment="CENTER">
-                           <font>
-                              <Font size="36.0" />
-                           </font>
-                           <styleClass>
-                              <String fx:value="brand-icon" />
-                              <String fx:value="icon-circle" />
-                           </styleClass>
-                        </Label>
-                     </children>
-                  </StackPane>
-               
-                   <Label text="BIDZONE" textAlignment="CENTER">
-                     <font>
-                        <Font size="36.0" />
-                     </font>
-                  </Label>
-                  <Label text="Hệ thống đấu giá trực tuyến" textAlignment="CENTER" />
-               </children>
-               <padding>
-                  <Insets bottom="160.0" left="80.0" right="40.0" />
-               </padding>
-            </VBox>
-            <StackPane>
-               <children>
-                  <VBox alignment="CENTER" prefHeight="242.0" prefWidth="500.0" spacing="15.0" stylesheets="@../css/login.css">
-                  
-                      <TextField fx:id="username" promptText="Username" />
-                      <PasswordField fx:id="password" promptText="Password" />
-                  
-                      <Button onAction="#handleLogin" text="Login">
-                        <styleClass>
-                           <String fx:value="login-button" />
-                           <String fx:value="login-title" />
-                        </styleClass></Button>
-                     <Label layoutX="500.0" layoutY="300.0" textFill="#f90909" />
-                     <Label fx:id="errorLabel" textFill="#e00909" />
-                     <Hyperlink onAction="#handleRegister" text="Don't have a account? Register" />
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                  
-                  </VBox>
-               </children>
-            </StackPane>
-         </children>
-      </HBox>
-   </children>
+<StackPane styleClass="root" stylesheets="@../css/login.css"
+           xmlns="http://javafx.com/javafx/17.0.12"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="client.controller.LoginController">
+
+   <HBox styleClass="login-layout" StackPane.alignment="CENTER">
+      <children>
+
+         <!-- LEFT BRAND PANEL -->
+         <VBox prefWidth="580.0" styleClass="left-panel">
+            <children>
+               <HBox alignment="CENTER_LEFT" spacing="16.0">
+                  <children>
+                     <StackPane styleClass="logo-box">
+                        <children>
+                           <Label text="⚖" styleClass="logo-icon" />
+                        </children>
+                     </StackPane>
+                     <Label text="BidZone" styleClass="brand-name" />
+                  </children>
+               </HBox>
+
+               <Region prefHeight="38.0" />
+
+               <Label text="Chào mừng trở lại với BidZone" styleClass="left-title" wrapText="true" />
+
+               <Label text="Đăng nhập để tiếp tục theo dõi phiên đấu giá, quản lý sản phẩm và cập nhật hoạt động của bạn trên hệ thống."
+                      styleClass="left-subtitle" wrapText="true" />
+
+               <VBox spacing="18.0" styleClass="feature-card">
+                  <children>
+                     <Label text="✓ Tham gia phiên đấu giá realtime" styleClass="feature-text" />
+                     <Label text="✓ Theo dõi giá và thời gian còn lại" styleClass="feature-text" />
+                     <Label text="✓ Quản lý vai trò Bidder, Seller, Admin" styleClass="feature-text" />
+                  </children>
+               </VBox>
+
+               <Region VBox.vgrow="ALWAYS" />
+
+               <Label text="Online Auction System" styleClass="left-footer" />
+            </children>
+         </VBox>
+
+         <!-- RIGHT LOGIN FORM -->
+         <StackPane HBox.hgrow="ALWAYS" styleClass="right-panel">
+            <children>
+               <VBox alignment="CENTER_LEFT" maxWidth="520.0" spacing="18.0" styleClass="login-card">
+                  <children>
+                     <Label text="Đăng nhập" styleClass="login-title" />
+                     <Label text="Đăng nhập để tiếp tục sử dụng BidZone" styleClass="login-subtitle" />
+
+                     <VBox spacing="8.0">
+                        <children>
+                           <Label text="Username" styleClass="field-label" />
+                           <TextField fx:id="username" promptText="Nhập username" styleClass="input-field" />
+                        </children>
+                     </VBox>
+
+                     <VBox spacing="8.0">
+                        <children>
+                           <Label text="Mật khẩu" styleClass="field-label" />
+                           <PasswordField fx:id="password" promptText="Nhập mật khẩu" styleClass="input-field" />
+                        </children>
+                     </VBox>
+
+                     <Label fx:id="errorLabel" styleClass="error-label" wrapText="true" />
+
+                     <Button maxWidth="1.7976931348623157E308" onAction="#handleLogin" text="Đăng nhập" styleClass="login-button" />
+
+                     <HBox alignment="CENTER" spacing="4.0">
+                        <children>
+                           <Label text="Chưa có tài khoản?" styleClass="hint-text" />
+                           <Hyperlink onAction="#handleRegister" text="Đăng ký ngay" styleClass="register-link" />
+                        </children>
+                     </HBox>
+                  </children>
+               </VBox>
+            </children>
+         </StackPane>
+
+      </children>
+   </HBox>
 </StackPane>

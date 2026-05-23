@@ -1,5 +1,6 @@
 package client.controller;
 import client.service.ClientNetworkService;
+import client.state.ClientSession;
 import client.util.StageUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -97,10 +98,6 @@ public class AdminDashboardController {
     private void showSettings() {
         loadPage(SETTINGS_PAGE);
     }
-    @FXML
-    private void showProductRequests() {
-        loadPage(REQUEST_PAGE);
-    }
     private void loadPage(String fxmlPath) {
         if (fxmlPath.equals(currentPage)) {
             return;
@@ -123,5 +120,10 @@ public class AdminDashboardController {
         }catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    @FXML
+    private void showProductRequests() {
+
+        loadPage(REQUEST_PAGE);
     }
 }

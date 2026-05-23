@@ -47,7 +47,9 @@ public class AdminRequestController {
                 new SimpleStringProperty(data.getValue().getItemCategory()));
 
         statusColumn.setCellValueFactory(data ->
-                new SimpleStringProperty(data.getValue().getStatus().name()));
+                new SimpleStringProperty(data.getValue().getStatus() != null
+                        ? data.getValue().getStatus().name()
+                        : ""));
 
         startPriceColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(String.valueOf(data.getValue().getStartPrice())));

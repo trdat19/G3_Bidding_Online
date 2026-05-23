@@ -17,7 +17,8 @@ public class Item {
     private int bidCount;
     private Long id;
     private String imageUrl;
-
+    private byte[] imageBytes;
+    private String imageContentType;
 
     public Item(String title, String category, String description,
                 double startPrice, double currentPrice,
@@ -63,7 +64,9 @@ public class Item {
         this.startTime = startTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {this.endTime = endTime;}
+    public void setEndTime(LocalDateTime startTime) {
+        this.endTime = endTime;
+    }
 
     public void setStatus(String status) {
         this.status = status;
@@ -74,6 +77,11 @@ public class Item {
     public void setId(Long id) {this.id = id;}
 
     public void setImageUrl(String imageUrl) {this.imageUrl = imageUrl;}
+
+    public void setImageBytes(byte[] imageBytes) {this.imageBytes = imageBytes;}
+    public void setImageContentType(String imageContentType) {
+        this.imageContentType = imageContentType;
+    }
 
     //getter
     public String getTitle() {
@@ -119,4 +127,10 @@ public class Item {
     public Long getId() {return id;}
 
     public String getImageUrl() {return imageUrl;}
+    public byte[] getImageBytes() {
+        return imageBytes;
+    }
+    public String getImageContentType() {
+        return imageContentType;
+    }
 }

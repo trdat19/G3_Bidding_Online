@@ -2,26 +2,22 @@ package client.controller;
 
 import client.service.ClientNetworkService;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-
-import shared.enums.Action;
 
 public class WalletPopupController {
 
-    @FXML
-    private Label walletBalanceLabel;
-    @FXML
-    private TextField depositAmountField;
-    @FXML
-    private Label walletMessageLabel;
+    @FXML private Label walletBalanceLabel;
+    @FXML private TextField depositAmountField;
+    @FXML private Label walletMessageLabel;
+
+
 
     @FXML
     private void initialize() {
@@ -92,4 +88,5 @@ public class WalletPopupController {
         Stage stage = (Stage) walletBalanceLabel.getScene().getWindow();
         stage.close();
     }
+
 }

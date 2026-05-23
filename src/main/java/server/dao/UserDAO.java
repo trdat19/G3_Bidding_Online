@@ -7,11 +7,10 @@ import server.model.user.Seller;
 import server.model.user.User;
 import shared.enums.UserRole;
 import shared.enums.UserStatus;
-
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.math.BigDecimal;
 
 public class UserDAO {
 

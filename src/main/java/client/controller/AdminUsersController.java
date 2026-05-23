@@ -18,7 +18,7 @@ public class AdminUsersController {
     @FXML private TableColumn<UserDTO, String> roleColumn;
     @FXML private TableColumn<UserDTO, String> statusColumn;
     @FXML private TableColumn<UserDTO, String> createAtColumn;
-    @FXML private TableColumn<UserDTO, String> ActionColumn;
+    @FXML private TableColumn<UserDTO, String> actionColumn;
 
     @FXML
     public void initialize() {
@@ -26,7 +26,10 @@ public class AdminUsersController {
         usernameColumn.setCellValueFactory(c-> new SimpleStringProperty(c.getValue().getUsername()));
         roleColumn.setCellValueFactory(c-> new SimpleStringProperty(String.valueOf(c.getValue().getRole())));
         statusColumn.setCellValueFactory(c-> new SimpleStringProperty(String.valueOf(c.getValue().getStatus())));
-        //createAtColumn.setCellValueFactory(c-> new SimpleStringProperty(""));
+        createAtColumn.setCellValueFactory(c-> new SimpleStringProperty(
+                c.getValue().getCreatedAt() != null
+                        ? c.getValue().getCreatedAt().toString()
+                        : ""));
 
         loadUsers();
     }

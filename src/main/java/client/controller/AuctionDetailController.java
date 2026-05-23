@@ -37,10 +37,9 @@ public class AuctionDetailController {
 
     private Timeline countdownTimeline;
 
-    private Item currentItem;
-
     private final DateTimeFormatter dateTimeFormatter =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private Item currentItem;
 
     public void setItemData(Item item) {
         productNameLabel.setText(item.getTitle());
@@ -55,22 +54,8 @@ public class AuctionDetailController {
         bidCountLabel.setText(item.getBidCount() + " bids");
         startCountdown(item.getStartTime(), item.getEndTime());
         setProductImage(item.getImageUrl());
-
         this.currentItem = item;
     }
-
-//    private void setProductImage(String imageUrl) {
-//        boolean hasImage = imageUrl != null && !imageUrl.isBlank();
-//
-//        imageView.setVisible(hasImage);
-//        imageView.setManaged(hasImage);
-//        imagePlaceholderLabel.setVisible(!hasImage);
-//        imagePlaceholderLabel.setManaged(!hasImage);
-//
-//        if (hasImage) {
-//            imageView.setImage(new Image(imageUrl, true));
-//        }
-//    }
 
     private void loadScene(String fxmlPath, ActionEvent event) {
         stopCountdown();
@@ -92,6 +77,7 @@ public class AuctionDetailController {
 
     @FXML
     private void handleJoinAuction(ActionEvent event) {
+        stopCountdown();
         if (currentItem.getStartTime() != null
                 && LocalDateTime.now().isBefore(currentItem.getStartTime())) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -100,7 +86,6 @@ public class AuctionDetailController {
             alert.showAndWait();
             return;
         }
-        stopCountdown();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/bidding-view.fxml"));
             Parent root = loader.load();

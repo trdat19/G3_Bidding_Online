@@ -56,6 +56,10 @@ public class ItemService {
         String description   = data.get("description").toString();
         ItemCategory category = ItemCategory.valueOf(data.get("category").toString());
         String imageUrl = data.containsKey("imageUrl") ? data.get("imageUrl").toString() : null;
+        byte[] imageBytes = data.containsKey("imageBytes") ? (byte[]) data.get("imageBytes") : null;
+        String imageContentType = data.containsKey("imageContentType")
+                ? data.get("imageContentType").toString()
+                : null;
 
         //validate Item
         if (name == null || name.isBlank()) {
@@ -68,6 +72,8 @@ public class ItemService {
         //static factory tạo item theo category
         Item item = ItemFactory.createItem(category, name, description, sellerId, ItemStatus.PENDING);
         item.setImageUrl(imageUrl);
+        item.setImageBytes(imageBytes);
+        item.setImageContentType(imageContentType);
 
         boolean ok = itemDAO.insertItem(item);
         return ok ? item : null;
@@ -99,6 +105,12 @@ public class ItemService {
         if (description != null) { item.setDescription(description); }
         if (category != null) { item.setCategory(category); }
         if (imageUrl != null) { item.setImageUrl(imageUrl); }
+        if (data.containsKey("imageBytes")) {
+            item.setImageBytes((byte[]) data.get("imageBytes"));
+        }
+        if (data.containsKey("imageContentType")) {
+            item.setImageContentType(data.get("imageContentType").toString());
+        }
 
         // 3. Kiểm tra
         boolean ok = itemDAO.updateItem(item);

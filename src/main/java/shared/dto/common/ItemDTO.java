@@ -33,6 +33,8 @@ public class ItemDTO implements Serializable {
     private BigDecimal priceStart;
     private String imageUrl;
     private LocalDateTime createdAt;
+    private byte[] imageBytes;
+    private String imageContentType;
 
 
 
@@ -80,6 +82,8 @@ public class ItemDTO implements Serializable {
     public BigDecimal getPriceStart() { return priceStart; }
     public String getImageUrl()       { return imageUrl; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public byte[] getImageBytes() {return imageBytes;}
+    public String getImageContentType() {return imageContentType;}
 
 
     // ─── SETTERS ──────────────────────────────────────────────────────────────
@@ -94,7 +98,8 @@ public class ItemDTO implements Serializable {
     public void setPriceStart(BigDecimal price)    { this.priceStart = price; }
     public void setImageUrl(String imageUrl)       { this.imageUrl = imageUrl; }
     public void setCreatedAt(LocalDateTime t)      { this.createdAt = t; }
-
+    public void setImageBytes(byte[] imageBytes) {this.imageBytes = imageBytes;}
+    public void setImageContentType(String imageContentType) {this.imageContentType = imageContentType;}
 
     @Override
     public String toString() {

@@ -17,6 +17,8 @@ import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,8 +96,13 @@ public class AddProductController {
         data.put("name", title);
         data.put("category", category.name());
         data.put("description", description);
-        data.put("imageUrl", selectedImageFile.toURI().toString());
-
+        try {
+            data.put("imageBytes", Files.readAllBytes(selectedImageFile.toPath()));
+            data.put("imageFileName", selectedImageFile.getName());
+            data.put("imageContentType", Files.probeContentType(selectedImageFile.toPath()));
+        }catch(IOException e) {
+            e.printStackTrace();
+        }
 
         BaseRequest request = new BaseRequest(Action.CREATE_ITEM, data);
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);

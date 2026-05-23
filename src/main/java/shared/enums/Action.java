@@ -23,6 +23,7 @@ public enum Action {
     GET_SELLER_ITEMS,
     SEND_CREATE_AUCTION_REQUEST,
 
+
     /**
      * Bidder
      */

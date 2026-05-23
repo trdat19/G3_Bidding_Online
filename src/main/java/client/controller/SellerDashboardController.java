@@ -1,10 +1,10 @@
 package client.controller;
 
 import client.model.Item;
+import shared.dto.common.ItemDTO;
 import client.service.ClientNetworkService;
 import client.session.ClientSession;
 import client.util.StageUtils;
-import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,7 +17,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
@@ -29,20 +28,14 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
-import shared.dto.common.ItemDTO;
-
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import javafx.application.Platform;
-import java.util.function.Consumer;
-import client.service.ClientNetworkService;
-import shared.dto.request.BaseRequest;
-import shared.dto.response.BaseResponse;
 import shared.enums.Action;
-import shared.enums.ItemStatus;
+
+import java.util.function.Consumer;
+import java.io.ByteArrayInputStream;
 
 public class SellerDashboardController {
 
@@ -54,7 +47,7 @@ public class SellerDashboardController {
 
     private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
 
-    private final List<ItemDTO> itemList = new ArrayList<>();
+    private final List<Item> itemList = new ArrayList<>();
     private Timeline refreshTimeline;
 
     @FXML
@@ -83,12 +76,12 @@ public class SellerDashboardController {
 
     private void loadProducts() {
         productContainer.getChildren().clear();
-        for (ItemDTO item :itemList) {
-            productContainer.getChildren().add(createProductCard(item));
+        for (Item items : itemList) {
+            productContainer.getChildren().add(createProductCard(items));
         }
     }
 
-    private VBox createProductCard(ItemDTO item) {
+    private VBox createProductCard(Item item) {
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
         card.setPrefWidth(360);
@@ -96,14 +89,14 @@ public class SellerDashboardController {
 
         StackPane imageBox = new StackPane();
         imageBox.getStyleClass().add("product-image");
-        Label categoryBadge = new Label(item.getCategory().name());
+        Label categoryBadge = new Label(item.getCategory());
         categoryBadge.getStyleClass().add("category-badge");
         StackPane.setMargin(categoryBadge, new Insets(14, 0, 0, 14));
         StackPane.setAlignment(categoryBadge, javafx.geometry.Pos.TOP_LEFT);
         imageBox.setPrefHeight(150);
 
-        if (item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
-            ImageView imageView = new ImageView(new Image(item.getImageUrl(), true));
+        if (item.getImageBytes() != null && item.getImageBytes().length > 0) {
+            ImageView imageView = new ImageView(new Image(new ByteArrayInputStream(item.getImageBytes())));
             imageView.setFitWidth(340);
             imageView.setFitHeight(150);
             imageView.setPreserveRatio(true);
@@ -119,7 +112,7 @@ public class SellerDashboardController {
         VBox body = new VBox(10);
         body.setPadding(new Insets(18));
 
-        Label titleLabel = new Label(item.getName());
+        Label titleLabel = new Label(item.getTitle());
         titleLabel.getStyleClass().add("product-title");
         titleLabel.setWrapText(true);
         titleLabel.setMaxWidth(324);
@@ -132,19 +125,19 @@ public class SellerDashboardController {
         HBox priceRow = new HBox(12);
         VBox priceBox = new VBox(6);
         priceBox.setPrefWidth(140);
-        Label priceLabel = new Label("GIÁ KHỞI ĐIỂM");
-        priceLabel.getStyleClass().add("meta-label");
-        Label priceValue = new Label(item.getPriceStart() + "$");
-        priceValue.getStyleClass().add("meta-value");
+        Label priceLabel = new Label("NGÀY TẠO");
+        Label priceValue = new Label(
+                item.getStartTime() != null ? item.getStartTime().toLocalDate().toString() : "-"
+        );
         priceBox.getChildren().addAll(priceLabel, priceValue);
 
         VBox statusBox = new VBox(6);
         statusBox.setPrefWidth(150);
         Label statusLabel = new Label("TRẠNG THÁI");
         statusLabel.getStyleClass().add("meta-label");
-        Label statusValue = new Label(getStatusText(item.getStatus().name()));
-        statusValue.getStyleClass().addAll("status-pill", getStatusStyleClass(item.getStatus().name()));
-        Label statusDesc = new Label(getStatusDescription(item.getStatus().name()));
+        Label statusValue = new Label(getStatusText(item.getStatus()));
+        statusValue.getStyleClass().addAll("status-pill", getStatusStyleClass(item.getStatus()));
+        Label statusDesc = new Label(getStatusDescription(item.getStatus()));
         statusDesc.getStyleClass().add("status-desc");
         statusDesc.setWrapText(true);
         statusDesc.setMaxWidth(324);
@@ -158,10 +151,8 @@ public class SellerDashboardController {
         //Doi UI theo tung status
         HBox actionRow = new HBox(12);
 
-        Button createAuctionButton = new Button(getCreateAuctionButtonText(item));
+        Button createAuctionButton = new Button("Tạo đấu giá");
         createAuctionButton.getStyleClass().add("edit-button");
-        createAuctionButton.setDisable(!canCreateAuction(item));
-        createAuctionButton.setTooltip(new Tooltip(getCreateAuctionTooltipText(item)));
         createAuctionButton.setOnAction(e -> handleCreateAuction(item));
 
         Button editButton = new Button("Edit");
@@ -187,7 +178,7 @@ public class SellerDashboardController {
             case "WAITING_APPROVAL" -> "Chờ duyệt";
             case "ACTIVE" -> "Đang được đấu giá";
             case "SOLD" -> "Đã bán";
-            case "CANCELLED" -> "Đã hủy";
+            case "CANCELLED" -> "Ế hàng";
             default -> status;
         };
     }
@@ -213,29 +204,15 @@ public class SellerDashboardController {
     }
     @FXML
     private void handleLogout(ActionEvent event) {
+        ClientNetworkService.getInstance().removeEventListener(realtimeListener);
+        ClientNetworkService.getInstance().sendRequest(new BaseRequest(Action.LOGOUT, null));
+        ClientSession.clear();
 
         try {
-            BaseRequest logoutRequest = new BaseRequest(Action.LOGOUT, null);
-            BaseResponse response = ClientNetworkService.getInstance().sendRequest(logoutRequest);
-
-            if (response != null && response.isSuccess()) {
-                ClientSession.clear();
-
-                Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                StageUtils.setMaximizedScene(stage, root);
-                stage.show();
-            }
-            else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Đăng xuất thất bại");
-                alert.setHeaderText(null);
-                alert.setContentText(response != null
-                        ? response.getMessage()
-                        : "Không kết nối được server");
-                alert.showAndWait();
-            }
-
+            Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            StageUtils.setMaximizedScene(stage, root);
+            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -267,7 +244,7 @@ public class SellerDashboardController {
             e.printStackTrace();
         }
     }
-    public void addNewProduct(ItemDTO item) {
+    public void addNewProduct(Item item) {
         itemList.add(item);
         loadProducts();
 
@@ -277,7 +254,7 @@ public class SellerDashboardController {
         refreshProducts();
     }
 
-    private void handleEditProduct(ItemDTO item) {
+    private void handleEditProduct(Item item) {
         if (!canManageItem(item)) {
             showCannotActionAlert("chỉnh sửa", item);
             return;
@@ -298,21 +275,8 @@ public class SellerDashboardController {
             e.printStackTrace();
         }
     }
-    @FXML
-    private void handleOpenSellerWalletPopup() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/seller-wallet-popup.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Thiết lập phiên đấu giá");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void handleDeleteProduct(ItemDTO item) {
+    private void handleDeleteProduct(Item item) {
         if (!canManageItem(item)) {
             showCannotActionAlert("xóa", item);
             return;
@@ -332,8 +296,8 @@ public class SellerDashboardController {
         }
     }
     //Hàm nối với SetupAuctionView khi admin duyệt
-    private void handleCreateAuction(ItemDTO item) {
-        if (!canCreateAuction(item)) {
+    private void handleCreateAuction(Item item) {
+        if (!canManageItem(item)) {
             showCannotActionAlert("tạo đấu giá cho", item);
             return;
         }
@@ -364,29 +328,28 @@ public class SellerDashboardController {
 
         itemList.clear();
 
-        List<ItemDTO> serverItems = (List<ItemDTO>) response.getData();
-//        for (ItemDTO obj : serverItems) {
-//            server.model.item.Item serverItem = (server.model.item.Item) obj;
-//
-//            Item item = new Item(
-//                    serverItem.getNameItem(),
-//                    serverItem.getCategory().name(),
-//                    serverItem.getDescription(),
-//                    1,
-//                    1,
-//                    "",
-//                    serverItem.getCreatedAtItem(),
-//                    serverItem.getCreatedAtItem(),
-//                    serverItem.getStatusItem().name(),
-//                    0
-//            );
-//
-//            item.setId(serverItem.getId());
-//            item.setImageUrl(serverItem.getImageUrl());
-//            itemList.add(item);
-//        }
-        for (ItemDTO itemDTO : serverItems) {
-            itemList.add(itemDTO);
+        List<?> serverItems = (List<?>) response.getData();
+        for (Object obj : serverItems) {
+            ItemDTO serverItem = (ItemDTO) obj;
+
+            Item item = new Item(
+                    serverItem.getName(),
+                    serverItem.getCategory().name(),
+                    serverItem.getDescription(),
+                    1,
+                    1,
+                    "",
+                    serverItem.getCreatedAt(),
+                    serverItem.getCreatedAt(),
+                    serverItem.getStatus().name(),
+                    0
+            );
+
+            item.setId(serverItem.getId());
+            item.setImageUrl(serverItem.getImageUrl());
+            item.setImageBytes(serverItem.getImageBytes());
+            item.setImageContentType(serverItem.getImageContentType());
+            itemList.add(item);
         }
 
         loadProducts();
@@ -395,33 +358,12 @@ public class SellerDashboardController {
         sellerNameLabel.setText(sellerName);
     }
 
-    private boolean canManageItem(ItemDTO item) {
-        return ItemStatus.PENDING.equals(item.getStatus())
-                || ItemStatus.CANCELLED.equals(item.getStatus());
+    private boolean canManageItem(Item item) {
+        return "PENDING".equals(item.getStatus())
+                || "CANCELLED".equals(item.getStatus());
     }
 
-    private boolean canCreateAuction(ItemDTO item) {
-        return ItemStatus.PENDING.equals(item.getStatus())
-                || ItemStatus.CANCELLED.equals(item.getStatus());
-    }
-
-    private String getCreateAuctionButtonText(ItemDTO item) {
-        if (ItemStatus.CANCELLED.equals(item.getStatus())) {
-            return "Tạo lại đấu giá";
-        }
-        return "Tạo đấu giá";
-    }
-
-    private String getCreateAuctionTooltipText(ItemDTO item) {
-        if (canCreateAuction(item)) {
-            return ItemStatus.CANCELLED.equals(item.getStatus())
-                    ? "Tạo phiên đấu giá mới cho sản phẩm hết hạn nhưng chưa có bid"
-                    : "Tạo phiên đấu giá cho sản phẩm vừa thêm";
-        }
-        return "Chỉ tạo đấu giá cho sản phẩm vừa thêm hoặc phiên hết hạn không có bid";
-    }
-
-    private void showCannotActionAlert(String action, ItemDTO item) {
+    private void showCannotActionAlert(String action, Item item) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Không thể " + action);
         alert.setHeaderText(null);
@@ -430,13 +372,13 @@ public class SellerDashboardController {
         alert.showAndWait();
     }
 
-    private String getStatusDescriptionForAlert(ItemStatus status) {
+    private String getStatusDescriptionForAlert(String status) {
         return switch (status) {
-            case ItemStatus.WAITING_APPROVAL -> "Đang chờ admin duyệt";
-            case ItemStatus.ACTIVE -> "Đang được đấu giá";
-            case ItemStatus.SOLD -> "Đã bán";
-            case ItemStatus.CANCELLED -> "Đã bị hủy";
-            case ItemStatus.PENDING -> "Đã được tạo";
+            case "WAITING_APPROVAL" -> "Đang chờ admin duyệt";
+            case "ACTIVE" -> "Đang được đấu giá";
+            case "SOLD" -> "Đã bán";
+            case "CANCELLED" -> "Đã bị hủy";
+            case "PENDING" -> "Đã được tạo";
             default -> "Ở trạng thái " + status;
         };
     }
@@ -448,5 +390,4 @@ public class SellerDashboardController {
 
         Platform.runLater(this::refreshProducts);
     }
-
 }

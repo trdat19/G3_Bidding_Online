@@ -64,7 +64,7 @@ public class BidService {
      */
     public synchronized boolean placeBid(Long auctionId, Long bidderId, BigDecimal amount) {
 
-        // 1. Lấy phiên đấu giá từ DB + kiểm tra thời gian
+        // 1. Lấy phiên đấu giá từ DB
         Auction auction = auctionDAO.findById(auctionId);
         if (auction == null) {
             throw new AuctionNotFoundException(auctionId);

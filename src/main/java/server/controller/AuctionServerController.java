@@ -149,38 +149,4 @@ public class AuctionServerController {
                     null);
         }
     }
-    /** getCreateAuctionRequests - Admin lấy request seller gửi */
-    public BaseResponse getCreateAuctionRequests() {
-        List<AuctionDTO> requests = auctionService.getCreateAuctionRequests();
-        return new BaseResponse(true, "Danh sách yêu cầu tạo đấu giá", requests);
-    }
-    /** approveCreateAuctionRequest -Admin duyệt request seller gửi */
-    public BaseResponse approveCreateAuctionRequest(BaseRequest request) {
-        try {
-            Long auctionId = Long.parseLong(request.getData().toString());
-            return new BaseResponse(
-                    true,
-                    "Đã duyệt đấu giá",
-                    auctionService.approveCreateAuctionRequest(auctionId)
-            );
-        }catch (Exception e) {
-            return new BaseResponse(false, "Lỗi từ chối yêu cầu: " + e.getMessage(), null);
-
-        }
-    }
-    /** rejectCreateAuctionRequest -Admin huy request seller gửi */
-    public BaseResponse rejectCreateAuctionRequest(BaseRequest request) {
-        try {
-            Long auctionId = Long.parseLong(request.getData().toString());
-
-            return new BaseResponse(
-                    true,
-                    "Đã từ chối yêu cầu đấu giá",
-                    auctionService.rejectCreateAuctionRequest(auctionId)
-            );
-        } catch (Exception e) {
-            return new BaseResponse(false, "Lỗi từ chối yêu cầu: " + e.getMessage(), null);
-        }
-    }
-
 }

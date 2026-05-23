@@ -1,16 +1,15 @@
 package client.controller;
 
+import client.model.Item;
 import client.service.ClientNetworkService;
-import shared.dto.common.ItemDTO;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
 
 import java.math.BigDecimal;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.stage.Stage;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -39,15 +38,15 @@ public class SetupAuctionViewController {
 
     @FXML private Label errorLabel;
 
-    private ItemDTO item;
+    private Item item;
     private SellerDashboardController sellerDashboardController;
 
-    public void setData(ItemDTO item, SellerDashboardController sellerDashboardController) {
+    public void setData(Item item, SellerDashboardController sellerDashboardController) {
         this.item = item;
         this.sellerDashboardController = sellerDashboardController;
 
-        productNameLabel.setText(item.getName());
-        productCategoryLabel.setText(item.getCategory().name());
+        productNameLabel.setText(item.getTitle());
+        productCategoryLabel.setText(item.getCategory());
     }
 
     @FXML
@@ -59,7 +58,7 @@ public class SetupAuctionViewController {
             endHourBox.getItems().add(i);
         }
 
-        for (int i = 0; i < 60; i += 5) {
+        for (int i = 0; i < 60; i ++) {
             startMinuteBox.getItems().add(i);
             endMinuteBox.getItems().add(i);
         }
@@ -98,23 +97,23 @@ public class SetupAuctionViewController {
             return;
         }
 
-        BigDecimal startPrice;
-        BigDecimal minIncrement;
+        double startPrice;
+        double minIncrement;
 
         try {
-            startPrice = new BigDecimal(startPriceText);
-            minIncrement = new BigDecimal(minIncrementText);
+            startPrice = Double.parseDouble(startPriceText);
+            minIncrement = Double.parseDouble(minIncrementText);
         } catch (NumberFormatException e) {
             errorLabel.setText("Giá khởi điểm và bước nhảy giá phải là số");
             return;
         }
 
-        if (startPrice.compareTo(BigDecimal.ZERO) <= 0) {
+        if (startPrice <= 0) {
             errorLabel.setText("Giá khởi điểm phải lớn hơn 0");
             return;
         }
 
-        if (minIncrement.compareTo(BigDecimal.ZERO) <= 0) {
+        if (minIncrement <= 0) {
             errorLabel.setText("Bước nhảy giá phải lớn hơn 0");
             return;
         }
@@ -139,25 +138,28 @@ public class SetupAuctionViewController {
             errorLabel.setText("Thời gian bắt đầu phải trước thời gian kết thúc");
             return;
         }
+
         Map<String, Object> data = new HashMap<>();
         data.put("itemId", item.getId());
-        data.put("startPrice", startPrice);
-        data.put("minIncrement", minIncrement);
-        data.put("buyNowPrice", null);
+        data.put("startPrice", BigDecimal.valueOf(startPrice));
+        data.put("minIncrement", BigDecimal.valueOf(minIncrement));
+        data.put("buyNowPrice", BigDecimal.valueOf(startPrice * 10));
         data.put("startTime", startDateTime);
         data.put("endTime", endDateTime);
 
-        BaseRequest request = new BaseRequest(Action.SEND_CREATE_AUCTION_REQUEST, data);
-        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+        BaseResponse response = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest(Action.SEND_CREATE_AUCTION_REQUEST, data));
 
-        if (response != null && response.isSuccess()) {
-            if (sellerDashboardController != null) {
-                sellerDashboardController.refreshProducts();
-            }
-            closeWindow();
-        } else {
-            errorLabel.setText(response != null ? response.getMessage() : "Không gửi được yêu cầu đấu giá");
+        if (response == null || !response.isSuccess()) {
+            errorLabel.setText(response != null ? response.getMessage() : "Khong ket noi duoc server");
+            return;
         }
+
+        if (sellerDashboardController != null) {
+            sellerDashboardController.refreshProducts();
+        }
+
+        closeWindow();
     }
 
     @FXML
