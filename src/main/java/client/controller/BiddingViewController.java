@@ -8,10 +8,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import client.service.ClientNetworkService;
-import server.model.core.Bid;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.dto.common.AuctionDTO;
@@ -50,6 +51,9 @@ public class BiddingViewController {
     @FXML private Label statusTextLabel;
     @FXML private ImageView productImageView;
     @FXML private Label imagePlaceholderLabel;
+    @FXML private Label minIncrementLabel;
+    @FXML private TextField autoBidIncrementField;
+    @FXML private TextField autoBidMaxAmountField;
 
 
     private Item currentItem;
@@ -57,6 +61,7 @@ public class BiddingViewController {
     private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
     private final ObservableList<BidDTO> bidHistory = FXCollections.observableArrayList();
     private final DateTimeFormatter bidTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private boolean returnedToDashboard = false;
 
     @FXML
     private void initialize()
@@ -100,6 +105,7 @@ public class BiddingViewController {
         currentPriceLabel.setText(String.valueOf(item.getCurrentPrice()));
         leaderLabel.setText(item.getLeader());
         bidCountLabel.setText(String.valueOf(item.getBidCount()));
+        minIncrementLabel.setText(String.valueOf(item.getMinIncrement()));
         startCountDown(item.getEndTime());
         ClientNetworkService.getInstance().addEventListener(realtimeListener);
         ClientNetworkService.getInstance()
@@ -135,12 +141,13 @@ public class BiddingViewController {
         long seconds = remaining.getSeconds();
         if (seconds <= 0) {
             timeLeftLabel.setText("00:00:00");
-            statusTextLabel.setText("Finishes");
+            statusTextLabel.setText("FINISHED");
 
             if (countdownTimeLine != null) {
                 countdownTimeLine.stop();
             }
 
+            goToBidderDashboard();
             return;
         }
         long hours = seconds / 3600;
@@ -272,6 +279,8 @@ public class BiddingViewController {
         if (countdownTimeLine != null) {
             countdownTimeLine.stop();
         }
+
+        goToBidderDashboard();
     }
 
     private void handleAuctionCancelledEvent(BaseResponse response) {
@@ -293,6 +302,49 @@ public class BiddingViewController {
         Image image = new Image(imageUrl, true);
         productImageView.setImage(image);
         imagePlaceholderLabel.setVisible(false);
+    }
+
+    private void goToBidderDashboard() {
+        if (returnedToDashboard) {
+            return;
+        }
+
+        returnedToDashboard = true;
+
+        ClientNetworkService.getInstance().removeEventListener(realtimeListener);
+
+        if (countdownTimeLine != null) {
+            countdownTimeLine.stop();
+        }
+
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/bidder-dashboard.fxml"));
+            Stage stage = (Stage) nameLabel.getScene().getWindow();
+            StageUtils.setMaximizedScene(stage, root);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleEnableAutoBid() {
+        String incrementText = autoBidIncrementField.getText().trim();
+        String maxAmountText = autoBidMaxAmountField.getText().trim();
+
+        if (incrementText.isEmpty() || maxAmountText.isEmpty()) {
+            messageLabel.setText("Vui lòng nhập bước giá và số tiền tối đa.");
+            return;
+        }
+
+        messageLabel.setText("Đã bật đấu giá tự động.");
+    }
+
+    @FXML
+    private void handleDisableAutoBid() {
+        autoBidIncrementField.clear();
+        autoBidMaxAmountField.clear();
+        messageLabel.setText("Đã tắt đấu giá tự động.");
     }
 
 }

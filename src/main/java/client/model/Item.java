@@ -19,6 +19,8 @@ public class Item {
     private String imageUrl;
     private byte[] imageBytes;
     private String imageContentType;
+    private double minIncrement;
+
 
     public Item(String title, String category, String description,
                 double startPrice, double currentPrice,
@@ -64,9 +66,7 @@ public class Item {
         this.startTime = startTime;
     }
 
-    public void setEndTime(LocalDateTime startTime) {
-        this.endTime = endTime;
-    }
+    public void setEndTime(LocalDateTime endTime) {this.endTime = endTime;}
 
     public void setStatus(String status) {
         this.status = status;
@@ -77,6 +77,8 @@ public class Item {
     public void setId(Long id) {this.id = id;}
 
     public void setImageUrl(String imageUrl) {this.imageUrl = imageUrl;}
+
+    public void setMinIncrement(double minIncrement) {this.minIncrement = minIncrement;}
 
     public void setImageBytes(byte[] imageBytes) {this.imageBytes = imageBytes;}
     public void setImageContentType(String imageContentType) {
@@ -127,6 +129,8 @@ public class Item {
     public Long getId() {return id;}
 
     public String getImageUrl() {return imageUrl;}
+
+    public double getMinIncrement() {return minIncrement;}
     public byte[] getImageBytes() {
         return imageBytes;
     }

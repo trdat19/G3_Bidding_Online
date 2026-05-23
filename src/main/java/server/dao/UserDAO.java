@@ -354,4 +354,48 @@ public class UserDAO {
 
         return false;
     }
+
+    public boolean transferBalanceIfEnough(long fromUserId, long toUserId, BigDecimal amount) {
+        String subtractSql = "UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?";
+        String addSql = "UPDATE users SET balance = balance + ? WHERE id = ?";
+
+        try (Connection con = DBconnection.getInstance().getConnection()) {
+            con.setAutoCommit(false);
+
+            try (PreparedStatement subtractPs = con.prepareStatement(subtractSql);
+                 PreparedStatement addPs = con.prepareStatement(addSql)) {
+
+                subtractPs.setBigDecimal(1, amount);
+                subtractPs.setLong(2, fromUserId);
+                subtractPs.setBigDecimal(3, amount);
+
+                if (subtractPs.executeUpdate() == 0) {
+                    con.rollback();
+                    return false;
+                }
+
+                addPs.setBigDecimal(1, amount);
+                addPs.setLong(2, toUserId);
+
+                if (addPs.executeUpdate() == 0) {
+                    con.rollback();
+                    return false;
+                }
+
+                con.commit();
+                return true;
+
+            } catch (Exception e) {
+                con.rollback();
+                System.err.println("transferBalanceIfEnough error: " + e.getMessage());
+                return false;
+            } finally {
+                con.setAutoCommit(true);
+            }
+
+        } catch (Exception e) {
+            System.err.println("transferBalanceIfEnough connection error: " + e.getMessage());
+            return false;
+        }
+    }
 }

@@ -2,11 +2,10 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.ImageView?>
 
-
-<BorderPane styleClass="root" stylesheets="@../css/bidding-view.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="client.controller.BiddingViewController">
+<BorderPane styleClass="root" stylesheets="@../css/bidding-view.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.BiddingViewController">
 
     <top>
         <HBox alignment="CENTER_LEFT" spacing="18" styleClass="top-bar">
@@ -30,18 +29,12 @@
             <!-- LEFT PANEL -->
             <VBox maxWidth="430" prefWidth="430" spacing="18">
 
-                <StackPane prefHeight="330" styleClass="image-card">
-                    <ImageView fx:id="productImageView"
-                               fitWidth="430"
-                               fitHeight="330"
-                               preserveRatio="true"
-                               smooth="true"/>
-                    <Label fx:id="imagePlaceholderLabel"
-                           styleClass="image-placeholder"
-                           text="Ảnh sản phẩm" />
+                <StackPane prefHeight="200.0" prefWidth="360.0" styleClass="image-card">
+                    <Label fx:id="imagePlaceholderLabel" styleClass="image-placeholder" text="Ảnh sản phẩm" />
+                    <ImageView fx:id="productImageView" fitHeight="236.0" fitWidth="322.0" preserveRatio="true" smooth="true" />
                 </StackPane>
 
-                <VBox spacing="10" styleClass="info-card">
+                <VBox prefHeight="114.0" prefWidth="430.0" spacing="10" styleClass="info-card">
                     <Label fx:id="nameLabel" styleClass="product-name" text="Product Name" />
                     <Label fx:id="categoryLabel" styleClass="muted-text" text="Category" />
                     <Separator />
@@ -54,42 +47,92 @@
             <!-- RIGHT PANEL -->
             <VBox maxWidth="760" prefWidth="760" spacing="18" stylesheets="@../css/bidding-view.css">
 
-                <HBox spacing="18">
-                    <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                        <Label styleClass="stat-label" text="Giá hiện tại" />
-                        <Label fx:id="currentPriceLabel" styleClass="main-price" text="0" />
+                <HBox alignment="TOP_LEFT" spacing="18">
+
+                    <!-- CỘT 1: Giá hiện tại + Người dẫn đầu -->
+                    <VBox prefWidth="210" spacing="18">
+                        <VBox maxWidth="Infinity" prefHeight="110" spacing="8" styleClass="stat-card">
+                            <Label styleClass="stat-label" text="Giá hiện tại" />
+                            <Label fx:id="currentPriceLabel" styleClass="main-price" text="0" />
+                        </VBox>
+
+                        <VBox maxWidth="Infinity" prefHeight="90" spacing="8" styleClass="info-card-small">
+                            <Label styleClass="stat-label" text="Người dẫn đầu" />
+                            <Label fx:id="leaderLabel" styleClass="stat-value" text="None" />
+                        </VBox>
                     </VBox>
 
-                    <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                        <Label styleClass="stat-label" text="Thời gian còn lại" />
-                        <Label fx:id="timeLeftLabel" styleClass="countdown" text="00:00:00" />
+                    <!-- CỘT 2: Thời gian + Bước giá/Số lượt bid -->
+                    <VBox prefWidth="260" spacing="18">
+                        <VBox maxWidth="Infinity" prefHeight="110" spacing="8" styleClass="stat-card">
+                            <Label styleClass="stat-label" text="Thời gian còn lại" />
+                            <Label fx:id="timeLeftLabel" styleClass="countdown" text="00:00:00" />
+                        </VBox>
+
+                        <HBox spacing="18">
+                            <VBox prefHeight="90" spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                                <Label styleClass="stat-label" text="Bước giá" />
+                                <Label fx:id="minIncrementLabel" styleClass="stat-value" text="0" />
+                            </VBox>
+
+                            <VBox prefHeight="90" spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                                <Label styleClass="stat-label" text="Số lượt bid" />
+                                <Label fx:id="bidCountLabel" styleClass="stat-value" text="0 bids" />
+                            </VBox>
+                        </HBox>
                     </VBox>
 
-                    <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                        <Label styleClass="stat-label" text="Số lượt bid" />
-                        <Label fx:id="bidCountLabel" styleClass="stat-value" text="0 bids" />
-                    </VBox>
-                </HBox>
+                    <!-- CỘT 3: Đấu giá tự động -->
+                    <StackPane prefWidth="240"
+                               prefHeight="218"
+                               minWidth="240"
+                               maxWidth="240"
+                               maxHeight="218"
+                               styleClass="auto-bid-wrapper">
+                        <VBox spacing="8"
+                              alignment="TOP_CENTER"
+                              styleClass="auto-bid-panel"
+                              StackPane.alignment="CENTER">
 
-                <HBox spacing="18">
-                    <VBox spacing="8" styleClass="info-card-small" HBox.hgrow="ALWAYS">
-                        <Label styleClass="stat-label" text="Người dẫn đầu" />
-                        <Label fx:id="leaderLabel" styleClass="stat-value" text="None" />
-                    </VBox>
+                            <Label styleClass="auto-bid-title"
+                                   text="Đấu giá tự động"
+                                   maxWidth="Infinity"
+                                   alignment="CENTER" />
 
-                    <VBox spacing="8" styleClass="info-card-small" HBox.hgrow="ALWAYS">
-                        <Label styleClass="stat-label" text="Trạng thái phiên" />
-                        <Label fx:id="statusTextLabel" styleClass="stat-value" text="RUNNING" />
-                    </VBox>
-                    <VBox spacing="8" styleClass="info-card-small" HBox.hgrow="ALWAYS">
-                        <Label styleClass="stat-label" text="Bắt đầu" />
-                        <Label fx:id="startTimeLabel" styleClass="stat-value" text="--/--/---- --:--" />
-                    </VBox>
+                            <VBox spacing="4" maxWidth="Infinity">
+                                <Label styleClass="stat-label" text="Bước giá" />
+                                <TextField fx:id="autoBidIncrementField"
+                                           maxWidth="Infinity"
+                                           promptText="Nhập bước giá"
+                                           styleClass="auto-bid-input" />
+                            </VBox>
 
-                    <VBox spacing="8" styleClass="info-card-small" HBox.hgrow="ALWAYS">
-                        <Label styleClass="stat-label" text="Kết thúc" />
-                        <Label fx:id="endTimeLabel" styleClass="stat-value" text="--/--/---- --:--" />
-                    </VBox>
+                            <VBox spacing="4" maxWidth="Infinity">
+                                <Label styleClass="stat-label" text="Số tiền tối đa" />
+                                <TextField fx:id="autoBidMaxAmountField"
+                                           maxWidth="Infinity"
+                                           promptText="Nhập số tiền tối đa"
+                                           styleClass="auto-bid-input" />
+                            </VBox>
+
+                            <HBox spacing="8" alignment="CENTER" maxWidth="Infinity">
+                                <Button fx:id="enableAutoBidButton"
+                                        onAction="#handleEnableAutoBid"
+                                        maxWidth="Infinity"
+                                        styleClass="auto-bid-enable-button"
+                                        text="Bật"
+                                        HBox.hgrow="ALWAYS" />
+
+                                <Button fx:id="disableAutoBidButton"
+                                        onAction="#handleDisableAutoBid"
+                                        maxWidth="Infinity"
+                                        styleClass="auto-bid-disable-button"
+                                        text="Tắt"
+                                        HBox.hgrow="ALWAYS" />
+                            </HBox>
+                        </VBox>
+                    </StackPane>
+
                 </HBox>
 
                 <VBox spacing="14" styleClass="bid-card">
@@ -104,12 +147,12 @@
                     <Label fx:id="messageLabel" styleClass="message-label" text="" />
                 </VBox>
 
-                <VBox spacing="12" styleClass="history-card" VBox.vgrow="ALWAYS">
+                <VBox prefWidth="749.0" spacing="12" styleClass="history-card" VBox.vgrow="ALWAYS">
                     <Label styleClass="card-title" text="Lịch sử đấu giá" />
 
-                    <TableView fx:id="bidTable" prefHeight="270" VBox.vgrow="ALWAYS">
+                    <TableView fx:id="bidTable" prefHeight="270" prefWidth="704.0" VBox.vgrow="ALWAYS">
                         <columns>
-                            <TableColumn fx:id="indexColumn" prefWidth="70" text="STT" sortable="false" />
+                            <TableColumn fx:id="indexColumn" prefWidth="70" sortable="false" text="STT" />
                             <TableColumn fx:id="bidderColumn" prefWidth="220" text="Người đấu" />
                             <TableColumn fx:id="amountColumn" prefWidth="220" text="Giá đấu" />
                             <TableColumn fx:id="timeColumn" prefWidth="260" text="Thời gian" />

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -51,19 +50,19 @@
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                             <children>
                                 <Label styleClass="page-title" text="Trang Seller" />
-                                <Label styleClass="page-subtitle" text="Quản lý sản phẩm, trạng thái duyệt và phiên đấu giá của bạn." />
+                                <Label styleClass="page-subtitle" text="Quản lý sản phẩm và phiên đấu giá của bạn." />
                             </children>
                         </VBox>
-                        <VBox alignment="CENTER_RIGHT" spacing="4.0">
+                        <VBox alignment="CENTER" prefHeight="65.0" prefWidth="148.0" spacing="4.0">
                             <children>
                                 <Label fx:id="sellerNameLabel" styleClass="user-name" text="Seller" />
                                 <Label styleClass="user-role" text="SELLER" />
                             </children>
                         </VBox>
-                        <VBox alignment="CENTER_LEFT" spacing="4.0" styleClass="seller-wallet-mini-card">
+                        <VBox alignment="CENTER" prefHeight="14.0" prefWidth="169.0" spacing="4.0" styleClass="seller-wallet-mini-card">
                             <children>
                                 <Label styleClass="seller-wallet-mini-title" text="Ví bán hàng" />
-                                <Label fx:id="sellerWalletBalanceLabel" styleClass="seller-wallet-mini-balance" text="/$0.00" />
+                                <Label fx:id="sellerWalletBalanceLabel" styleClass="seller-wallet-mini-balance" text="\$0.00" />
                             </children>
                         </VBox>
                         <Button mnemonicParsing="false" onAction="#handleOpenSellerWalletPopup" styleClass="primary-button" text="Mở ví" />
@@ -83,7 +82,6 @@
                                             </children>
                                         </VBox>
                                         <Button mnemonicParsing="false" onAction="#handleAddProduct" styleClass="primary-button" text="+ Thêm sản phẩm" />
-                                        <Button mnemonicParsing="false" onAction="#handleOpenSellerWalletPopup" styleClass="wallet-button" text="💰 Ví bán hàng" />
                                         <Button mnemonicParsing="false" onAction="#handleRefresh" styleClass="secondary-button" text="Làm mới" />
                                     </children>
                                 </HBox>

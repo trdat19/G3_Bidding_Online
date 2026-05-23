@@ -19,6 +19,7 @@ import javafx.scene.layout.*;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import java.math.BigDecimal;
 
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
@@ -44,6 +45,9 @@ public class BidderDashboardController
     @FXML
     private Label bidderNameLabel;
 
+    @FXML
+    private Label bidderWalletBalanceLabel;
+
     private final List<Item> itemList = new ArrayList<>();
     private final List<Timeline> countdownTimelines = new ArrayList<>();
     private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
@@ -52,11 +56,24 @@ public class BidderDashboardController
     @FXML
     public void initialize() {
         bidderNameLabel.setText(ClientSession.getCurrentUserFullName());
+        loadWalletBalance();
         loadAuctionsFromServer();
 
         ClientNetworkService.getInstance().addEventListener(realtimeListener);
         ClientNetworkService.getInstance()
                 .sendRequest(new BaseRequest(Action.SUBSCRIBE_AUCTION_LIST, null));
+    }
+
+    private void loadWalletBalance() {
+        BaseResponse response = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest(Action.GET_WALLET, null));
+
+        if (response != null && response.isSuccess() && response.getData() != null) {
+            BigDecimal balance = new BigDecimal(response.getData().toString());
+            bidderWalletBalanceLabel.setText("$" + balance.toPlainString());
+        } else {
+            bidderWalletBalanceLabel.setText("$0.00");
+        }
     }
 
     @FXML
@@ -73,6 +90,8 @@ public class BidderDashboardController
             popup.setTitle("Ví của tôi");
             popup.setScene(new Scene(root));
             popup.initOwner(((Node) event.getSource()).getScene().getWindow());
+            popup.setOnHidden(e -> loadWalletBalance());
+
             popup.show();
 
         } catch (IOException e) {
@@ -129,6 +148,7 @@ public class BidderDashboardController
         );
         item.setId(auction.getId());
         item.setImageUrl(auction.getItemImageUrl());
+        item.setMinIncrement(auction.getMinIncrement() != null ? auction.getMinIncrement().doubleValue() : 0);
         item.setImageBytes(auction.getImageBytes());
         item.setImageContentType(auction.getImageContentType());
         return item;
@@ -162,8 +182,7 @@ public class BidderDashboardController
             imageView.setPreserveRatio(true);
             imageView.setSmooth(true);
             imageBox.getChildren().add(imageView);
-        }
-        else {
+        } else {
             Label imagePlaceholder = new Label("Image");
             imagePlaceholder.getStyleClass().add("image-placeholder");
             imageBox.getChildren().add(imagePlaceholder);
@@ -347,4 +366,5 @@ public class BidderDashboardController
             refreshTimeLine = null;
         }
     }
+
 }
