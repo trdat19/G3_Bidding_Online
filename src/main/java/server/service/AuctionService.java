@@ -120,23 +120,21 @@ public class AuctionService {
             throw new RuntimeException("Sản phẩm không tồn tại!");
         }
         //Kiểm tra xem sản phẩm còn được phép tạo phiên đấu giá không?
-        if (item.getStatusItem() != ItemStatus.PENDING) {
-            throw new RuntimeException("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING!");
-        }
-
-        if (auctionDAO.existsAuctionByItemId(itemId)) {
-            throw new RuntimeException("Sản phẩm này đã có yêu cầu/phiên đấu giá, không thể tạo thêm!");
-        }
-
-        //kiểm tra rằng item chưa ở phiên đấu giá nào khác
-        if (auctionDAO.existsOpenAuctionByItemId(itemId)) {
-            throw new RuntimeException("Sản phẩm đang nằm ở phiên đấu giá khác!");
+        if (item.getStatusItem() != ItemStatus.PENDING
+                && item.getStatusItem() != ItemStatus.CANCELLED) {
+            throw new RuntimeException("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING hoặc CANCELLED!");
         }
 
         //kiểm tra logic thời gian start < end
         if (!endTime.isAfter(startTime)) {
             throw new RuntimeException("Thời gian kết thúc phải sau thời gian bắt đầu");
         }
+
+        if (minIncrement == null || minIncrement.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Bước nhảy giá phải lớn hơn 0");
+        }
+
+        clearReusableNoBidAuctions(itemId);
 
         Auction auction = new Auction(itemId, sellerId, startPrice, startPrice,
                                         minIncrement, buyNowPrice, startTime, endTime);
@@ -146,16 +144,40 @@ public class AuctionService {
             throw new RuntimeException("Lỗi lưu phiên đấu giá vào hệ thống");
         }
 
-        if (minIncrement == null || minIncrement.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Bước nhảy giá phải lớn hơn 0");
-        }
-
         //Chuển trạng thái của item trong Dao
         itemDAO.updateStatus(itemId, ItemStatus.WAITING_APPROVAL);
         System.out.println(">>> [AuctionService] Tạo auction #" + auction.getId() + " cho item #" + itemId);
 
         return toDTO(auction, item);
     }
+
+    private void clearReusableNoBidAuctions(Long itemId) {
+        List<Auction> oldAuctions = auctionDAO.getAllAuctionsByItemId(itemId);
+        if (oldAuctions == null || oldAuctions.isEmpty()) {
+            return;
+        }
+
+        for (Auction oldAuction : oldAuctions) {
+            if (bidDAO.countBidByAuctionId(oldAuction.getId()) > 0) {
+                throw new RuntimeException("Sản phẩm đã có lịch sử đấu giá, không thể tạo lại phiên mới!");
+            }
+
+            if (!isReusableNoBidAuction(oldAuction.getStatus())) {
+                throw new RuntimeException("Sản phẩm này đã có yêu cầu/phiên đấu giá, không thể tạo thêm!");
+            }
+        }
+
+        if (!auctionDAO.deleteAuctionsByItemId(itemId)) {
+            throw new RuntimeException("Không thể dọn phiên đấu giá cũ của sản phẩm!");
+        }
+    }
+
+    private boolean isReusableNoBidAuction(AuctionStatus status) {
+        return status == AuctionStatus.FINISHED
+                || status == AuctionStatus.CANCELLED
+                || status == AuctionStatus.CLOSED;
+    }
+
     //Thêm method admin lấy danh sách request
     public List<AuctionDTO> getCreateAuctionRequests() {
         List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.PREPARING);

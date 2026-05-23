@@ -27,7 +27,7 @@ public class SetupAuctionViewController {
     @FXML private Label productCategoryLabel;
 
     @FXML private TextField startPriceField;
-    @FXML private Spinner<Integer> minIncrementSpinner;
+    @FXML private TextField minIncrementField;
 
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
@@ -69,10 +69,6 @@ public class SetupAuctionViewController {
         endHourBox.setValue(20);
         endMinuteBox.setValue(0);
 
-        minIncrementSpinner.setValueFactory(
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 999, 1)
-        );
-
         startDatePicker.setValue(LocalDate.now());
         endDatePicker.setValue(LocalDate.now());
     }
@@ -87,8 +83,10 @@ public class SetupAuctionViewController {
         }
 
         String startPriceText = startPriceField.getText().trim();
+        String minIncrementText = minIncrementField.getText().trim();
 
         if (startPriceText.isEmpty()
+                || minIncrementText.isEmpty()
                 || startDatePicker.getValue() == null
                 || endDatePicker.getValue() == null
                 || startHourBox.getValue() == null
@@ -100,17 +98,24 @@ public class SetupAuctionViewController {
             return;
         }
 
-        double startPrice;
+        BigDecimal startPrice;
+        BigDecimal minIncrement;
 
         try {
-            startPrice = Double.parseDouble(startPriceText);
+            startPrice = new BigDecimal(startPriceText);
+            minIncrement = new BigDecimal(minIncrementText);
         } catch (NumberFormatException e) {
-            errorLabel.setText("Giá khởi điểm phải là số");
+            errorLabel.setText("Giá khởi điểm và bước nhảy giá phải là số");
             return;
         }
 
-        if (startPrice <= 0) {
+        if (startPrice.compareTo(BigDecimal.ZERO) <= 0) {
             errorLabel.setText("Giá khởi điểm phải lớn hơn 0");
+            return;
+        }
+
+        if (minIncrement.compareTo(BigDecimal.ZERO) <= 0) {
+            errorLabel.setText("Bước nhảy giá phải lớn hơn 0");
             return;
         }
 
@@ -136,8 +141,8 @@ public class SetupAuctionViewController {
         }
         Map<String, Object> data = new HashMap<>();
         data.put("itemId", item.getId());
-        data.put("startPrice", BigDecimal.valueOf(startPrice));
-        data.put("minIncrement", BigDecimal.valueOf(minIncrementSpinner.getValue()));
+        data.put("startPrice", startPrice);
+        data.put("minIncrement", minIncrement);
         data.put("buyNowPrice", null);
         data.put("startTime", startDateTime);
         data.put("endTime", endDateTime);

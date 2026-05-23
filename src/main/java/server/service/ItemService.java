@@ -1,9 +1,13 @@
 package server.service;
 
 import server.dao.ItemDAO;
+import server.dao.AuctionDAO;
+import server.dao.BidDAO;
+import server.model.core.Auction;
 import server.model.item.Item;
 import server.model.item.ItemFactory;
 import shared.dto.response.BaseResponse;
+import shared.enums.AuctionStatus;
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
 
@@ -21,6 +25,8 @@ public class ItemService {
     private static ItemService instance;
 
     private final ItemDAO itemDAO = new ItemDAO();
+    private final AuctionDAO auctionDAO = new AuctionDAO();
+    private final BidDAO bidDAO = new BidDAO();
 
     private ItemService() {}
 
@@ -106,15 +112,43 @@ public class ItemService {
             throw new IllegalArgumentException("Sản phẩm không tồn tại!");
         }
 
-        // Chỉ cho phép xóa sản phẩm khi nó đang ở trạng thái PENDING
-        if (item.getStatusItem() != ItemStatus.PENDING) {
-            throw new IllegalStateException("Chỉ có thể xóa sản phẩm khi đang PENDING!");
+        if (item.getStatusItem() != ItemStatus.PENDING
+                && item.getStatusItem() != ItemStatus.CANCELLED) {
+            throw new IllegalStateException("Chỉ có thể xóa sản phẩm khi đang PENDING hoặc CANCELLED!");
         }
 
+        deleteNoBidAuctionsForItem(itemId);
         return itemDAO.deleteItem(itemId);
     }
 
     public List<Item> findBySeller(Long sellerId) {
         return itemDAO.findBySellerId(sellerId);
+    }
+
+    private void deleteNoBidAuctionsForItem(Long itemId) {
+        List<Auction> auctions = auctionDAO.getAllAuctionsByItemId(itemId);
+        if (auctions == null || auctions.isEmpty()) {
+            return;
+        }
+
+        for (Auction auction : auctions) {
+            if (bidDAO.countBidByAuctionId(auction.getId()) > 0) {
+                throw new IllegalStateException("Không thể xóa sản phẩm đã có lượt đấu giá!");
+            }
+
+            if (!isInactiveAuctionStatus(auction.getStatus())) {
+                throw new IllegalStateException("Không thể xóa sản phẩm khi còn yêu cầu/phiên đấu giá đang hoạt động!");
+            }
+        }
+
+        if (!auctionDAO.deleteAuctionsByItemId(itemId)) {
+            throw new IllegalStateException("Không thể xóa các phiên đấu giá cũ của sản phẩm!");
+        }
+    }
+
+    private boolean isInactiveAuctionStatus(AuctionStatus status) {
+        return status == AuctionStatus.FINISHED
+                || status == AuctionStatus.CANCELLED
+                || status == AuctionStatus.CLOSED;
     }
 }

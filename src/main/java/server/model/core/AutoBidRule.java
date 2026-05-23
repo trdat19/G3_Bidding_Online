@@ -1,6 +1,5 @@
 package server.model.core;
 
-import com.mysql.cj.jdbc.jmx.LoadBalanceConnectionGroupManager;
 import server.model.Entity;
 
 import java.math.BigDecimal;

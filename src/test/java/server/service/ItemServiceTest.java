@@ -6,13 +6,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import server.dao.AuctionDAO;
+import server.dao.BidDAO;
 import server.dao.ItemDAO;
+import server.model.core.Auction;
 import server.model.item.Item;
+import shared.enums.AuctionStatus;
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,6 +28,8 @@ import static org.mockito.Mockito.*;
 public class ItemServiceTest {
 
     @Mock private ItemDAO itemDAO;
+    @Mock private AuctionDAO auctionDAO;
+    @Mock private BidDAO bidDAO;
 
     private ItemService itemService;
 
@@ -31,6 +38,8 @@ public class ItemServiceTest {
         SingletonTestUtil.resetSingleton(ItemService.class);
         itemService = ItemService.getInstance();
         inject("itemDAO", itemDAO);
+        inject("auctionDAO", auctionDAO);
+        inject("bidDAO", bidDAO);
     }
 
     private void inject(String name, Object mock) throws Exception {
@@ -75,9 +84,50 @@ public class ItemServiceTest {
 
         when(item.getStatusItem()).thenReturn(ItemStatus.PENDING);
         when(itemDAO.findById(1L)).thenReturn(item);
+        when(auctionDAO.getAllAuctionsByItemId(1L)).thenReturn(List.of());
         when(itemDAO.deleteItem(1L)).thenReturn(true);
 
         assertTrue(itemService.deleteItem(1L));
+    }
+
+    @Test
+    @DisplayName("deleteItem - Xoá thành công sản phẩm CANCELLED không có bid")
+    public void deleteItem_cancelledNoBid_success() {
+        Item item = mock(Item.class);
+        Auction auction = new Auction();
+        auction.setId(5L);
+        auction.setStatus(AuctionStatus.FINISHED);
+
+        when(item.getStatusItem()).thenReturn(ItemStatus.CANCELLED);
+        when(itemDAO.findById(1L)).thenReturn(item);
+        when(auctionDAO.getAllAuctionsByItemId(1L)).thenReturn(List.of(auction));
+        when(bidDAO.countBidByAuctionId(5L)).thenReturn(0);
+        when(auctionDAO.deleteAuctionsByItemId(1L)).thenReturn(true);
+        when(itemDAO.deleteItem(1L)).thenReturn(true);
+
+        assertTrue(itemService.deleteItem(1L));
+        verify(auctionDAO).deleteAuctionsByItemId(1L);
+    }
+
+    @Test
+    @DisplayName("deleteItem - Không xoá sản phẩm CANCELLED nếu auction cũ có bid")
+    public void deleteItem_cancelledWithBid_failed() {
+        Item item = mock(Item.class);
+        Auction auction = new Auction();
+        auction.setId(5L);
+        auction.setStatus(AuctionStatus.FINISHED);
+
+        when(item.getStatusItem()).thenReturn(ItemStatus.CANCELLED);
+        when(itemDAO.findById(1L)).thenReturn(item);
+        when(auctionDAO.getAllAuctionsByItemId(1L)).thenReturn(List.of(auction));
+        when(bidDAO.countBidByAuctionId(5L)).thenReturn(1);
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            itemService.deleteItem(1L);
+        });
+
+        assertEquals("Không thể xóa sản phẩm đã có lượt đấu giá!", exception.getMessage());
+        verify(itemDAO, never()).deleteItem(1L);
     }
 
     @Test
@@ -92,7 +142,7 @@ public class ItemServiceTest {
             itemService.deleteItem(1L);
         });
 
-        assertEquals("Chỉ có thể xóa sản phẩm khi đang PENDING!", exception.getMessage());
+        assertEquals("Chỉ có thể xóa sản phẩm khi đang PENDING hoặc CANCELLED!", exception.getMessage());
      }
 
      //-----------------------UPDATE-------------------

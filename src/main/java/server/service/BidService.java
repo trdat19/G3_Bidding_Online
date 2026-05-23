@@ -39,6 +39,7 @@ public class BidService {
     private final AuctionDAO auctionDAO = new AuctionDAO();
     private final BidDAO bidDAO = new BidDAO();
     private final UserDAO userDAO =  new UserDAO();
+    private final AutoBidService autoBidService = AutoBidService.getInstance();
 
     private BidService() {}
 
@@ -151,6 +152,10 @@ public class BidService {
         if (buyNowTriggered) {
             auctionService.finishAuction(auctionId);
         }
+//        else {
+//            // ngược lại thì kích hoạt autobid
+//            autoBidService.reactToIncomingBid(auctionId, bidderId);
+//        }
 
         // 11. Lấy tên người đặt để hiển thị
         User bidder = userDAO.findById(bidderId);

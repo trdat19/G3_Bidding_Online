@@ -68,8 +68,7 @@ public class AuctionServiceTest {
         User seller = user(7L, "Seller One");
 
         when(itemDAO.findById(10L)).thenReturn(item);
-        when(auctionDAO.existsAuctionByItemId(10L)).thenReturn(false);
-        when(auctionDAO.existsOpenAuctionByItemId(10L)).thenReturn(false);
+        when(auctionDAO.getAllAuctionsByItemId(10L)).thenReturn(List.of());
         when(auctionDAO.insertAuction(any(Auction.class))).thenAnswer(invocation -> {
             Auction auction = invocation.getArgument(0);
             auction.setId(99L);
@@ -119,8 +118,68 @@ public class AuctionServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
                 auctionService.createAuction(auctionData(10L, 7L, start, end)));
 
-        assertEquals("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING!", exception.getMessage());
+        assertEquals("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING hoặc CANCELLED!", exception.getMessage());
         verify(auctionDAO, never()).insertAuction(any(Auction.class));
+    }
+
+    @Test
+    @DisplayName("createAuction - tạo lại phiên cho sản phẩm CANCELLED không có bid")
+    public void createAuction_cancelledNoBidItem_success() {
+        LocalDateTime start = LocalDateTime.now().plusHours(1);
+        LocalDateTime end = start.plusHours(2);
+        Item item = item(10L, 7L, ItemStatus.CANCELLED);
+        User seller = user(7L, "Seller One");
+        Auction oldAuction = auction(
+                5L,
+                10L,
+                7L,
+                AuctionStatus.FINISHED,
+                LocalDateTime.now().minusHours(3),
+                LocalDateTime.now().minusHours(1));
+
+        when(itemDAO.findById(10L)).thenReturn(item);
+        when(auctionDAO.getAllAuctionsByItemId(10L)).thenReturn(List.of(oldAuction));
+        when(bidDAO.countBidByAuctionId(5L)).thenReturn(0);
+        when(auctionDAO.deleteAuctionsByItemId(10L)).thenReturn(true);
+        when(auctionDAO.insertAuction(any(Auction.class))).thenAnswer(invocation -> {
+            Auction auction = invocation.getArgument(0);
+            auction.setId(99L);
+            return true;
+        });
+        when(bidDAO.countBidByAuctionId(99L)).thenReturn(0);
+        when(userDAO.findById(7L)).thenReturn(seller);
+
+        AuctionDTO result = auctionService.createAuction(auctionData(10L, 7L, start, end));
+
+        assertNotNull(result);
+        assertEquals(99L, result.getId());
+        verify(auctionDAO).deleteAuctionsByItemId(10L);
+        verify(itemDAO).updateStatus(10L, ItemStatus.WAITING_APPROVAL);
+    }
+
+    @Test
+    @DisplayName("createAuction - không tạo lại phiên nếu auction cũ đã có bid")
+    public void createAuction_cancelledItemWithBid_failure() {
+        LocalDateTime start = LocalDateTime.now().plusHours(1);
+        LocalDateTime end = start.plusHours(2);
+        Auction oldAuction = auction(
+                5L,
+                10L,
+                7L,
+                AuctionStatus.FINISHED,
+                LocalDateTime.now().minusHours(3),
+                LocalDateTime.now().minusHours(1));
+
+        when(itemDAO.findById(10L)).thenReturn(item(10L, 7L, ItemStatus.CANCELLED));
+        when(auctionDAO.getAllAuctionsByItemId(10L)).thenReturn(List.of(oldAuction));
+        when(bidDAO.countBidByAuctionId(5L)).thenReturn(1);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                auctionService.createAuction(auctionData(10L, 7L, start, end)));
+
+        assertEquals("Sản phẩm đã có lịch sử đấu giá, không thể tạo lại phiên mới!", exception.getMessage());
+        verify(auctionDAO, never()).insertAuction(any(Auction.class));
+        verify(auctionDAO, never()).deleteAuctionsByItemId(10L);
     }
 
     @Test
@@ -129,8 +188,6 @@ public class AuctionServiceTest {
         LocalDateTime start = LocalDateTime.now().plusHours(2);
         LocalDateTime end = start.minusMinutes(1);
         when(itemDAO.findById(10L)).thenReturn(item(10L, 7L, ItemStatus.PENDING));
-        when(auctionDAO.existsAuctionByItemId(10L)).thenReturn(false);
-        when(auctionDAO.existsOpenAuctionByItemId(10L)).thenReturn(false);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
                 auctionService.createAuction(auctionData(10L, 7L, start, end)));

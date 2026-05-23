@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
@@ -157,8 +158,10 @@ public class SellerDashboardController {
         //Doi UI theo tung status
         HBox actionRow = new HBox(12);
 
-        Button createAuctionButton = new Button("Tạo đấu giá");
+        Button createAuctionButton = new Button(getCreateAuctionButtonText(item));
         createAuctionButton.getStyleClass().add("edit-button");
+        createAuctionButton.setDisable(!canCreateAuction(item));
+        createAuctionButton.setTooltip(new Tooltip(getCreateAuctionTooltipText(item)));
         createAuctionButton.setOnAction(e -> handleCreateAuction(item));
 
         Button editButton = new Button("Edit");
@@ -330,7 +333,7 @@ public class SellerDashboardController {
     }
     //Hàm nối với SetupAuctionView khi admin duyệt
     private void handleCreateAuction(ItemDTO item) {
-        if (!canManageItem(item)) {
+        if (!canCreateAuction(item)) {
             showCannotActionAlert("tạo đấu giá cho", item);
             return;
         }
@@ -395,6 +398,27 @@ public class SellerDashboardController {
     private boolean canManageItem(ItemDTO item) {
         return ItemStatus.PENDING.equals(item.getStatus())
                 || ItemStatus.CANCELLED.equals(item.getStatus());
+    }
+
+    private boolean canCreateAuction(ItemDTO item) {
+        return ItemStatus.PENDING.equals(item.getStatus())
+                || ItemStatus.CANCELLED.equals(item.getStatus());
+    }
+
+    private String getCreateAuctionButtonText(ItemDTO item) {
+        if (ItemStatus.CANCELLED.equals(item.getStatus())) {
+            return "Tạo lại đấu giá";
+        }
+        return "Tạo đấu giá";
+    }
+
+    private String getCreateAuctionTooltipText(ItemDTO item) {
+        if (canCreateAuction(item)) {
+            return ItemStatus.CANCELLED.equals(item.getStatus())
+                    ? "Tạo phiên đấu giá mới cho sản phẩm hết hạn nhưng chưa có bid"
+                    : "Tạo phiên đấu giá cho sản phẩm vừa thêm";
+        }
+        return "Chỉ tạo đấu giá cho sản phẩm vừa thêm hoặc phiên hết hạn không có bid";
     }
 
     private void showCannotActionAlert(String action, ItemDTO item) {
