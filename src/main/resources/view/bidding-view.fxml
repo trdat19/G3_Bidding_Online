@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
@@ -16,7 +17,7 @@
             <Button onAction="#handleBack" styleClass="back-button" text="← Back" />
             <Label styleClass="title" text="Đấu giá trực tiếp" />
             <Region HBox.hgrow="ALWAYS" />
-            <Label fx:id="statusLabel" styleClass="status-running" text="RUNNING" />
+            <Label fx:id="statusTextLabel" styleClass="status-running" text="RUNNING" />
         </HBox>
     </top>
 
@@ -27,19 +28,31 @@
             </padding>
 
             <!-- LEFT PANEL -->
-            <VBox maxWidth="430" prefWidth="430" spacing="18">
+            <VBox maxWidth="520.0" prefHeight="520.0" prefWidth="436.0" spacing="18">
 
                 <StackPane prefHeight="200.0" prefWidth="360.0" styleClass="image-card">
                     <Label fx:id="imagePlaceholderLabel" styleClass="image-placeholder" text="Ảnh sản phẩm" />
                     <ImageView fx:id="productImageView" fitHeight="236.0" fitWidth="322.0" preserveRatio="true" smooth="true" />
                 </StackPane>
 
-                <VBox prefHeight="114.0" prefWidth="430.0" spacing="10" styleClass="info-card">
+                <VBox prefHeight="145.0" prefWidth="432.0" spacing="10" styleClass="info-card">
                     <Label fx:id="nameLabel" styleClass="product-name" text="Product Name" />
                     <Label fx:id="categoryLabel" styleClass="muted-text" text="Category" />
                     <Separator />
                     <Label styleClass="section-label" text="Mô tả sản phẩm" />
                     <Label fx:id="descriptionLabel" styleClass="description-text" text="Description" wrapText="true" />
+                </VBox>
+                <VBox prefHeight="340" prefWidth="520" spacing="10" styleClass="chart-card">
+                    <Label styleClass="card-title" text="Biểu đồ giá realtime" />
+
+                    <LineChart fx:id="priceHistoryChart" animated="false" createSymbols="true" legendVisible="false" prefHeight="265.0" prefWidth="438.0">
+                        <xAxis>
+                            <NumberAxis fx:id="priceChartXAxis" forceZeroInRange="false" label="Thời gian" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis fx:id="priceChartYAxis" forceZeroInRange="false" label="Giá" />
+                        </yAxis>
+                    </LineChart>
                 </VBox>
 
             </VBox>
@@ -83,52 +96,25 @@
                     </VBox>
 
                     <!-- CỘT 3: Đấu giá tự động -->
-                    <StackPane prefWidth="240"
-                               prefHeight="218"
-                               minWidth="240"
-                               maxWidth="240"
-                               maxHeight="218"
-                               styleClass="auto-bid-wrapper">
-                        <VBox spacing="8"
-                              alignment="TOP_CENTER"
-                              styleClass="auto-bid-panel"
-                              StackPane.alignment="CENTER">
+                    <StackPane maxHeight="218" maxWidth="240" minWidth="240" prefHeight="218" prefWidth="240" styleClass="auto-bid-wrapper">
+                        <VBox alignment="TOP_CENTER" spacing="8" styleClass="auto-bid-panel" StackPane.alignment="CENTER">
 
-                            <Label styleClass="auto-bid-title"
-                                   text="Đấu giá tự động"
-                                   maxWidth="Infinity"
-                                   alignment="CENTER" />
+                            <Label alignment="CENTER" maxWidth="Infinity" styleClass="auto-bid-title" text="Đấu giá tự động" />
 
-                            <VBox spacing="4" maxWidth="Infinity">
+                            <VBox maxWidth="Infinity" spacing="4">
                                 <Label styleClass="stat-label" text="Bước giá" />
-                                <TextField fx:id="autoBidIncrementField"
-                                           maxWidth="Infinity"
-                                           promptText="Nhập bước giá"
-                                           styleClass="auto-bid-input" />
+                                <TextField fx:id="autoBidIncrementField" maxWidth="Infinity" promptText="Nhập bước giá" styleClass="auto-bid-input" />
                             </VBox>
 
-                            <VBox spacing="4" maxWidth="Infinity">
+                            <VBox maxWidth="Infinity" spacing="4">
                                 <Label styleClass="stat-label" text="Số tiền tối đa" />
-                                <TextField fx:id="autoBidMaxAmountField"
-                                           maxWidth="Infinity"
-                                           promptText="Nhập số tiền tối đa"
-                                           styleClass="auto-bid-input" />
+                                <TextField fx:id="autoBidMaxAmountField" maxWidth="Infinity" promptText="Nhập số tiền tối đa" styleClass="auto-bid-input" />
                             </VBox>
 
-                            <HBox spacing="8" alignment="CENTER" maxWidth="Infinity">
-                                <Button fx:id="enableAutoBidButton"
-                                        onAction="#handleEnableAutoBid"
-                                        maxWidth="Infinity"
-                                        styleClass="auto-bid-enable-button"
-                                        text="Bật"
-                                        HBox.hgrow="ALWAYS" />
+                            <HBox alignment="CENTER" maxWidth="Infinity" spacing="8">
+                                <Button fx:id="enableAutoBidButton" maxWidth="Infinity" onAction="#handleEnableAutoBid" styleClass="auto-bid-enable-button" text="Bật" HBox.hgrow="ALWAYS" />
 
-                                <Button fx:id="disableAutoBidButton"
-                                        onAction="#handleDisableAutoBid"
-                                        maxWidth="Infinity"
-                                        styleClass="auto-bid-disable-button"
-                                        text="Tắt"
-                                        HBox.hgrow="ALWAYS" />
+                                <Button fx:id="disableAutoBidButton" maxWidth="Infinity" onAction="#handleDisableAutoBid" styleClass="auto-bid-disable-button" text="Tắt" HBox.hgrow="ALWAYS" />
                             </HBox>
                         </VBox>
                     </StackPane>

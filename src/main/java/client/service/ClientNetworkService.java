@@ -17,8 +17,8 @@ public class ClientNetworkService {
     private static ClientNetworkService instance;
 
     private static final int DEFAULT_PORT = 8888;
-    private static final String DEFAULT_HOST = "26.198.98.181";
-
+    //private static final String DEFAULT_HOST = "26.198.98.181";
+    private static final String DEFAULT_HOST = "localhost";
     private final String host;
     private final int port;
 

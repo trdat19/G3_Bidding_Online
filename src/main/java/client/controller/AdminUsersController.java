@@ -9,6 +9,11 @@ import shared.dto.common.UserDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.scene.layout.HBox;
+import shared.enums.UserStatus;
 
 import java.util.List;
 public class AdminUsersController {
@@ -18,7 +23,15 @@ public class AdminUsersController {
     @FXML private TableColumn<UserDTO, String> roleColumn;
     @FXML private TableColumn<UserDTO, String> statusColumn;
     @FXML private TableColumn<UserDTO, String> createAtColumn;
-    @FXML private TableColumn<UserDTO, String> actionColumn;
+    @FXML private TextField searchField;
+    @FXML private ComboBox<String> roleFilterBox;
+    @FXML private ComboBox<String> statusFilterBox;
+    @FXML private TableColumn<UserDTO, String> fullnameColumn;
+    @FXML private TableColumn<UserDTO, String> emailColumn;
+    @FXML private TableColumn<UserDTO, Void> actionColumn;
+
+    private final ObservableList<UserDTO> allUsers = FXCollections.observableArrayList();
+    private final FilteredList<UserDTO> filteredUsers = new FilteredList<>(allUsers, user -> true);
 
     @FXML
     public void initialize() {
@@ -30,6 +43,8 @@ public class AdminUsersController {
                 c.getValue().getCreatedAt() != null
                         ? c.getValue().getCreatedAt().toString()
                         : ""));
+        fullnameColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFullname()));
+        emailColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEmail()));
 
         loadUsers();
     }

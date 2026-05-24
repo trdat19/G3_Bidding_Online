@@ -98,3 +98,16 @@
     -fx-border-radius: 12;
     -fx-background-radius: 12;
 }
+.danger-btn {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-padding: 8 14;
+}
+
+.success-btn {
+    -fx-background-color: #16a34a;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-padding: 8 14;
+}

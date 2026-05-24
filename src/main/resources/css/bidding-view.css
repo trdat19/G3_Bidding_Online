@@ -246,3 +246,33 @@
 .auto-bid-disable-button:hover {
     -fx-background-color: #1d4ed8;
 }
+.chart-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 14, 0.2, 0, 3);
+}
+
+.chart {
+    -fx-background-color: transparent;
+}
+
+.chart-plot-background {
+    -fx-background-color: #f8fafc;
+}
+
+.chart-series-line {
+    -fx-stroke: #2563eb;
+    -fx-stroke-width: 2.5px;
+}
+
+.chart-line-symbol {
+    -fx-background-color: #2563eb, white;
+    -fx-background-radius: 5px;
+    -fx-padding: 4px;
+}
+
+.axis-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+}
