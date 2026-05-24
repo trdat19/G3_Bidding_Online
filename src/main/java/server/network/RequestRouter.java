@@ -2,6 +2,7 @@
 package server.network;
 
 import server.controller.*;
+import server.service.AutoBidService;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
@@ -144,19 +145,34 @@ public class RequestRouter {
                                 "ID phiên đấu giá phải là số nguyên hợp lệ!", null);
                     }
                 }
-                case Action.GET_AUCTION_LIST:
+                case Action.GET_AUCTION_LIST: {
                     return AuctionServerController.getInstance().getAuctions();
-                case Action.GET_AUCTION_DETAILS:
+                }
+                case Action.GET_AUCTION_DETAILS: {
                     return AuctionServerController.getInstance().getAuctionDetail(request);
+                }
 
-                case Action.GET_BID_HISTORY:
+                case Action.GET_BID_HISTORY: {
                     return AuctionServerController.getInstance().getBidHistory(request);
+                }
 
 
-                case Action.SUBSCRIBE_AUCTION_LIST:
+                case Action.SUBSCRIBE_AUCTION_LIST: {
                     requireRole(handler, UserRole.BIDDER);
                     RealtimePushServer.subscribeToAuctionList(handler);
                     return new BaseResponse(true, "Đã subscribe danh sách phiên đấu giá ", null);
+                }
+
+                case Action.REGISTER_AUTO_BID_RULE: {
+                    requireRole(handler, UserRole.BIDDER);
+                    return AutoBidController.getInstance().registerRule(request, handler);
+                }
+
+                case Action.REMOVE_AUTO_BID_RULE: {
+                    requireRole(handler, UserRole.BIDDER);
+                    return AutoBidController.getInstance().removeRule(request, handler);
+                }
+
                 /**
                  * Thao tác của Admin
                  */

@@ -19,6 +19,8 @@ public class AutoBidService {
     private final AuctionDAO auctionDAO = new AuctionDAO();
     private final BidDAO bidDAO = new BidDAO();
 
+    private final BidService bidService = BidService.getInstance();
+
     private AutoBidService() {}
 
     public static AutoBidService getInstance() {
@@ -51,8 +53,7 @@ public class AutoBidService {
         }
 
         if (stepAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            //Nếu step amount không hợp lệ để default là minIncrement
-            stepAmount = auction.getMinIncrement();
+            throw new InvalidBidException("Step amount không hợp lệ!");
         }
 
         Bid highestBid = bidDAO.getHighestBidByAuctionId(auctionId);
@@ -63,6 +64,9 @@ public class AutoBidService {
         BigDecimal minRequired = currentPrice.add(auction.getMinIncrement());
         if (maxAmount.compareTo(minRequired) < 0) {
             throw new InvalidBidException("Max amount phải >= " + minRequired);
+        }
+        if (stepAmount.compareTo(auction.getMinIncrement()) < 0) {
+            throw new InvalidBidException("Step amount phải >= " + auction.getMinIncrement());
         }
 
         AutoBidRule rule = new AutoBidRule(auctionId, bidderId, maxAmount, stepAmount);
@@ -98,17 +102,12 @@ public class AutoBidService {
 
             AutoBidRule rule = rules.get(0);
 
-            BigDecimal stepAmount = rule.getStepAmount();
-            if (stepAmount == null || stepAmount.compareTo(BigDecimal.ZERO) <= 0) {
-                stepAmount = auction.getMinIncrement();
-            }
+            BigDecimal stepAmount = rule.getStepAmount() != null ? rule.getStepAmount() : auction.getMinIncrement();
 
             BigDecimal increment = stepAmount.max(auction.getMinIncrement());
-            BigDecimal nextAmount = currentPrice.add(increment);
-
-            if (nextAmount.compareTo(rule.getMaxAmount()) > 0) {
-                nextAmount = rule.getMaxAmount();
-            }
+            BigDecimal nextAmount = currentPrice.add(increment).compareTo(rule.getMaxAmount()) > 0
+                                    ? rule.getMaxAmount()
+                                    : currentPrice.add(increment);
 
             if (nextAmount.compareTo(currentPrice) <= 0) {
                 autoBidRuleDAO.updateStatus(rule.getId(), false);
@@ -118,12 +117,15 @@ public class AutoBidService {
             Bid autoBid = new Bid(auctionId, rule.getBidderId(), nextAmount);
             autoBid.setIsAutoBid(true);
 
-            boolean inserted = bidDAO.insertBid(autoBid);
-            if (!inserted) {
+            boolean placed = BidService.getInstance().placeAutoBid(
+                    auctionId,
+                    rule.getBidderId(),
+                    nextAmount
+            );
+
+            if (!placed) {
                 return;
             }
-
-            auctionDAO.updateMaxPrice(auctionId, nextAmount);
         }
     }
 

@@ -50,7 +50,7 @@ public class AutoBidRuleDAO {
             return insertRule(rule);
         }
 
-        return updateMaxAmountAndSetActive(existingRule.getId(), rule.getMaxAmount(), rule.getIsActive());
+        return updateRule(existingRule.getId(), rule.getMaxAmount(), rule.getStepAmount());
     }
 
     //--------------------------------FIND--------------------
@@ -155,10 +155,10 @@ public class AutoBidRuleDAO {
 
     //---------------------UPDATE------------------
     /** update mức autobid */
-    public boolean updateMaxAmountAndSetActive(Long id, BigDecimal maxAmount, boolean active) {
+    public boolean updateRule(Long id, BigDecimal maxAmount, BigDecimal stepAmount) {
         String sql = """
                 UPDATE auto_bid_rules
-                SET max_amount = ?, is_active = ?
+                SET max_amount = ?, step_amount = ?, is_active = TRUE
                 WHERE id = ?
                 """;
 
@@ -166,7 +166,7 @@ public class AutoBidRuleDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setBigDecimal(1, maxAmount);
-            ps.setBoolean(2, active);
+            ps.setBigDecimal(2, stepAmount);
             ps.setLong(3, id);
 
             return ps.executeUpdate() > 0;

@@ -5,6 +5,9 @@ import client.util.StageUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,9 +23,9 @@ import javafx.application.Platform;
 import shared.dto.common.BidDTO;
 
 import java.io.ByteArrayInputStream;
+import java.util.*;
 import java.util.function.Consumer;
-import java.util.HashMap;
-import java.util.Map;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.beans.property.SimpleStringProperty;
@@ -30,32 +33,59 @@ import javafx.scene.control.TableColumn;
 import shared.enums.Action;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class BiddingViewController {
-    @FXML private Label nameLabel;
-    @FXML private Label categoryLabel;
-    @FXML private Label descriptionLabel;
-    @FXML private Label currentPriceLabel;
-    @FXML private Label leaderLabel;
-    @FXML private Label bidCountLabel;
-    @FXML private Label timeLeftLabel;
-    @FXML private Label messageLabel;
-    @FXML private TextField bidAmountField;
-    @FXML private TableView<BidDTO> bidTable;
-    @FXML private TableColumn<BidDTO, Void> indexColumn;
-    @FXML private TableColumn<BidDTO, String> amountColumn;
-    @FXML private TableColumn<BidDTO, String> bidderColumn;
-    @FXML private TableColumn<BidDTO, String> timeColumn;
-    @FXML private Label statusTextLabel;
-    @FXML private ImageView productImageView;
-    @FXML private Label imagePlaceholderLabel;
-    @FXML private Label minIncrementLabel;
-    @FXML private TextField autoBidIncrementField;
-    @FXML private TextField autoBidMaxAmountField;
+    @FXML
+    private Label nameLabel;
+    @FXML
+    private Label categoryLabel;
+    @FXML
+    private Label descriptionLabel;
+    @FXML
+    private Label currentPriceLabel;
+    @FXML
+    private Label leaderLabel;
+    @FXML
+    private Label bidCountLabel;
+    @FXML
+    private Label timeLeftLabel;
+    @FXML
+    private Label messageLabel;
+    @FXML
+    private TextField bidAmountField;
+    @FXML
+    private TableView<BidDTO> bidTable;
+    @FXML
+    private TableColumn<BidDTO, Void> indexColumn;
+    @FXML
+    private TableColumn<BidDTO, String> amountColumn;
+    @FXML
+    private TableColumn<BidDTO, String> bidderColumn;
+    @FXML
+    private TableColumn<BidDTO, String> timeColumn;
+    @FXML
+    private Label statusTextLabel;
+    @FXML
+    private ImageView productImageView;
+    @FXML
+    private Label imagePlaceholderLabel;
+    @FXML
+    private Label minIncrementLabel;
+    @FXML
+    private TextField autoBidIncrementField;
+    @FXML
+    private TextField autoBidMaxAmountField;
+    @FXML
+    private LineChart<Number, Number> priceHistoryChart;
+    @FXML
+    private NumberAxis priceChartXAxis;
+    @FXML
+    private NumberAxis priceChartYAxis;
+
+    private final XYChart.Series<Number, Number> priceSeries = new XYChart.Series<>();
 
 
     private Item currentItem;
@@ -66,14 +96,14 @@ public class BiddingViewController {
     private boolean returnedToDashboard = false;
 
     @FXML
-    private void initialize()
-    {
+    private void initialize() {
 
 
         bidderColumn.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getBidderName())
-        );;
-        amountColumn.setCellValueFactory(cell->
+        );
+        ;
+        amountColumn.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getAmount().toPlainString())
         );
         timeColumn.setCellValueFactory(cell ->
@@ -95,6 +125,7 @@ public class BiddingViewController {
             }
         });
         bidTable.setItems(bidHistory);
+        setupPriceHistoryChart();
     }
 
     public void setItem(Item item) {
@@ -125,6 +156,7 @@ public class BiddingViewController {
         }
 
         bidHistory.setAll((List<BidDTO>) response.getData());
+        rebuildPriceChart();
     }
 
     private void startCountDown(LocalDateTime endTime) {
@@ -138,6 +170,7 @@ public class BiddingViewController {
         countdownTimeLine.play();
         updateTimeLeft(endTime);
     }
+
     private void updateTimeLeft(LocalDateTime endTime) {
         java.time.Duration remaining = java.time.Duration.between(LocalDateTime.now(), endTime);
         long seconds = remaining.getSeconds();
@@ -158,6 +191,7 @@ public class BiddingViewController {
 
         timeLeftLabel.setText(String.format("%02d:%02d:%02d", hours, minutes, secs));
     }
+
     @FXML
     private void handleBack() {
         ClientNetworkService.getInstance().removeEventListener(realtimeListener);
@@ -170,15 +204,15 @@ public class BiddingViewController {
             Stage stage = (Stage) nameLabel.getScene().getWindow();
             StageUtils.setMaximizedScene(stage, root);
             stage.show();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
+
     @FXML
     private void handlePlaceBid() {
-        if(currentItem == null || currentItem.getId() == null)
-        {
+        if (currentItem == null || currentItem.getId() == null) {
             messageLabel.setText("Không tìm thấy phiên đâ giá");
             return;
         }
@@ -260,6 +294,7 @@ public class BiddingViewController {
         leaderLabel.setText(currentItem.getLeader());
 
         bidHistory.add(0, bid);
+        rebuildPriceChart();
 
         refreshAuctionDetail();
     }
@@ -329,6 +364,72 @@ public class BiddingViewController {
         }
     }
 
+    private void setupPriceHistoryChart() {
+        priceHistoryChart.getData().setAll(priceSeries);
+        priceHistoryChart.setAnimated(false);
+        priceHistoryChart.setLegendVisible(false);
+        priceChartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(priceChartXAxis) {
+            @Override
+            public String toString(Number value) {
+                long epochSeconds = value.longValue();
+                java.time.Instant timePoint = java.time.Instant.ofEpochSecond(epochSeconds);
+                java.time.ZoneId localZone = java.time.ZoneId.systemDefault();
+
+                LocalDateTime bidTime = timePoint.atZone(localZone).toLocalDateTime();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+                return bidTime.format(formatter);
+
+            }
+        });
+        priceChartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(priceChartYAxis) {
+            @Override
+            public String toString (Number value){
+                double price = value.doubleValue();
+
+                if (price >= 1_000_000_000) {
+                    return String.format("%.1fB", price / 1_000_000_000);
+                }
+
+                if (price >= 1_000_000) {
+                    return String.format("%.1fM", price / 1_000_000);
+                }
+
+                if (price >= 1_000) {
+                    return String.format("%.0fK", price / 1_000);
+                }
+
+                return String.format("%.0f", price);
+            }
+        });
+    }
+
+    private void rebuildPriceChart() {
+        priceSeries.getData().clear();
+        List<BidDTO> validBids = new ArrayList<>();
+
+        for (BidDTO bid : bidHistory) {
+            if (bid.getTimestamp() != null && bid.getAmount() != null) {
+                validBids.add(bid);
+            }
+        }
+        validBids.sort(Comparator.comparing(BidDTO::getTimestamp));
+
+        int startIndex = Math.max(0, validBids.size() - 30);
+        for (int i = startIndex; i < validBids.size(); i++) {
+            BidDTO bid = validBids.get(i);
+
+            long timeOnXAxis = bid.getTimestamp()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toEpochSecond();
+
+            double priceOnYAxis = bid.getAmount().doubleValue();
+            priceSeries.getData().add(new XYChart.Data<>(timeOnXAxis, priceOnYAxis));
+        }
+
+    }
+
+    /** kích hoạt auto bid */
     @FXML
     private void handleEnableAutoBid() {
         String incrementText = autoBidIncrementField.getText().trim();
@@ -339,14 +440,45 @@ public class BiddingViewController {
             return;
         }
 
-        messageLabel.setText("Đã bật đấu giá tự động.");
+        Map<String, Object> data = new HashMap<>();
+        data.put("auctionId", currentItem.getId());
+        data.put("maxAmount", maxAmountText);
+        data.put("stepAmount", incrementText);
+
+        BaseRequest request = new BaseRequest(Action.REGISTER_AUTO_BID_RULE, data);
+        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+
+        if (response != null && response.isSuccess()) {
+            autoBidIncrementField.clear();
+            autoBidMaxAmountField.clear();
+            messageLabel.setText("Đã bật đấu giá tự động.");
+        }
+        else {
+            messageLabel.setText(response != null ? response.getMessage() : "Có lôi xảy ra!");
+        }
+
     }
 
     @FXML
     private void handleDisableAutoBid() {
-        autoBidIncrementField.clear();
-        autoBidMaxAmountField.clear();
-        messageLabel.setText("Đã tắt đấu giá tự động.");
+        if (currentItem == null || currentItem.getId() == null) {
+            messageLabel.setText("Không tìm thấy phiên!");
+            return;
+        }
+
+        BaseRequest request = new BaseRequest(Action.REMOVE_AUTO_BID_RULE, currentItem.getId());
+        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+
+        if (response != null && response.isSuccess()) {
+            autoBidIncrementField.clear();
+            autoBidMaxAmountField.clear();
+
+            messageLabel.setText("Đã tắt đấu giá tự động.");
+        }
+        else {
+            messageLabel.setText(response != null ? response.getMessage() : "Có lỗi xảy ra!");
+        }
+
     }
 
 }
