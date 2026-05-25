@@ -1,5 +1,6 @@
 package server.service;
 
+import server.concurrency.AuctionLockManager;
 import server.dao.AuctionDAO;
 import server.dao.AutoBidRuleDAO;
 import server.dao.BidDAO;
@@ -13,6 +14,7 @@ import shared.exception.InvalidBidException;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.spi.ToolProvider;
 
 public class AutoBidService {
@@ -78,7 +80,7 @@ public class AutoBidService {
             Bid highest = bidDAO.getHighestBidByAuctionId(auctionId);
             //nếu thằng đặt rule vẫn đang dẫn đầu thì không tự react
             if (highest != null && !highest.getBidderId().equals(bidderId)) {
-                reactToIncomingBid(auctionId, bidderId);
+                reactToIncomingBidLocked(auctionId);
             }
         }
         return saved;
@@ -96,7 +98,20 @@ public class AutoBidService {
      * 3. id nhỏ hơn
      * Không insert tất cả các auto bid vào DB, chỉ insert bid cuối mạnh nhất của người thắng
      */
-    public synchronized void reactToIncomingBid(Long auctionId, Long currentBidderId) {
+
+    /** method có lấy lock để gọi method chính */
+    public void reactToIncomingBid(Long auctionId) {
+        ReentrantLock lock = AuctionLockManager.getInstance().getLock(auctionId);
+        lock.lock();
+
+        try {
+            reactToIncomingBidLocked(auctionId);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void reactToIncomingBidLocked(Long auctionId) {
         Auction auction = auctionDAO.findById(auctionId);
         if (auction == null) {
             return;

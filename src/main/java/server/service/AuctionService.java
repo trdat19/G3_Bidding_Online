@@ -1,5 +1,6 @@
 package server.service;
 
+import server.concurrency.AuctionLockManager;
 import server.dao.AuctionDAO;
 import server.dao.BidDAO;
 import server.dao.ItemDAO;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * AuctionService xử lí các nghiệp vụ liên quan tới phiên đấu giá
@@ -327,8 +329,24 @@ public class AuctionService {
     /**
      * kết thúc phiên đấu giá, chuyển trạng thái sang FINISHED
      * xác định người chiến thắng và trả thông tin
+     *
+     * dùng cùng lock với placeBid để tránh trường hợp đang xử lý đặt giá mà kết thúc phiên
      */
-    public synchronized Map<String, Object> finishAuction(Long auctionId) {
+
+    /** method lấy lock */
+    public Map<String, Object> finishAuction(Long auctionId) {
+        ReentrantLock lock = AuctionLockManager.getInstance().getLock(auctionId);
+        lock.lock();
+
+        try {
+            return finishAuctionInternal(auctionId);
+        } finally {
+            lock.unlock();
+            AuctionLockManager.getInstance().removeLock(auctionId);
+        }
+    }
+
+    private Map<String, Object> finishAuctionInternal(Long auctionId) {
         Map<String, Object> data = new HashMap<>();
 
         Auction auction = auctionDAO.findById(auctionId);
@@ -374,10 +392,6 @@ public class AuctionService {
                 throw new RuntimeException("Khong cap nhat duoc trang thai auction FINISHED");
             }
         } catch (Exception e) {
-//            System.err.println(">>> [AuctionService] Loi ket thuc phien #" + auctionId + ": " + e.getMessage());
-//            data.put("message", e.getMessage());
-//            data.put("highestBid", highestBid);
-//            return data;
             throw new RuntimeException("Lỗi kết thúc phiên: " + e.getMessage());
         }
 
@@ -437,8 +451,23 @@ public class AuctionService {
      * Gia hạn phiên khi có bid trong X giây cuối (Anti-sniping).
      * @param auctionId  ID phiên
      * @param extraSeconds Số giây gia hạn thêm (VD: 60)
+     *
+     * cũng dùng chung lock vì diễn ra trong quá trình placeBid
      */
-    public synchronized boolean extendAuction(Long auctionId, int extraSeconds) {
+
+    /** lấy lock */
+    public boolean extendAuction(Long auctionId, int extraSeconds) {
+        ReentrantLock lock = AuctionLockManager.getInstance().getLock(auctionId);
+        lock.lock();
+
+        try {
+            return extendAuctionInternal(auctionId, extraSeconds);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private boolean extendAuctionInternal(Long auctionId, int extraSeconds) {
         Auction auction = auctionDAO.findById(auctionId);
         if (auction == null) return false;
 

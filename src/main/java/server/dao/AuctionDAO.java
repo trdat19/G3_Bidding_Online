@@ -202,7 +202,12 @@ public class AuctionDAO {
     // cập nhật riêng giá cao nhất hiện tại
     // dùng khi có người bid thành công
     public boolean updateMaxPrice(long idAuction, BigDecimal newMaxPrice) {
-        String sql = "UPDATE auctions SET max_price = ? WHERE id_auction = ?";
+        String sql = """
+            UPDATE auctions
+            SET max_price = ?
+            WHERE id_auction = ?
+              AND (max_price IS NULL OR max_price < ?)
+            """;
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
