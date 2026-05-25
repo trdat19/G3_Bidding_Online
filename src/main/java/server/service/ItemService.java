@@ -1,10 +1,13 @@
 package server.service;
 
-import server.dao.AuctionDAO;
 import server.dao.ItemDAO;
+import server.dao.AuctionDAO;
+import server.dao.BidDAO;
+import server.model.core.Auction;
 import server.model.item.Item;
 import server.model.item.ItemFactory;
 import shared.dto.response.BaseResponse;
+import shared.enums.AuctionStatus;
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
 
@@ -22,8 +25,8 @@ public class ItemService {
     private static ItemService instance;
 
     private final ItemDAO itemDAO = new ItemDAO();
-
     private final AuctionDAO auctionDAO = new AuctionDAO();
+    private final BidDAO bidDAO = new BidDAO();
 
     private ItemService() {}
 
@@ -52,6 +55,11 @@ public class ItemService {
         String name          = data.get("name").toString();
         String description   = data.get("description").toString();
         ItemCategory category = ItemCategory.valueOf(data.get("category").toString());
+        String imageUrl = data.containsKey("imageUrl") ? data.get("imageUrl").toString() : null;
+        byte[] imageBytes = data.containsKey("imageBytes") ? (byte[]) data.get("imageBytes") : null;
+        String imageContentType = data.containsKey("imageContentType")
+                ? data.get("imageContentType").toString()
+                : null;
 
         //validate Item
         if (name == null || name.isBlank()) {
@@ -63,9 +71,9 @@ public class ItemService {
 
         //static factory tạo item theo category
         Item item = ItemFactory.createItem(category, name, description, sellerId, ItemStatus.PENDING);
-        if (data.containsKey("imageUrl")) {
-            item.setImageUrl(data.get("imageUrl").toString());
-        }
+        item.setImageUrl(imageUrl);
+        item.setImageBytes(imageBytes);
+        item.setImageContentType(imageContentType);
 
         boolean ok = itemDAO.insertItem(item);
         return ok ? item : null;
@@ -78,7 +86,7 @@ public class ItemService {
             throw new IllegalArgumentException("Thiếu id sản phẩm cần cập nhật!");
         }
 
-        Long itemId = Long.parseLong(data.get("id").toString());
+        Long itemId = (Long) data.get("id");
         Item item = itemDAO.findById(itemId);
         if (item == null) {
             throw new IllegalArgumentException("Sản phẩm không tồn tại!");
@@ -97,6 +105,12 @@ public class ItemService {
         if (description != null) { item.setDescription(description); }
         if (category != null) { item.setCategory(category); }
         if (imageUrl != null) { item.setImageUrl(imageUrl); }
+        if (data.containsKey("imageBytes")) {
+            item.setImageBytes((byte[]) data.get("imageBytes"));
+        }
+        if (data.containsKey("imageContentType")) {
+            item.setImageContentType(data.get("imageContentType").toString());
+        }
 
         // 3. Kiểm tra
         boolean ok = itemDAO.updateItem(item);
@@ -115,17 +129,42 @@ public class ItemService {
             throw new IllegalStateException("Chỉ có thể xóa sản phẩm khi đang PENDING hoặc CANCELLED!");
         }
 
-        if (item.getStatusItem() == ItemStatus.CANCELLED) {
-            boolean deletedAuctions = auctionDAO.deleteAuctionsByItemId(itemId);
-            if (!deletedAuctions) {
-                return false;
-            }
-        }
-
+        deleteNoBidAuctionsForItem(itemId);
         return itemDAO.deleteItem(itemId);
     }
 
     public List<Item> findBySeller(Long sellerId) {
         return itemDAO.findBySellerId(sellerId);
+    }
+
+    public List<Item> findAllItems() {
+        return itemDAO.getAllItems();
+    }
+
+    private void deleteNoBidAuctionsForItem(Long itemId) {
+        List<Auction> auctions = auctionDAO.getAllAuctionsByItemId(itemId);
+        if (auctions == null || auctions.isEmpty()) {
+            return;
+        }
+
+        for (Auction auction : auctions) {
+            if (bidDAO.countBidByAuctionId(auction.getId()) > 0) {
+                throw new IllegalStateException("Không thể xóa sản phẩm đã có lượt đấu giá!");
+            }
+
+            if (!isInactiveAuctionStatus(auction.getStatus())) {
+                throw new IllegalStateException("Không thể xóa sản phẩm khi còn yêu cầu/phiên đấu giá đang hoạt động!");
+            }
+        }
+
+        if (!auctionDAO.deleteAuctionsByItemId(itemId)) {
+            throw new IllegalStateException("Không thể xóa các phiên đấu giá cũ của sản phẩm!");
+        }
+    }
+
+    private boolean isInactiveAuctionStatus(AuctionStatus status) {
+        return status == AuctionStatus.FINISHED
+                || status == AuctionStatus.CANCELLED
+                || status == AuctionStatus.CLOSED;
     }
 }

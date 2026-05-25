@@ -13,6 +13,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 import shared.enums.ItemCategory;
 
 import java.io.File;
@@ -36,8 +37,8 @@ public class EditProductController {
     }
     @FXML
     private void initialize() {     //tao lua chon ngay gio cho nguoi dung
-       errorLabel.setText("");
-       categoryBox.getItems().setAll(ItemCategory.values());
+        errorLabel.setText("");
+        categoryBox.getItems().setAll(ItemCategory.values());
     }
 
     @FXML
@@ -93,7 +94,7 @@ public class EditProductController {
         data.put("id", editingItem.getId());
         data.put("imageUrl", selectedImageFile.toURI().toString());
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("UPDATE_ITEM", data));
+                .sendRequest(new BaseRequest(Action.UPDATE_ITEM, data));
 
         if (response == null || !response.isSuccess()) {
             errorLabel.setText(response != null ? response.getMessage() : "Khong ket noi duoc server");

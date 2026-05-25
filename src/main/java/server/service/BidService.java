@@ -35,10 +35,11 @@ public class BidService {
     // Sử dụng Singleton để đảm bảo mọi luồng đều dùng chung một đối tượng xử lý giá
     private static BidService instance;
 
-    private AuctionService auctionService = AuctionService.getInstance();
-    private AuctionDAO auctionDAO = new AuctionDAO();
-    private BidDAO bidDAO = new BidDAO();
-    private UserDAO userDAO =  new UserDAO();
+    private final AuctionService auctionService = AuctionService.getInstance();
+    private final AuctionDAO auctionDAO = new AuctionDAO();
+    private final BidDAO bidDAO = new BidDAO();
+    private final UserDAO userDAO =  new UserDAO();
+    private final AutoBidService autoBidService = AutoBidService.getInstance();
 
     private BidService() {}
 
@@ -69,13 +70,6 @@ public class BidService {
             throw new AuctionNotFoundException(auctionId);
         }
 
-        // 2. Kiểm tra trạng thái của phiên xem có đang mở không
-        AuctionStatus status = auction.getStatus();
-        if (status != AuctionStatus.OPEN && status != AuctionStatus.RUNNING) {
-            throw new AuctionClosedException();
-        }
-
-        // 3. Kiểm tra thời gian
         LocalDateTime now = LocalDateTime.now();
 
         if (auction.getStartTime() != null && now.isBefore(auction.getStartTime())) {
@@ -85,6 +79,27 @@ public class BidService {
         if (auction.getEndTime() != null && now.isAfter(auction.getEndTime())) {
             auctionService.finishAuction(auctionId);
             throw new InvalidAuctionTimeException(now);
+        }
+
+        if (auction.getStatus() == AuctionStatus.OPEN) {
+            auctionDAO.updateStatus(auctionId, AuctionStatus.RUNNING);
+            auction.setStatus(AuctionStatus.RUNNING);
+        }
+
+        if (auction.getStatus() != AuctionStatus.RUNNING) {
+            throw new AuctionClosedException();
+        }
+
+        // 2. Kiểm tra trạng thái của phiên xem có đang mở không
+        AuctionStatus status = auction.getStatus();
+        if (status != AuctionStatus.OPEN && status != AuctionStatus.RUNNING) {
+            throw new AuctionClosedException();
+        }
+
+        // 3. Kiểm tra thời gian
+        if (LocalDateTime.now().isAfter(auction.getEndTime())) {
+            auctionService.finishAuction(auctionId); // Kết thúc phiên nếu chưa kịp đóng!
+            throw new InvalidAuctionTimeException(LocalDateTime.now());
         }
 
         // 4. Tính mức giá tối thiểu hợp lệ
@@ -137,6 +152,10 @@ public class BidService {
         if (buyNowTriggered) {
             auctionService.finishAuction(auctionId);
         }
+//        else {
+//            // ngược lại thì kích hoạt autobid
+//            autoBidService.reactToIncomingBid(auctionId, bidderId);
+//        }
 
         // 11. Lấy tên người đặt để hiển thị
         User bidder = userDAO.findById(bidderId);

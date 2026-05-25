@@ -2,12 +2,10 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.Region?>
 <VBox xmlns:fx="http://javafx.com/fxml" spacing="20" styleClass="page">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
@@ -16,39 +14,79 @@
     <HBox spacing="20">
         <VBox styleClass="stat-card" prefWidth="180">
             <Label text="120" styleClass="stat-number"/>
-            <Label text="Total Users"/>
+            <Label text="Tổng người dùng"/>
         </VBox>
 
         <VBox styleClass="stat-card" prefWidth="180">
             <Label text="18" styleClass="stat-number"/>
-            <Label text="Active Auctions"/>
+            <Label text="Phiên đang diễn ra"/>
         </VBox>
 
         <VBox styleClass="stat-card" prefWidth="180">
             <Label text="54" styleClass="stat-number"/>
-            <Label text="Finished Auctions"/>
+            <Label text="Phiên đã kết thúc"/>
         </VBox>
 
         <VBox styleClass="stat-card" prefWidth="180">
             <Label text="73" styleClass="stat-number"/>
-            <Label text="Products"/>
+            <Label text="Sản phẩm"/>
         </VBox>
     </HBox>
 
-    <Label text="Recent Auctions" styleClass="section-title"/>
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+        <VBox styleClass="dashboard-card" spacing="14" HBox.hgrow="ALWAYS">
+            <Label text="Công việc quản trị" styleClass="section-title"/>
 
-    <TableView fx:id="recentAuctionTable" prefHeight="250">
-        <columns>
-            <TableColumn text="Auction ID" prefWidth="120"/>
-            <TableColumn text="Product" prefWidth="220"/>
-            <TableColumn text="Seller" prefWidth="150"/>
-            <TableColumn text="Current Price" prefWidth="150"/>
-            <TableColumn text="Status" prefWidth="120"/>
-            <TableColumn text="End Time" prefWidth="180"/>
-        </columns>
-    </TableView>
+            <HBox styleClass="focus-row" spacing="12">
+                <Label text="Yêu cầu duyệt" styleClass="focus-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Duyệt sản phẩm người bán gửi lên" styleClass="muted-text"/>
+            </HBox>
 
-    <Label text="System Alerts" styleClass="section-title"/>
+            <HBox styleClass="focus-row" spacing="12">
+                <Label text="Phiên đấu giá" styleClass="focus-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Theo dõi các phiên đang chạy" styleClass="muted-text"/>
+            </HBox>
 
-    <ListView fx:id="alertList" prefHeight="150"/>
+            <HBox styleClass="focus-row" spacing="12">
+                <Label text="Người dùng" styleClass="focus-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Quản lý trạng thái tài khoản" styleClass="muted-text"/>
+            </HBox>
+
+            <HBox styleClass="focus-row" spacing="12">
+                <Label text="Sản phẩm" styleClass="focus-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Theo dõi sản phẩm trong hệ thống" styleClass="muted-text"/>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="dashboard-card" spacing="14" prefWidth="360">
+            <Label text="Tổng quan phiên đấu giá" styleClass="section-title"/>
+
+            <HBox styleClass="summary-row">
+                <Label text="Phiên đang diễn ra"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="18" styleClass="summary-number"/>
+            </HBox>
+
+            <HBox styleClass="summary-row">
+                <Label text="Phiên đang chờ duyệt"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="6" styleClass="summary-number"/>
+            </HBox>
+
+            <HBox styleClass="summary-row">
+                <Label text="Phiên đã kết thúc"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="54" styleClass="summary-number"/>
+            </HBox>
+        </VBox>
+    </HBox>
+
+    <VBox styleClass="dashboard-card" spacing="12">
+        <Label text="Tóm tắt quản trị" styleClass="section-title"/>
+        <Label text="Sử dụng menu bên trái để duyệt yêu cầu, quản lý người dùng, theo dõi đấu giá và xem báo cáo hệ thống" styleClass="muted-text"/>
+    </VBox>
 </VBox>

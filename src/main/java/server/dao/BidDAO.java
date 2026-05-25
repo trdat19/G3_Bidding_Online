@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.Database.DBconnection;
+import server.database.DBconnection;
 import server.model.core.Bid;
 import java.sql.*;
 import java.util.ArrayList;
@@ -30,7 +30,10 @@ public class BidDAO {
 
                         // lấy lại bid_time từ DB
                         Bid inserted = findById(bid.getId());
-                        bid.setTimestamp(inserted.getTimestamp());
+                        if (inserted != null) {
+                            bid.setTimestamp(inserted.getTimestamp());
+                            bid.setIsAutoBid(inserted.getIsAutoBid());
+                        }
                     }
                 }
                 return true;

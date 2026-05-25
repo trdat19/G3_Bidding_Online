@@ -13,6 +13,7 @@ import javafx.util.Duration;
 import shared.dto.common.AuctionDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 
 import java.util.List;
 
@@ -46,7 +47,9 @@ public class AdminRequestController {
                 new SimpleStringProperty(data.getValue().getItemCategory()));
 
         statusColumn.setCellValueFactory(data ->
-                new SimpleStringProperty(data.getValue().getStatus().name()));
+                new SimpleStringProperty(data.getValue().getStatus() != null
+                        ? data.getValue().getStatus().name()
+                        : ""));
 
         startPriceColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(String.valueOf(data.getValue().getStartPrice())));
@@ -87,7 +90,7 @@ public class AdminRequestController {
 
     private void loadRequests() {
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("GET_CREATE_AUCTION_REQUESTS", null));
+                .sendRequest(new BaseRequest(Action.GET_CREATE_AUCTION_REQUESTS, null));
 
         requests.clear();
 
@@ -104,7 +107,7 @@ public class AdminRequestController {
 
     private void approveRequest(AuctionDTO auction) {
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("ACCEPT_CREATE_AUCTION_REQUEST", auction.getId()));
+                .sendRequest(new BaseRequest(Action.ACCEPT_CREATE_AUCTION_REQUEST, auction.getId()));
 
         if (response != null && response.isSuccess()) {
             loadRequests();
@@ -115,7 +118,7 @@ public class AdminRequestController {
 
     private void rejectRequest(AuctionDTO auction) {
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("REJECT_CREATE_AUCTION_REQUEST", auction.getId()));
+                .sendRequest(new BaseRequest(Action.REJECT_CREATE_AUCTION_REQUEST, auction.getId()));
 
         if (response != null && response.isSuccess()) {
             loadRequests();

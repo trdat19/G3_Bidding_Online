@@ -1,7 +1,7 @@
 package server.controller;
 
-import server.network.ClientConnectionHandler;
 import server.service.AuctionService;
+import server.network.ClientConnectionHandler;
 import shared.dto.common.AuctionDTO;
 import shared.dto.common.BidDTO;
 import shared.dto.request.BaseRequest;
@@ -80,27 +80,31 @@ public class AuctionServerController {
     public BaseResponse createAuction(BaseRequest request, ClientConnectionHandler handler) {
         try {
             Map<String, Object> data = (Map<String, Object>) request.getData();
+            if (data == null) {
+                return new BaseResponse(false,
+                        "Thieu thong tin can thiet de tao phien dau gia!", null);
+            }
+            data.put("sellerId", handler.getUser().getId());
 
             if (!(data.containsKey("startPrice")
                     && data.containsKey("minIncrement")
                     && data.containsKey("buyNowPrice")
                     && data.containsKey("startTime")
                     && data.containsKey("endTime")
-                    && data.containsKey("itemId")))
+                    && data.containsKey("itemId")
+            ))
             {
                 return new BaseResponse(false,
                         "Thiếu thông tin cần thiết để tạo phiên đấu giá!", null);
             }
 
-            data.put("sellerId", handler.getUser().getId());
-
             return new BaseResponse(true,
                     "Tạo phiên đấu giá thành công!",
                             auctionService.createAuction(data));
 
-        }  catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            return new BaseResponse(false, e.getMessage(), null);
+            return new BaseResponse(false, "Loi tao yeu cau dau gia: " + e.getMessage(), null);
         }
     }
 

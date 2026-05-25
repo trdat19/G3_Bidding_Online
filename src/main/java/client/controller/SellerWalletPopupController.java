@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import client.service.ClientNetworkService;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 
 import java.math.BigDecimal;
 
@@ -28,7 +29,7 @@ public class SellerWalletPopupController {
 
     private void loadWallet() {
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("GET_WALLET", null));
+                .sendRequest(new BaseRequest(Action.GET_WALLET, null));
 
         if (response != null && response.isSuccess() && response.getData() != null) {
             BigDecimal balance = new BigDecimal(response.getData().toString());

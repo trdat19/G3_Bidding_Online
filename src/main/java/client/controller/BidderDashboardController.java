@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.math.BigDecimal;
 
@@ -34,6 +35,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import java.io.ByteArrayInputStream;
+import shared.enums.Action;
 
 public class BidderDashboardController
 {
@@ -59,12 +62,12 @@ public class BidderDashboardController
 
         ClientNetworkService.getInstance().addEventListener(realtimeListener);
         ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("SUBSCRIBE_AUCTION_LIST", null));
+                .sendRequest(new BaseRequest(Action.SUBSCRIBE_AUCTION_LIST, null));
     }
 
     private void loadWalletBalance() {
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("GET_WALLET", null));
+                .sendRequest(new BaseRequest(Action.GET_WALLET, null));
 
         if (response != null && response.isSuccess() && response.getData() != null) {
             BigDecimal balance = new BigDecimal(response.getData().toString());
@@ -88,7 +91,6 @@ public class BidderDashboardController
             popup.setTitle("Ví của tôi");
             popup.setScene(new Scene(root));
             popup.initOwner(((Node) event.getSource()).getScene().getWindow());
-
             popup.setOnHidden(e -> loadWalletBalance());
 
             popup.show();
@@ -107,7 +109,7 @@ public class BidderDashboardController
     }
 
     private void loadAuctionsFromServer() {
-        BaseRequest request = new BaseRequest("GET_AUCTION_LIST", null);
+        BaseRequest request = new BaseRequest(Action.GET_AUCTION_LIST, null);
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
         itemList.clear();
@@ -148,6 +150,8 @@ public class BidderDashboardController
         item.setId(auction.getId());
         item.setImageUrl(auction.getItemImageUrl());
         item.setMinIncrement(auction.getMinIncrement() != null ? auction.getMinIncrement().doubleValue() : 0);
+        item.setImageBytes(auction.getImageBytes());
+        item.setImageContentType(auction.getImageContentType());
         return item;
     }
 
@@ -167,18 +171,22 @@ public class BidderDashboardController
         StackPane.setAlignment(categoryBadge, Pos.TOP_LEFT);
         StackPane.setMargin(categoryBadge, new Insets(12, 0, 0, 12));
 
-        Label statusBadge = new Label();
+        Label statusBadge = new Label(item.getStatus());
         statusBadge.getStyleClass().add("status-pill");
         StackPane.setAlignment(statusBadge, Pos.TOP_RIGHT);
         StackPane.setMargin(statusBadge, new Insets(12, 12, 0, 0));
 
-        if (item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
-            ImageView imageView = new ImageView(new Image(item.getImageUrl(), true));
+        Image image = null;
+
+        if(item.getImageBytes() != null && item.getImageBytes().length > 0 ) {
+            image = new Image(new ByteArrayInputStream(item.getImageBytes()));
+        }
+        if (image != null) {
+            ImageView imageView = new ImageView(image);
             imageView.setFitWidth(330);
             imageView.setFitHeight(210);
             imageView.setPreserveRatio(true);
             imageView.setSmooth(true);
-
             imageBox.getChildren().add(imageView);
         } else {
             Label imagePlaceholder = new Label("Image");
@@ -309,7 +317,7 @@ public class BidderDashboardController
         stopAutoRefresh();
         stopCountdowns();
         ClientNetworkService.getInstance().removeEventListener(realtimeListener);
-        ClientNetworkService.getInstance().sendRequest(new BaseRequest("LOGOUT", null));
+        ClientNetworkService.getInstance().sendRequest(new BaseRequest(Action.LOGOUT, null));
         ClientSession.clear();
 
         try {
@@ -333,8 +341,14 @@ public class BidderDashboardController
             controller.setItemData(item);
 
             Stage stage = (Stage) auctionContainer.getScene().getWindow();
-            StageUtils.setMaximizedScene(stage, root);
-            stage.show();
+            Stage popup = new Stage();
+            popup.initOwner(stage);
+            popup.initModality(Modality.WINDOW_MODAL);
+            popup.setTitle("Chi tiết phiên đấu giá");
+            popup.setScene(new Scene(root, 1040, 760));
+            popup.setMinWidth(960);
+            popup.setMinHeight(680);
+            popup.showAndWait();
 
         } catch (IOException e) {
             e.printStackTrace();

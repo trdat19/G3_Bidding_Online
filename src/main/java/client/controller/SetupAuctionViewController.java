@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -147,7 +148,7 @@ public class SetupAuctionViewController {
         data.put("endTime", endDateTime);
 
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("CREATE_AUCTION", data));
+                .sendRequest(new BaseRequest(Action.SEND_CREATE_AUCTION_REQUEST, data));
 
         if (response == null || !response.isSuccess()) {
             errorLabel.setText(response != null ? response.getMessage() : "Khong ket noi duoc server");

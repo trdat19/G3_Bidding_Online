@@ -1,6 +1,5 @@
 package client.controller;
-import client.model.Item;
-import client.service.ClientNetworkService;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -9,9 +8,21 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 import shared.enums.ItemCategory;
 
 import java.io.File;
+import client.service.ClientNetworkService;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
+import shared.enums.Action;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
+
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,26 +92,30 @@ public class AddProductController {
             errorLabel.setText("Vui lòng chọn ảnh sản phẩm");
             return;
         }
-
         Map<String, Object> data = new HashMap<>();
         data.put("name", title);
         data.put("category", category.name());
         data.put("description", description);
-        data.put("imageUrl", selectedImageFile.toURI().toString());
-
-        BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("CREATE_ITEM", data));
-
-        if (response == null || !response.isSuccess()) {
-            errorLabel.setText(response != null ? response.getMessage() : "Khong ket noi duoc server");
-            return;
+        try {
+            data.put("imageBytes", Files.readAllBytes(selectedImageFile.toPath()));
+            data.put("imageFileName", selectedImageFile.getName());
+            data.put("imageContentType", Files.probeContentType(selectedImageFile.toPath()));
+        }catch(IOException e) {
+            e.printStackTrace();
         }
 
-        if (sellerDashboardController != null) {
-            sellerDashboardController.refreshProducts();
-        }
+        BaseRequest request = new BaseRequest(Action.CREATE_ITEM, data);
+        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
-        closeWindow();
+        if (response != null && response.isSuccess() && response.getData() != null)  {
+            if (sellerDashboardController != null) {
+                sellerDashboardController.refreshProducts();
+            }
+            closeWindow();
+        }
+        else {
+            errorLabel.setText(response != null ? response.getMessage() : "Không kết nối được server");
+        }
     }
 
     @FXML

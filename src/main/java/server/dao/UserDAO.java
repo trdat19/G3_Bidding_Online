@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.Database.DBconnection;
+import server.database.DBconnection;
 import server.model.user.Admin;
 import server.model.user.Bidder;
 import server.model.user.Seller;
@@ -14,10 +14,9 @@ import java.math.BigDecimal;
 
 public class UserDAO {
 
-
     public boolean insertUser(User user) {
-        String sql = "INSERT INTO users(username, password, full_name, email, role, status) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users(username, password, full_name, email, role, status, balance) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DBconnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
@@ -28,6 +27,7 @@ public class UserDAO {
             ps.setString(4, user.getEmail());
             ps.setString(5, user.getRole().name());
             ps.setString(6, user.getStatus().name());
+            ps.setBigDecimal(7, BigDecimal.ZERO);
 
             int rowsAffected = ps.executeUpdate(); // 1 nếu insert thành công, 0 nếu thất bại
             if (rowsAffected > 0) {

@@ -1,8 +1,8 @@
 package client.controller;
 
 import client.service.ClientNetworkService;
-import client.session.ClientSession;
 import client.util.StageUtils;
+import client.session.ClientSession;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.stage.Stage;
 import server.model.user.User;
 import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 import shared.enums.UserRole;
 import shared.dto.request.BaseRequest;
 
@@ -30,6 +31,9 @@ public class LoginController {
     @FXML
     private Label errorLabel;
 
+    private BidderDashboardController bidderController;
+    private SellerDashboardController sellerController;
+
     @FXML
     private void handleLogin(ActionEvent event) {
 
@@ -38,47 +42,23 @@ public class LoginController {
         Map<String, String> loginData = new HashMap<>();
         loginData.put("username", user);
         loginData.put("password", pass);
-        BaseRequest request = new BaseRequest("LOGIN", loginData);
+        BaseRequest request = new BaseRequest(Action.LOGIN, loginData);
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
         if (response != null && response.isSuccess()) {
             User LogginUser = (User) response.getData();
-            ClientSession.setCurrentUser(LogginUser);
             UserRole role = LogginUser.getRole();
+            String fullName = LogginUser.getFullName();
+            ClientSession.setCurrentUser(LogginUser);
             if (role == UserRole.BIDDER) {
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/bidder-dashboard.fxml"));
-                    Parent root = loader.load();
+                loadScene("/view/bidder-dashboard.fxml", event, fullName);
 
-                    BidderDashboardController controller = loader.getController();
-                    controller.setBidderName(LogginUser.getFullName());
-
-                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                    StageUtils.setMaximizedScene(stage, root);
-                    stage.show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
-            else if(role == UserRole.SELLER)
-            {
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/seller-dashboard.fxml"));
-                    Parent root = loader.load();
-
-                    SellerDashboardController controller = loader.getController();
-                    controller.setSellerName(LogginUser.getFullName());
-
-                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                    StageUtils.setMaximizedScene(stage, root);
-                    stage.show();
-                } catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+            else if(role == UserRole.SELLER) {
+                loadScene("/view/seller-dashboard.fxml", event, fullName);
             }
             else if(role == UserRole.ADMIN)  {
-                loadScene("/view/admin/admin-dashboard.fxml", event);
+                loadScene("/view/admin/admin-dashboard.fxml", event, fullName);
             }
         }
         else {
@@ -87,9 +67,10 @@ public class LoginController {
             errorLabel.setText(message);
         }
     }
-    private void loadScene(String fxmlPath, ActionEvent event) {
+    private void loadScene(String fxmlPath, ActionEvent event, String fullname) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             StageUtils.setMaximizedScene(stage,root);
             stage.show();

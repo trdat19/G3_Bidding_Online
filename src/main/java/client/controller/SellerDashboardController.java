@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.model.Item;
+import shared.dto.common.ItemDTO;
 import client.service.ClientNetworkService;
 import client.session.ClientSession;
 import client.util.StageUtils;
@@ -32,7 +33,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
+import shared.enums.Action;
+
 import java.util.function.Consumer;
+import java.io.ByteArrayInputStream;
 
 public class SellerDashboardController {
 
@@ -96,8 +100,8 @@ public class SellerDashboardController {
         StackPane.setAlignment(categoryBadge, javafx.geometry.Pos.TOP_LEFT);
         imageBox.setPrefHeight(150);
 
-        if (item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
-            ImageView imageView = new ImageView(new Image(item.getImageUrl(), true));
+        if (item.getImageBytes() != null && item.getImageBytes().length > 0) {
+            ImageView imageView = new ImageView(new Image(new ByteArrayInputStream(item.getImageBytes())));
             imageView.setFitWidth(340);
             imageView.setFitHeight(150);
             imageView.setPreserveRatio(true);
@@ -206,7 +210,7 @@ public class SellerDashboardController {
     @FXML
     private void handleLogout(ActionEvent event) {
         ClientNetworkService.getInstance().removeEventListener(realtimeListener);
-        ClientNetworkService.getInstance().sendRequest(new BaseRequest("LOGOUT", null));
+        ClientNetworkService.getInstance().sendRequest(new BaseRequest(Action.LOGOUT, null));
         ClientSession.clear();
 
         try {
@@ -288,7 +292,7 @@ public class SellerDashboardController {
         }
 
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("DELETE_ITEM", item.getId()));
+                .sendRequest(new BaseRequest(Action.DELETE_ITEM, item.getId()));
 
         if (response != null && response.isSuccess()) {
             refreshProducts();
@@ -320,7 +324,7 @@ public class SellerDashboardController {
     }
     public void refreshProducts() {
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("GET_SELLER_ITEMS", null));
+                .sendRequest(new BaseRequest(Action.GET_SELLER_ITEMS, null));
 
         if (response == null || !response.isSuccess()) {
             System.out.println(response != null ? response.getMessage() : "Khong ket noi duoc server");
@@ -331,32 +335,30 @@ public class SellerDashboardController {
 
         List<?> serverItems = (List<?>) response.getData();
         for (Object obj : serverItems) {
-            server.model.item.Item serverItem = (server.model.item.Item) obj;
+            ItemDTO serverItem = (ItemDTO) obj;
 
             Item item = new Item(
-                    serverItem.getNameItem(),
+                    serverItem.getName(),
                     serverItem.getCategory().name(),
                     serverItem.getDescription(),
                     1,
                     1,
                     "",
-                    serverItem.getCreatedAtItem(),
-                    serverItem.getCreatedAtItem(),
-                    serverItem.getStatusItem().name(),
+                    serverItem.getCreatedAt(),
+                    serverItem.getCreatedAt(),
+                    serverItem.getStatus().name(),
                     0
             );
 
             item.setId(serverItem.getId());
             item.setImageUrl(serverItem.getImageUrl());
+            item.setImageBytes(serverItem.getImageBytes());
+            item.setImageContentType(serverItem.getImageContentType());
             itemList.add(item);
         }
 
         loadProducts();
     }
-    public void setSellerName(String sellerName) {
-        sellerNameLabel.setText(sellerName);
-    }
-
     private boolean canManageItem(Item item) {
         return "PENDING".equals(item.getStatus())
                 || "CANCELLED".equals(item.getStatus());
@@ -395,7 +397,7 @@ public class SellerDashboardController {
 
     private void loadSellerWalletBalance() {
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("GET_WALLET", null));
+                .sendRequest(new BaseRequest(Action.GET_WALLET, null));
 
         if (response != null && response.isSuccess() && response.getData() != null) {
             BigDecimal balance = new BigDecimal(response.getData().toString());

@@ -5,6 +5,8 @@ module client {
     requires java.desktop;
     requires com.zaxxer.hikari;
     requires mysql.connector.j;
+    requires jdk.compiler;
+    requires com.google.protobuf;
     //requires client;
 
     opens client to javafx.graphics;

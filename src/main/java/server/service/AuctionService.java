@@ -72,6 +72,8 @@ public class AuctionService {
         dto.setItemDescription(item.getDescription());
         dto.setItemCategory(item.getCategory().name());
         dto.setItemImageUrl(item.getImageUrl());
+        dto.setImageBytes(item.getImageBytes());
+        dto.setImageContentType(item.getImageContentType());
         dto.setStartPrice(auction.getStartPrice());
 
         Bid highestBid = bidDAO.getHighestBidByAuctionId(auction.getId());
@@ -119,16 +121,27 @@ public class AuctionService {
         if (item == null) {
             throw new RuntimeException("Sản phẩm không tồn tại!");
         }
+        //Kiểm tra xem sản phẩm còn được phép tạo phiên đấu giá không?
+        if (item.getStatusItem() != ItemStatus.PENDING) {
+            throw new RuntimeException("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING!");
+        }
 
-        //kiểm tra rằng item chưa ở phiên đấu giá nào khác
-        if (auctionDAO.existsOpenAuctionByItemId(itemId)) {
-            throw new RuntimeException("Sản phẩm đang nằm ở phiên đấu giá khác!");
+        if (auctionDAO.existsActiveAuctionByItemId(itemId)) {
+            throw new RuntimeException(
+                    "Sản phẩm này đang có yêu cầu hoặc phiên đấu giá hoạt động!"
+            );
         }
 
         //kiểm tra logic thời gian start < end
         if (!endTime.isAfter(startTime)) {
             throw new RuntimeException("Thời gian kết thúc phải sau thời gian bắt đầu");
         }
+
+        if (minIncrement == null || minIncrement.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Bước nhảy giá phải lớn hơn 0");
+        }
+
+//        clearReusableNoBidAuctions(itemId);
 
         Auction auction = new Auction(itemId, sellerId, startPrice, startPrice,
                                         minIncrement, buyNowPrice, startTime, endTime);
@@ -148,6 +161,91 @@ public class AuctionService {
 
         return toDTO(auction, item);
     }
+
+    private void clearReusableNoBidAuctions(Long itemId) {
+        List<Auction> oldAuctions = auctionDAO.getAllAuctionsByItemId(itemId);
+        if (oldAuctions == null || oldAuctions.isEmpty()) {
+            return;
+        }
+
+        for (Auction oldAuction : oldAuctions) {
+            if (bidDAO.countBidByAuctionId(oldAuction.getId()) > 0) {
+                throw new RuntimeException("Sản phẩm đã có lịch sử đấu giá, không thể tạo lại phiên mới!");
+            }
+
+            if (!isReusableNoBidAuction(oldAuction.getStatus())) {
+                throw new RuntimeException("Sản phẩm này đã có yêu cầu/phiên đấu giá, không thể tạo thêm!");
+            }
+        }
+
+        if (!auctionDAO.deleteAuctionsByItemId(itemId)) {
+            throw new RuntimeException("Không thể dọn phiên đấu giá cũ của sản phẩm!");
+        }
+    }
+
+    private boolean isReusableNoBidAuction(AuctionStatus status) {
+        return status == AuctionStatus.FINISHED
+                || status == AuctionStatus.CANCELLED
+                || status == AuctionStatus.CLOSED;
+    }
+
+    //Thêm method admin lấy danh sách request
+    public List<AuctionDTO> getCreateAuctionRequests() {
+        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.PREPARING);
+        List<AuctionDTO> dtos = new ArrayList<>();
+
+        for (Auction auction : auctions) {
+            Item item = itemDAO.findById(auction.getItemId());
+            if (item != null) {
+                dtos.add(toDTO(auction, item));
+            }
+        }
+        return dtos;
+    }
+    //Thêm method admin duyệt request
+    public AuctionDTO approveCreateAuctionRequest(Long auctionId) {
+        Auction auction = auctionDAO.findById(auctionId);
+
+        if (auction == null) {
+            throw new RuntimeException("Không tìm thấy yêu cầu đấu giá");
+        }
+        if (auction.getStatus() != AuctionStatus.PREPARING) {
+            throw new RuntimeException("Chỉ duyệt được yêu cầu đang chờ duyệt");
+
+        }
+        LocalDateTime now = LocalDateTime.now();
+
+        if (auction.getEndTime() != null && !now.isBefore(auction.getEndTime())) {
+            throw new RuntimeException("Không thể duyệt phiên đã quá thời gian kết thúc!");
+        }
+        AuctionStatus nextStatus = AuctionStatus.OPEN;
+        if (auction.getStartTime() != null && !now.isBefore(auction.getStartTime())) {
+            nextStatus = AuctionStatus.RUNNING;
+        }
+        auctionDAO.updateStatus(auctionId, nextStatus);
+        itemDAO.updateStatus(auction.getItemId(), ItemStatus.ACTIVE);
+        auction.setStatus(nextStatus);
+
+        Item item = itemDAO.findById(auction.getItemId());
+        return toDTO(auction, item);
+    }
+    //Thêm method admin từ chối request
+    public AuctionDTO rejectCreateAuctionRequest(Long auctionId) {
+        Auction auction = auctionDAO.findById(auctionId);
+        if (auction == null) {
+           throw new RuntimeException("Không tìm thấy yêu cầu đấu giá");
+        }
+        if (auction.getStatus() != AuctionStatus.PREPARING)  {
+           throw new RuntimeException("Chỉ duyệt được yêu cầu đang chờ duyệt");
+        }
+        auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELLED);
+        itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
+
+        auction.setStatus(AuctionStatus.CANCELLED);
+        Item item = itemDAO.findById(auction.getItemId());
+        return toDTO(auction,item);
+    }
+
 
     //----------------CANCEL------------------
     public boolean cancelAuction(Long auctionId) {
@@ -364,8 +462,7 @@ public class AuctionService {
     //---------------GET--------------
     /** Lấy tất cả phiên đang OPEN */
     public List<AuctionDTO> getOpenAuctions() {
-        List<Auction> auctions = new ArrayList<>();
-        auctions.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN));
+        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN);
         auctions.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.RUNNING));
         List<AuctionDTO> dtos = new ArrayList<>();
         for (Auction a : auctions) {
@@ -435,12 +532,23 @@ public class AuctionService {
             return false;
         }
 
-        auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELLED);
-        itemDAO.updateStatus(auction.getItemId(), ItemStatus.CANCELLED);
+        boolean auctionUpdated = auctionDAO.updateStatus(
+                auctionId,
+                AuctionStatus.CANCELLED
+        );
+
+        boolean itemUpdated = itemDAO.updateStatus(
+                auction.getItemId(),
+                ItemStatus.PENDING
+        );
+
+        if (!auctionUpdated || !itemUpdated) {
+            return false;
+        }
 
         BaseResponse sellerEvent = new BaseResponse(
                 true,
-                "Trạng thái sản phẩm của seller đã thay đổi",
+                "Yêu cầu đấu giá đã bị từ chối. Sản phẩm đã trở về trạng thái ban đầu.",
                 auction.getItemId()
         );
         sellerEvent.setAction("SELLER_ITEMS_CHANGED");

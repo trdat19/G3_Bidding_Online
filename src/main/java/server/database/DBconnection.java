@@ -1,4 +1,4 @@
-package server.Database;
+package server.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,14 +10,9 @@ public class DBconnection {
     private static DBconnection instance;
     private final HikariDataSource dataSource;
 
-//    Database Local
-//    private String url = "jdbc:mysql://localhost:3307/new_db";
-//    private String user = "root";
-//    private String pass = "123456";
-
-    private String url = "jdbc:mysql://gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/new_db";
-    private String user = "2RZiMXNpgzAb2Zf.root";
-    private String pass = "QUGAicy63NlmSGfY";
+    private String url = "jdbc:mysql://4Fh6tercQZ88ojp.root:Pcw7mel45GAdVwvl@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/Bidding?sslMode=VERIFY_IDENTITY";
+    private String user = "4Fh6tercQZ88ojp.root";
+    private String pass = "Pcw7mel45GAdVwvl";
 
     private DBconnection() {
         HikariConfig config = new HikariConfig();

@@ -9,12 +9,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -49,9 +51,10 @@ public class AuctionDetailController {
         leadingBidderLabel.setText(item.getLeader());
         startTimeLabel.setText(formatDateTime(item.getStartTime()));
         endTimeLabel.setText(formatDateTime(item.getEndTime()));
+        statusLabel.setText(item.getStatus());
         bidCountLabel.setText(item.getBidCount() + " bids");
         startCountdown(item.getStartTime(), item.getEndTime());
-        setProductImage(item.getImageUrl());
+        setProductImage(item.getImageBytes());
         this.currentItem = item;
     }
 
@@ -76,6 +79,14 @@ public class AuctionDetailController {
     @FXML
     private void handleJoinAuction(ActionEvent event) {
         stopCountdown();
+        if (currentItem.getStartTime() != null
+                && LocalDateTime.now().isBefore(currentItem.getStartTime())) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText(null);
+            alert.setContentText("Phiên đấu giá chưa bắt đầu!");
+            alert.showAndWait();
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/bidding-view.fxml"));
             Parent root = loader.load();
@@ -177,14 +188,14 @@ public class AuctionDetailController {
         return String.format("%02d:%02d:%02d", hours, minutes, secs);
     }
 
-    private void setProductImage(String imageUrl) {
-        if (imageUrl == null || imageUrl.isBlank()) {
+    private void setProductImage(byte[] imageBytes) {
+        if (imageBytes == null || imageBytes.length < 0) {
             productImageView.setImage(null);
             imagePlaceholderLabel.setVisible(true);
             return;
         }
 
-        Image image = new Image(imageUrl, true);
+        Image image = new Image(new ByteArrayInputStream(imageBytes));
         productImageView.setImage(image);
         imagePlaceholderLabel.setVisible(false);
     }

@@ -10,15 +10,11 @@ import shared.enums.UserRole;
 import shared.enums.UserStatus;
 
 public class AuthService {
-    private UserDAO userDAO;
-
-    // Constructor cho test
-    public AuthService(UserDAO userDAO) {
-        this.userDAO = userDAO;
-    }
 
     // 1. Singleton: Đảm bảo duy nhất 1 thực thể quản lý User online
     private static AuthService instance;
+
+    private UserDAO userDAO;
 
     // Khóa constructor để không ai 'new' lung tung
     private AuthService() {
@@ -39,6 +35,9 @@ public class AuthService {
         User user = userDAO.findByUsername(username);
 
         if (user != null && user.getPassword().equals(password)) {
+            if (user.getStatus() != UserStatus.ACTIVE) {
+                return null;
+            }
             System.out.println(">>> [AuthService] Đăng nhập thành công: " + username);
             return user;
         }

@@ -5,9 +5,14 @@ import client.util.StageUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import client.service.ClientNetworkService;
@@ -16,43 +21,71 @@ import shared.dto.response.BaseResponse;
 import shared.dto.common.AuctionDTO;
 import javafx.application.Platform;
 import shared.dto.common.BidDTO;
+
+import java.io.ByteArrayInputStream;
+import java.util.*;
 import java.util.function.Consumer;
-import java.util.HashMap;
-import java.util.Map;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableColumn;
+import shared.enums.Action;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class BiddingViewController {
-    @FXML private Label nameLabel;
-    @FXML private Label categoryLabel;
-    @FXML private Label descriptionLabel;
-    @FXML private Label currentPriceLabel;
-    @FXML private Label leaderLabel;
-    @FXML private Label bidCountLabel;
-    @FXML private Label timeLeftLabel;
-    @FXML private Label messageLabel;
-    @FXML private TextField bidAmountField;
-    @FXML private TableView<BidDTO> bidTable;
-    @FXML private TableColumn<BidDTO, Void> indexColumn;
-    @FXML private TableColumn<BidDTO, String> amountColumn;
-    @FXML private TableColumn<BidDTO, String> bidderColumn;
-    @FXML private TableColumn<BidDTO, String> timeColumn;
-    @FXML private Label statusTextLabel;
-    @FXML private ImageView productImageView;
-    @FXML private Label imagePlaceholderLabel;
-    @FXML private Label minIncrementLabel;
-    @FXML private TextField autoBidIncrementField;
-    @FXML private TextField autoBidMaxAmountField;
+    @FXML
+    private Label nameLabel;
+    @FXML
+    private Label categoryLabel;
+    @FXML
+    private Label descriptionLabel;
+    @FXML
+    private Label currentPriceLabel;
+    @FXML
+    private Label leaderLabel;
+    @FXML
+    private Label bidCountLabel;
+    @FXML
+    private Label timeLeftLabel;
+    @FXML
+    private Label messageLabel;
+    @FXML
+    private TextField bidAmountField;
+    @FXML
+    private TableView<BidDTO> bidTable;
+    @FXML
+    private TableColumn<BidDTO, Void> indexColumn;
+    @FXML
+    private TableColumn<BidDTO, String> amountColumn;
+    @FXML
+    private TableColumn<BidDTO, String> bidderColumn;
+    @FXML
+    private TableColumn<BidDTO, String> timeColumn;
+    @FXML
+    private Label statusTextLabel;
+    @FXML
+    private ImageView productImageView;
+    @FXML
+    private Label imagePlaceholderLabel;
+    @FXML
+    private Label minIncrementLabel;
+    @FXML
+    private TextField autoBidIncrementField;
+    @FXML
+    private TextField autoBidMaxAmountField;
+    @FXML
+    private LineChart<Number, Number> priceHistoryChart;
+    @FXML
+    private NumberAxis priceChartXAxis;
+    @FXML
+    private NumberAxis priceChartYAxis;
+
+    private final XYChart.Series<Number, Number> priceSeries = new XYChart.Series<>();
 
 
     private Item currentItem;
@@ -63,20 +96,20 @@ public class BiddingViewController {
     private boolean returnedToDashboard = false;
 
     @FXML
-    private void initialize()
-    {
+    private void initialize() {
 
 
         bidderColumn.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getBidderName())
-        );;
-        amountColumn.setCellValueFactory(cell->
+        );
+        ;
+        amountColumn.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getAmount().toPlainString())
         );
         timeColumn.setCellValueFactory(cell ->
                 new SimpleStringProperty(
                         cell.getValue().getTimestamp() != null
-                        ? cell.getValue().getTimestamp().format(bidTimeFormatter) : ""
+                                ? cell.getValue().getTimestamp().format(bidTimeFormatter) : ""
                 )
         );
         indexColumn.setCellFactory(column -> new TableCell<>() {
@@ -92,11 +125,12 @@ public class BiddingViewController {
             }
         });
         bidTable.setItems(bidHistory);
+        setupPriceHistoryChart();
     }
 
     public void setItem(Item item) {
         this.currentItem = item;
-        setProductImage(item.getImageUrl());
+        setProductImage(item.getImageBytes());
 
         nameLabel.setText(item.getTitle());
         categoryLabel.setText(item.getCategory());
@@ -108,13 +142,13 @@ public class BiddingViewController {
         startCountDown(item.getEndTime());
         ClientNetworkService.getInstance().addEventListener(realtimeListener);
         ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("SUBSCRIBE_AUCTION", currentItem.getId()));
+                .sendRequest(new BaseRequest(Action.SUBSCRIBE_AUCTION, currentItem.getId()));
         loadBidHistory();
     }
 
     private void loadBidHistory() {
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("GET_BID_HISTORY", currentItem.getId()));
+                .sendRequest(new BaseRequest(Action.GET_BID_HISTORY, currentItem.getId()));
 
         if (response == null || !response.isSuccess() || response.getData() == null) {
             bidHistory.clear();
@@ -122,6 +156,7 @@ public class BiddingViewController {
         }
 
         bidHistory.setAll((List<BidDTO>) response.getData());
+        rebuildPriceChart();
     }
 
     private void startCountDown(LocalDateTime endTime) {
@@ -135,6 +170,7 @@ public class BiddingViewController {
         countdownTimeLine.play();
         updateTimeLeft(endTime);
     }
+
     private void updateTimeLeft(LocalDateTime endTime) {
         java.time.Duration remaining = java.time.Duration.between(LocalDateTime.now(), endTime);
         long seconds = remaining.getSeconds();
@@ -155,6 +191,7 @@ public class BiddingViewController {
 
         timeLeftLabel.setText(String.format("%02d:%02d:%02d", hours, minutes, secs));
     }
+
     @FXML
     private void handleBack() {
         ClientNetworkService.getInstance().removeEventListener(realtimeListener);
@@ -167,15 +204,15 @@ public class BiddingViewController {
             Stage stage = (Stage) nameLabel.getScene().getWindow();
             StageUtils.setMaximizedScene(stage, root);
             stage.show();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
+
     @FXML
     private void handlePlaceBid() {
-        if(currentItem == null || currentItem.getId() == null)
-        {
+        if (currentItem == null || currentItem.getId() == null) {
             messageLabel.setText("Không tìm thấy phiên đâ giá");
             return;
         }
@@ -191,7 +228,7 @@ public class BiddingViewController {
         data.put("amount", amountText);
 
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("PLACE_BID", data));
+                .sendRequest(new BaseRequest(Action.PLACE_BID, data));
 
         if (response != null && response.isSuccess()) {
             messageLabel.setText("Đặt giá thành công.");
@@ -205,7 +242,7 @@ public class BiddingViewController {
 
     private void refreshAuctionDetail() {
         BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest("GET_AUCTION_DETAILS", currentItem.getId()));
+                .sendRequest(new BaseRequest(Action.GET_AUCTION_DETAILS, currentItem.getId()));
 
         if (response == null || !response.isSuccess() || response.getData() == null) {
             return;
@@ -257,6 +294,7 @@ public class BiddingViewController {
         leaderLabel.setText(currentItem.getLeader());
 
         bidHistory.add(0, bid);
+        rebuildPriceChart();
 
         refreshAuctionDetail();
     }
@@ -291,14 +329,14 @@ public class BiddingViewController {
         }
     }
 
-    private void setProductImage(String imageUrl) {
-        if (imageUrl == null || imageUrl.isBlank()) {
+    private void setProductImage(byte[] imageBytes) {
+        if (imageBytes == null || imageBytes.length < 0) {
             productImageView.setImage(null);
             imagePlaceholderLabel.setVisible(true);
             return;
         }
 
-        Image image = new Image(imageUrl, true);
+        Image image = new Image(new ByteArrayInputStream(imageBytes));
         productImageView.setImage(image);
         imagePlaceholderLabel.setVisible(false);
     }
@@ -344,6 +382,71 @@ public class BiddingViewController {
         autoBidIncrementField.clear();
         autoBidMaxAmountField.clear();
         messageLabel.setText("Đã tắt đấu giá tự động.");
+    }
+
+    private void setupPriceHistoryChart() {
+        priceHistoryChart.getData().setAll(priceSeries);
+        priceHistoryChart.setAnimated(false);
+        priceHistoryChart.setLegendVisible(false);
+        priceChartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(priceChartXAxis) {
+            @Override
+            public String toString(Number value) {
+                long epochSeconds = value.longValue();
+                java.time.Instant timePoint = java.time.Instant.ofEpochSecond(epochSeconds);
+                java.time.ZoneId localZone = java.time.ZoneId.systemDefault();
+
+                LocalDateTime bidTime = timePoint.atZone(localZone).toLocalDateTime();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+                return bidTime.format(formatter);
+
+            }
+        });
+        priceChartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(priceChartYAxis) {
+            @Override
+            public String toString (Number value){
+                double price = value.doubleValue();
+
+                if (price >= 1_000_000_000) {
+                    return String.format("%.1fB", price / 1_000_000_000);
+                }
+
+                if (price >= 1_000_000) {
+                    return String.format("%.1fM", price / 1_000_000);
+                }
+
+                if (price >= 1_000) {
+                    return String.format("%.0fK", price / 1_000);
+                }
+
+                return String.format("%.0f", price);
+            }
+        });
+    }
+
+    private void rebuildPriceChart() {
+        priceSeries.getData().clear();
+        List<BidDTO> validBids = new ArrayList<>();
+
+        for (BidDTO bid : bidHistory) {
+            if (bid.getTimestamp() != null && bid.getAmount() != null) {
+                validBids.add(bid);
+            }
+        }
+        validBids.sort(Comparator.comparing(BidDTO::getTimestamp));
+
+        int startIndex = Math.max(0, validBids.size() - 30);
+        for (int i = startIndex; i < validBids.size(); i++) {
+            BidDTO bid = validBids.get(i);
+
+            long timeOnXAxis = bid.getTimestamp()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toEpochSecond();
+
+            double priceOnYAxis = bid.getAmount().doubleValue();
+            priceSeries.getData().add(new XYChart.Data<>(timeOnXAxis, priceOnYAxis));
+        }
+
     }
 
 }
