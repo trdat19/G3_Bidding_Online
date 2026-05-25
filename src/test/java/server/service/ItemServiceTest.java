@@ -143,9 +143,9 @@ public class ItemServiceTest {
         });
 
         assertEquals("Chỉ có thể xóa sản phẩm khi đang PENDING hoặc CANCELLED!", exception.getMessage());
-     }
+    }
 
-     //-----------------------UPDATE-------------------
+    //-----------------------UPDATE-------------------
     @Test
     @DisplayName("updateItem - Cập nhật sản phẩm thành công, tìm được ID!")
     public void updateItem_success() {

@@ -122,8 +122,11 @@ public class AuctionService {
             throw new RuntimeException("Sản phẩm không tồn tại!");
         }
         //Kiểm tra xem sản phẩm còn được phép tạo phiên đấu giá không?
-        if (item.getStatusItem() != ItemStatus.PENDING) {
-            throw new RuntimeException("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING!");
+        if (item.getStatusItem() != ItemStatus.PENDING
+                && item.getStatusItem() != ItemStatus.CANCELLED) {
+            throw new RuntimeException(
+                    "Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING hoặc CANCELLED!"
+            );
         }
 
         if (auctionDAO.existsActiveAuctionByItemId(itemId)) {
@@ -371,10 +374,7 @@ public class AuctionService {
                 throw new RuntimeException("Khong cap nhat duoc trang thai auction FINISHED");
             }
         } catch (Exception e) {
-            System.err.println(">>> [AuctionService] Loi ket thuc phien #" + auctionId + ": " + e.getMessage());
-            data.put("message", e.getMessage());
-            data.put("highestBid", highestBid);
-            return data;
+            throw new RuntimeException("Lỗi kết thúc phiên: " + e.getMessage());
         }
 
         BaseResponse sellerEvent = new BaseResponse(

@@ -20,6 +20,7 @@ import server.model.user.User;
 import shared.dto.common.AuctionDTO;
 import shared.enums.AuctionStatus;
 import shared.enums.ItemStatus;
+import org.mockito.MockedStatic;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -68,7 +69,7 @@ public class AuctionServiceTest {
         User seller = user(7L, "Seller One");
 
         when(itemDAO.findById(10L)).thenReturn(item);
-        when(auctionDAO.getAllAuctionsByItemId(10L)).thenReturn(List.of());
+        when(auctionDAO.existsActiveAuctionByItemId(10L)).thenReturn(false);
         when(auctionDAO.insertAuction(any(Auction.class))).thenAnswer(invocation -> {
             Auction auction = invocation.getArgument(0);
             auction.setId(99L);
@@ -84,7 +85,7 @@ public class AuctionServiceTest {
         assertEquals(10L, result.getItemId());
         assertEquals("Laptop", result.getItemName());
         assertEquals(new BigDecimal("100.00"), result.getStartPrice());
-        assertEquals(AuctionStatus.PREPARING, result.getStatus());
+        assertEquals(AuctionStatus.WAITING_APPROVAL, result.getStatus());
 
         ArgumentCaptor<Auction> auctionCaptor = ArgumentCaptor.forClass(Auction.class);
         verify(auctionDAO).insertAuction(auctionCaptor.capture());
@@ -118,29 +119,22 @@ public class AuctionServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
                 auctionService.createAuction(auctionData(10L, 7L, start, end)));
 
-        assertEquals("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING hoặc CANCELLED!", exception.getMessage());
+        assertEquals("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING hoặc CANCELLED!",
+                exception.getMessage());
         verify(auctionDAO, never()).insertAuction(any(Auction.class));
     }
 
     @Test
-    @DisplayName("createAuction - tạo lại phiên cho sản phẩm CANCELLED không có bid")
+    @DisplayName("createAuction - tạo lại phiên cho sản phẩm CANCELLED")
     public void createAuction_cancelledNoBidItem_success() {
         LocalDateTime start = LocalDateTime.now().plusHours(1);
         LocalDateTime end = start.plusHours(2);
+
         Item item = item(10L, 7L, ItemStatus.CANCELLED);
         User seller = user(7L, "Seller One");
-        Auction oldAuction = auction(
-                5L,
-                10L,
-                7L,
-                AuctionStatus.FINISHED,
-                LocalDateTime.now().minusHours(3),
-                LocalDateTime.now().minusHours(1));
 
         when(itemDAO.findById(10L)).thenReturn(item);
-        when(auctionDAO.getAllAuctionsByItemId(10L)).thenReturn(List.of(oldAuction));
-        when(bidDAO.countBidByAuctionId(5L)).thenReturn(0);
-        when(auctionDAO.deleteAuctionsByItemId(10L)).thenReturn(true);
+        when(auctionDAO.existsActiveAuctionByItemId(10L)).thenReturn(false);
         when(auctionDAO.insertAuction(any(Auction.class))).thenAnswer(invocation -> {
             Auction auction = invocation.getArgument(0);
             auction.setId(99L);
@@ -149,37 +143,41 @@ public class AuctionServiceTest {
         when(bidDAO.countBidByAuctionId(99L)).thenReturn(0);
         when(userDAO.findById(7L)).thenReturn(seller);
 
-        AuctionDTO result = auctionService.createAuction(auctionData(10L, 7L, start, end));
+        AuctionDTO result = auctionService.createAuction(
+                auctionData(10L, 7L, start, end)
+        );
 
         assertNotNull(result);
         assertEquals(99L, result.getId());
-        verify(auctionDAO).deleteAuctionsByItemId(10L);
+        assertEquals(AuctionStatus.WAITING_APPROVAL, result.getStatus());
+
         verify(itemDAO).updateStatus(10L, ItemStatus.WAITING_APPROVAL);
+        verify(auctionDAO, never()).deleteAuctionsByItemId(10L);
     }
 
     @Test
-    @DisplayName("createAuction - không tạo lại phiên nếu auction cũ đã có bid")
-    public void createAuction_cancelledItemWithBid_failure() {
+    @DisplayName("createAuction - không tạo phiên mới nếu đang có phiên hoạt động")
+    public void createAuction_activeRequestExists_failure() {
         LocalDateTime start = LocalDateTime.now().plusHours(1);
         LocalDateTime end = start.plusHours(2);
-        Auction oldAuction = auction(
-                5L,
-                10L,
-                7L,
-                AuctionStatus.FINISHED,
-                LocalDateTime.now().minusHours(3),
-                LocalDateTime.now().minusHours(1));
 
-        when(itemDAO.findById(10L)).thenReturn(item(10L, 7L, ItemStatus.CANCELLED));
-        when(auctionDAO.getAllAuctionsByItemId(10L)).thenReturn(List.of(oldAuction));
-        when(bidDAO.countBidByAuctionId(5L)).thenReturn(1);
+        when(itemDAO.findById(10L))
+                .thenReturn(item(10L, 7L, ItemStatus.CANCELLED));
+
+        when(auctionDAO.existsActiveAuctionByItemId(10L))
+                .thenReturn(true);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                auctionService.createAuction(auctionData(10L, 7L, start, end)));
+                auctionService.createAuction(auctionData(10L, 7L, start, end))
+        );
 
-        assertEquals("Sản phẩm đã có lịch sử đấu giá, không thể tạo lại phiên mới!", exception.getMessage());
+        assertEquals(
+                "Sản phẩm này đang có yêu cầu hoặc phiên đấu giá hoạt động!",
+                exception.getMessage()
+        );
+
         verify(auctionDAO, never()).insertAuction(any(Auction.class));
-        verify(auctionDAO, never()).deleteAuctionsByItemId(10L);
+        verify(itemDAO, never()).updateStatus(anyLong(), any(ItemStatus.class));
     }
 
     @Test
@@ -279,20 +277,35 @@ public class AuctionServiceTest {
                 AuctionStatus.RUNNING,
                 LocalDateTime.now().minusHours(1),
                 LocalDateTime.now().plusMinutes(5));
+
         Bid highestBid = new Bid(5L, 3L, new BigDecimal("150.00"));
         highestBid.setId(11L);
+
+        WalletService walletService = mock(WalletService.class);
 
         when(auctionDAO.findById(5L)).thenReturn(auction);
         when(bidDAO.getHighestBidByAuctionId(5L)).thenReturn(highestBid);
         when(userDAO.findById(3L)).thenReturn(user(3L, "Bidder One"));
+        when(itemDAO.updateStatus(10L, ItemStatus.SOLD)).thenReturn(true);
+        when(auctionDAO.updateStatus(5L, AuctionStatus.FINISHED)).thenReturn(true);
 
-        Map<String, Object> result = auctionService.finishAuction(5L);
+        try (MockedStatic<WalletService> mockedWallet = mockStatic(WalletService.class)) {
+            mockedWallet.when(WalletService::getInstance).thenReturn(walletService);
 
-        assertNotNull(result);
-        assertSame(highestBid, result.get("highestBid"));
-        assertTrue(result.get("message").toString().contains("Bidder One"));
-        verify(auctionDAO).updateStatus(5L, AuctionStatus.FINISHED);
-        verify(itemDAO).updateStatus(10L, ItemStatus.SOLD);
+            Map<String, Object> result = auctionService.finishAuction(5L);
+
+            assertNotNull(result);
+            assertSame(highestBid, result.get("highestBid"));
+            assertTrue(result.get("message").toString().contains("Bidder One"));
+
+            verify(walletService).payWinnerToSeller(
+                    3L,
+                    7L,
+                    new BigDecimal("150.00")
+            );
+            verify(itemDAO).updateStatus(10L, ItemStatus.SOLD);
+            verify(auctionDAO).updateStatus(5L, AuctionStatus.FINISHED);
+        }
     }
 
     @Test
@@ -307,6 +320,8 @@ public class AuctionServiceTest {
                 LocalDateTime.now().plusMinutes(5));
         when(auctionDAO.findById(5L)).thenReturn(auction);
         when(bidDAO.getHighestBidByAuctionId(5L)).thenReturn(null);
+        when(itemDAO.updateStatus(10L, ItemStatus.CANCELLED)).thenReturn(true);
+        when(auctionDAO.updateStatus(5L, AuctionStatus.FINISHED)).thenReturn(true);
 
         Map<String, Object> result = auctionService.finishAuction(5L);
 

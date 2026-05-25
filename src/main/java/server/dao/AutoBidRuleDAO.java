@@ -1,7 +1,6 @@
 package server.dao;
 
 import server.database.DBconnection;
-import server.model.core.Auction;
 import server.model.core.AutoBidRule;
 
 import java.math.BigDecimal;
@@ -50,7 +49,7 @@ public class AutoBidRuleDAO {
             return insertRule(rule);
         }
 
-        return updateMaxAmountAndSetActive(existingRule.getId(), rule.getMaxAmount(), rule.getIsActive());
+        return updateRule(existingRule.getId(), rule.getMaxAmount(), rule.getStepAmount());
     }
 
     //--------------------------------FIND--------------------
@@ -59,7 +58,7 @@ public class AutoBidRuleDAO {
         String sql ="SELECT * FROM auto_bid_rules WHERE id = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, id);
 
@@ -101,13 +100,13 @@ public class AutoBidRuleDAO {
         String sql = """
                 SELECT * FROM auto_bid_rules
                 WHERE auction_id = ? AND is_active = TRUE
-                ORDER BY max_amount DESC, created_at ASC
+                ORDER BY max_amount DESC, created_at ASC, id ASC
                 """;
 
         List<AutoBidRule> rules = new ArrayList<>();
 
         try (Connection con = DBconnection.getInstance().getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, auctionId);
 
@@ -155,10 +154,10 @@ public class AutoBidRuleDAO {
 
     //---------------------UPDATE------------------
     /** update mức autobid */
-    public boolean updateMaxAmountAndSetActive(Long id, BigDecimal maxAmount, boolean active) {
+    public boolean updateRule(Long id, BigDecimal maxAmount, BigDecimal stepAmount) {
         String sql = """
                 UPDATE auto_bid_rules
-                SET max_amount = ?, is_active = ?
+                SET max_amount = ?, step_amount = ?, is_active = TRUE
                 WHERE id = ?
                 """;
 
@@ -166,7 +165,7 @@ public class AutoBidRuleDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setBigDecimal(1, maxAmount);
-            ps.setBoolean(2, active);
+            ps.setBigDecimal(2, stepAmount);
             ps.setLong(3, id);
 
             return ps.executeUpdate() > 0;
@@ -231,7 +230,7 @@ public class AutoBidRuleDAO {
         String sql = "DELETE FROM auto_bid_rules WHERE id = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;

@@ -364,26 +364,6 @@ public class BiddingViewController {
         }
     }
 
-    @FXML
-    private void handleEnableAutoBid() {
-        String incrementText = autoBidIncrementField.getText().trim();
-        String maxAmountText = autoBidMaxAmountField.getText().trim();
-
-        if (incrementText.isEmpty() || maxAmountText.isEmpty()) {
-            messageLabel.setText("Vui lòng nhập bước giá và số tiền tối đa.");
-            return;
-        }
-
-        messageLabel.setText("Đã bật đấu giá tự động.");
-    }
-
-    @FXML
-    private void handleDisableAutoBid() {
-        autoBidIncrementField.clear();
-        autoBidMaxAmountField.clear();
-        messageLabel.setText("Đã tắt đấu giá tự động.");
-    }
-
     private void setupPriceHistoryChart() {
         priceHistoryChart.getData().setAll(priceSeries);
         priceHistoryChart.setAnimated(false);
@@ -445,6 +425,56 @@ public class BiddingViewController {
 
             double priceOnYAxis = bid.getAmount().doubleValue();
             priceSeries.getData().add(new XYChart.Data<>(timeOnXAxis, priceOnYAxis));
+        }
+
+    }
+
+    /** kích hoạt auto bid */
+    @FXML
+    private void handleEnableAutoBid() {
+        String incrementText = autoBidIncrementField.getText().trim();
+        String maxAmountText = autoBidMaxAmountField.getText().trim();
+
+        if (incrementText.isEmpty() || maxAmountText.isEmpty()) {
+            messageLabel.setText("Vui lòng nhập bước giá và số tiền tối đa.");
+            return;
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("auctionId", currentItem.getId());
+        data.put("maxAmount", maxAmountText);
+        data.put("stepAmount", incrementText);
+
+        BaseRequest request = new BaseRequest(Action.REGISTER_AUTO_BID_RULE, data);
+        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+
+        if (response != null && response.isSuccess()) {
+            messageLabel.setText("Đã bật đấu giá tự động.");
+        }
+        else {
+            messageLabel.setText(response != null ? response.getMessage() : "Có lôi xảy ra!");
+        }
+
+    }
+
+    @FXML
+    private void handleDisableAutoBid() {
+        if (currentItem == null || currentItem.getId() == null) {
+            messageLabel.setText("Không tìm thấy phiên!");
+            return;
+        }
+
+        BaseRequest request = new BaseRequest(Action.REMOVE_AUTO_BID_RULE, currentItem.getId());
+        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+
+        if (response != null && response.isSuccess()) {
+            autoBidIncrementField.clear();
+            autoBidMaxAmountField.clear();
+
+            messageLabel.setText("Đã tắt đấu giá tự động.");
+        }
+        else {
+            messageLabel.setText(response != null ? response.getMessage() : "Có lỗi xảy ra!");
         }
 
     }

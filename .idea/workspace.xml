@@ -4,7 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="46d58188-6a47-4a70-8660-102ddfb8c121" name="Changes" comment="" />
+    <list default="true" id="46d58188-6a47-4a70-8660-102ddfb8c121" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/server/controller/AutoBidController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BiddingViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BiddingViewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/AutoBidRuleDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/AutoBidRuleDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AutoBidService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AutoBidService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/AuctionServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/AuctionServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/AuthServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/AuthServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/BidServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/BidServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/ItemServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/ItemServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/SingletonTestUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/SingletonTestUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/UserServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/UserServiceTest.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,11 +28,19 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="6ca1750e-26a9-4a61-887e-f7894fc5caa1" />
+        <option name="activeSessionId" value="98bd985c-cb46-4553-9642-5a18b5831f10" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
             <option name="id" value="6ca1750e-26a9-4a61-887e-f7894fc5caa1" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="98bd985c-cb46-4553-9642-5a18b5831f10" />
             <option name="modeId" value="Ask" />
             <option name="modelType" value="builtin_family" />
             <option name="modelValue" value="auto" />
@@ -31,10 +54,11 @@
   <component name="CopilotPersistence">
     <persistenceIdMap>
       <entry key="_C:/Users/admin/Desktop/G3_Bidding_Online-vanh" value="3EDqga941G9AmMqExjNQk9MoP5f" />
+      <entry key="_C:/Users/admin/Downloads/K70/NAM_1/KI_2/LAP_TRINH_NANG_CAO/BAI_TAP_LON/DUONG/G3_Bidding_Online" value="3EEFp0cS65IsybAWxZutkRJTF6v" />
     </persistenceIdMap>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="180" />
+    <option name="cachedIndexableFilesCount" value="182" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -42,6 +66,9 @@
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
@@ -63,25 +90,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.ClientLauncher.executor&quot;: &quot;Run&quot;,
-    &quot;Application.SocketServer.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.ClientLauncher.executor": "Run",
+    "Application.SocketServer.executor": "Run",
+    "JUnit.java in G3_BiddingOnline.executor": "Run",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "Duong__Socket",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager" selected="Application.ClientLauncher">
+}]]></component>
+  <component name="RunManager" selected="JUnit.java in G3_BiddingOnline">
     <configuration name="ClientLauncher" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="client.ClientLauncher" />
       <module name="G3_BiddingOnline" />
@@ -108,12 +138,22 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="java in G3_BiddingOnline" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="G3_BiddingOnline" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/src/test/java" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="Application.ClientLauncher" />
       <item itemvalue="Application.SocketServer" />
+      <item itemvalue="JUnit.java in G3_BiddingOnline" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.java in G3_BiddingOnline" />
         <item itemvalue="Application.ClientLauncher" />
         <item itemvalue="Application.SocketServer" />
       </list>
@@ -127,6 +167,7 @@
       <option name="presentableId" value="Default" />
       <updated>1779723606575</updated>
       <workItem from="1779723631634" duration="11439000" />
+      <workItem from="1779736004071" duration="3928000" />
     </task>
     <servers />
   </component>
