@@ -1,0 +1,352 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+left to right direction
+
+' ================= CLIENT =================
+
+package "client" {
+
+  package "controller" {
+    class AddProductController
+    class AdminDashboardController
+    class AdminRequestController
+    class AdminUsersController
+    class AuctionDetailController
+    class BidderDashboardController
+    class BiddingViewController
+    class EditProductController
+    class LoginController
+    class RegisterFormController
+    class SellerDashboardController
+    class SellerWalletPopupController
+    class SetupAuctionViewController
+    class WalletPopupController
+  }
+
+  package "model" {
+    class Item
+  }
+
+  package "realtime" {
+  }
+
+  package "service" {
+    class ClientNetworkService
+    class ItemService
+  }
+
+  package "session" {
+    class ClientSession
+  }
+
+  package "state" {
+    class ClientSessionState
+  }
+
+  package "util" {
+    class StageUtils
+  }
+
+  package "view" {
+  }
+
+  class ClientLauncher
+  class MainApplication
+}
+
+' ================= SERVER =================
+
+package "server" {
+
+  package "concurrency" {
+  }
+
+  package "config" {
+    class DBconnection_Config
+    class TestConnection_Config
+  }
+
+  package "controller" {
+    class AdminServerController
+    class AuctionServerController
+    class AuthServerController
+    class AutoBidController
+    class BidServerController
+    class SellerServerController
+    class WalletServerController
+  }
+
+  package "dao" {
+    class AuctionDAO
+    class AutoBidRuleDAO
+    class BidDAO
+    class ItemDAO
+    class TestUserDao
+    class UserDAO
+  }
+
+  package "database" {
+    class DBconnection
+    class TestConnection
+  }
+
+  package "exception" {
+    class AuctionClosedException_Server
+    class AuctionException_Server
+    class InvalidBidException_Server
+  }
+
+  package "model" {
+
+    package "core" {
+      class Auction
+      class AuctionManager
+      class AutoBidRule
+      class Bid
+      class BidTransaction
+    }
+
+    package "item" {
+      abstract class Item_Server
+      class Art
+      class Electronics
+      class Vehicle
+
+      package "factory" {
+        interface ItemFactory_Interface
+        class ArtFactory
+        class ElectronicsFactory
+        class VehicleFactory
+        class ItemFactoryRegistry
+      }
+    }
+
+    package "user" {
+      abstract class User
+      class Admin
+      class Bidder
+      class Seller
+    }
+
+    class Entity
+  }
+
+  package "network" {
+    class AuctionServer
+    class ClientConnectionHandler
+    class RealtimePushServer
+    class RequestRouter
+    class SocketServer
+  }
+
+  package "realtime" {
+  }
+
+  package "scheduler" {
+    class AuctionScheduler
+  }
+
+  package "service" {
+    class AuctionService
+    class AuditService
+    class AuthService
+    class AutoBidService
+    class BidService
+    class ItemService_Server
+    class RealtimeEventService
+    class UserService
+    class WalletService
+  }
+}
+
+' ================= SHARED =================
+
+package "shared" {
+
+  package "dto" {
+
+    package "common" {
+      class AuctionDTO
+      class BidDTO
+      class ItemDTO
+      class UserDTO
+    }
+
+    package "request" {
+      class BaseRequest
+    }
+
+    package "response" {
+      class BaseResponse
+      class AdminDashboardDTO
+    }
+  }
+
+  package "enums" {
+    enum Action
+    enum AuctionStatus
+    enum ItemCategory
+    enum ItemStatus
+    enum UserRole
+    enum UserStatus
+  }
+
+  package "event" {
+  }
+
+  package "exception" {
+    class AuctionClosedException
+    class AuctionException
+    class AuctionNotFoundException
+    class BidExceededLimitException
+    class BidTooLowException
+    class InsufficientBalanceException
+    class InvalidAuctionTimeException
+    class InvalidBidException
+  }
+
+  package "utility" {
+  }
+}
+
+' ================= CLIENT RELATIONS =================
+
+MainApplication --> ClientLauncher
+MainApplication --> LoginController
+MainApplication --> RegisterFormController
+MainApplication --> BidderDashboardController
+MainApplication --> SellerDashboardController
+MainApplication --> AdminDashboardController
+
+LoginController --> ClientNetworkService
+RegisterFormController --> ClientNetworkService
+AuctionDetailController --> ClientNetworkService
+BiddingViewController --> ClientNetworkService
+AddProductController --> ItemService
+EditProductController --> ItemService
+
+ClientNetworkService --> BaseRequest
+ClientNetworkService --> BaseResponse
+ClientNetworkService --> ClientSession
+ClientNetworkService --> SocketServer : socket
+
+ClientSession --> UserDTO
+ClientSessionState --> ClientSession
+StageUtils --> MainApplication
+
+' ================= SERVER CONTROLLER -> SERVICE =================
+
+AuthServerController --> AuthService
+AdminServerController --> AuditService
+AdminServerController --> UserService
+AuctionServerController --> AuctionService
+BidServerController --> BidService
+SellerServerController --> ItemService_Server
+WalletServerController --> WalletService
+AutoBidController --> AutoBidService
+
+' ================= SERVER SERVICE -> DAO =================
+
+AuthService --> UserDAO
+UserService --> UserDAO
+AuctionService --> AuctionDAO
+AuctionService --> ItemDAO
+BidService --> BidDAO
+BidService --> AuctionDAO
+AutoBidService --> AutoBidRuleDAO
+ItemService_Server --> ItemDAO
+WalletService --> UserDAO
+AuditService --> AuctionDAO
+RealtimeEventService --> RealtimePushServer
+
+' ================= DAO -> DATABASE =================
+
+AuctionDAO --> DBconnection
+AutoBidRuleDAO --> DBconnection
+BidDAO --> DBconnection
+ItemDAO --> DBconnection
+UserDAO --> DBconnection
+TestUserDao --> DBconnection
+TestConnection --> DBconnection
+
+' ================= NETWORK =================
+
+SocketServer --> ClientConnectionHandler
+AuctionServer --> SocketServer
+RealtimePushServer --> ClientConnectionHandler
+ClientConnectionHandler --> RequestRouter
+RequestRouter --> AuthServerController
+RequestRouter --> AuctionServerController
+RequestRouter --> BidServerController
+RequestRouter --> AdminServerController
+RequestRouter --> SellerServerController
+RequestRouter --> WalletServerController
+
+ClientConnectionHandler --> BaseRequest
+ClientConnectionHandler --> BaseResponse
+
+' ================= DOMAIN MODEL =================
+
+Entity <|-- User
+User <|-- Admin
+User <|-- Bidder
+User <|-- Seller
+
+Entity <|-- Item_Server
+Item_Server <|-- Art
+Item_Server <|-- Electronics
+Item_Server <|-- Vehicle
+
+Auction --> Item_Server
+Auction --> Bid
+Auction --> AutoBidRule
+Bid --> Bidder
+BidTransaction --> Bid
+AuctionManager --> Auction
+
+' ================= FACTORY PATTERN =================
+
+ItemFactory_Interface <|.. ArtFactory
+ItemFactory_Interface <|.. ElectronicsFactory
+ItemFactory_Interface <|.. VehicleFactory
+
+ArtFactory --> Art
+ElectronicsFactory --> Electronics
+VehicleFactory --> Vehicle
+ItemFactoryRegistry --> ItemFactory_Interface
+
+' ================= DTO / ENUM =================
+
+AuctionDTO --> AuctionStatus
+ItemDTO --> ItemCategory
+ItemDTO --> ItemStatus
+UserDTO --> UserRole
+UserDTO --> UserStatus
+BaseRequest --> Action
+
+AuctionService --> AuctionDTO
+BidService --> BidDTO
+ItemService_Server --> ItemDTO
+UserService --> UserDTO
+
+' ================= EXCEPTION HIERARCHY =================
+
+AuctionException <|-- AuctionClosedException
+AuctionException <|-- AuctionNotFoundException
+AuctionException <|-- BidExceededLimitException
+AuctionException <|-- BidTooLowException
+AuctionException <|-- InsufficientBalanceException
+AuctionException <|-- InvalidAuctionTimeException
+AuctionException <|-- InvalidBidException
+
+AuctionException_Server <|-- AuctionClosedException_Server
+AuctionException_Server <|-- InvalidBidException_Server
+
+' ================= SCHEDULER =================
+
+AuctionScheduler --> AuctionService
+AuctionScheduler --> AutoBidService
+AuctionScheduler --> RealtimeEventService
+
+@enduml
