@@ -449,8 +449,6 @@ public class BiddingViewController {
         BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
         if (response != null && response.isSuccess()) {
-            autoBidIncrementField.clear();
-            autoBidMaxAmountField.clear();
             messageLabel.setText("Đã bật đấu giá tự động.");
         }
         else {

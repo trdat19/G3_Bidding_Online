@@ -1,7 +1,6 @@
 package server.dao;
 
 import server.database.DBconnection;
-import server.model.core.Auction;
 import server.model.core.AutoBidRule;
 
 import java.math.BigDecimal;
@@ -101,7 +100,7 @@ public class AutoBidRuleDAO {
         String sql = """
                 SELECT * FROM auto_bid_rules
                 WHERE auction_id = ? AND is_active = TRUE
-                ORDER BY max_amount DESC, created_at ASC
+                ORDER BY max_amount DESC, created_at ASC, id ASC
                 """;
 
         List<AutoBidRule> rules = new ArrayList<>();

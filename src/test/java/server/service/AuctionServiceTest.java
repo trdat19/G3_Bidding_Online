@@ -84,7 +84,7 @@ public class AuctionServiceTest {
         assertEquals(10L, result.getItemId());
         assertEquals("Laptop", result.getItemName());
         assertEquals(new BigDecimal("100.00"), result.getStartPrice());
-        assertEquals(AuctionStatus.PREPARING, result.getStatus());
+        assertEquals(AuctionStatus.WAITING_APPROVAL, result.getStatus());
 
         ArgumentCaptor<Auction> auctionCaptor = ArgumentCaptor.forClass(Auction.class);
         verify(auctionDAO).insertAuction(auctionCaptor.capture());
@@ -118,7 +118,7 @@ public class AuctionServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
                 auctionService.createAuction(auctionData(10L, 7L, start, end)));
 
-        assertEquals("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING hoặc CANCELLED!", exception.getMessage());
+        assertEquals("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING!", exception.getMessage());
         verify(auctionDAO, never()).insertAuction(any(Auction.class));
     }
 
@@ -177,7 +177,7 @@ public class AuctionServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
                 auctionService.createAuction(auctionData(10L, 7L, start, end)));
 
-        assertEquals("Sản phẩm đã có lịch sử đấu giá, không thể tạo lại phiên mới!", exception.getMessage());
+        assertEquals("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING!", exception.getMessage());
         verify(auctionDAO, never()).insertAuction(any(Auction.class));
         verify(auctionDAO, never()).deleteAuctionsByItemId(10L);
     }

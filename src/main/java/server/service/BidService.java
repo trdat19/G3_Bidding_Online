@@ -7,9 +7,9 @@ import server.model.core.Auction;
 import server.model.core.Bid;
 import server.model.user.User;
 import server.network.RealtimePushServer;
+
 import shared.dto.common.BidDTO;
 import shared.dto.response.BaseResponse;
-import shared.enums.Action;
 import shared.enums.AuctionStatus;
 import shared.exception.AuctionClosedException;
 import shared.exception.AuctionNotFoundException;
@@ -19,9 +19,6 @@ import shared.exception.InvalidAuctionTimeException;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 /** Xử lý logic đặt giá, kết nối vơi DB
  * Singleton
@@ -160,7 +157,7 @@ public class BidService {
         return true;
     }
 
-    /** Xử lí đặt giá chính, synchronized tránh lost update khi nhiều người đặt cùng lúc */
+    /** Xử lí đặt giá tay, synchronized tránh lost update khi nhiều người đặt cùng lúc */
     public synchronized boolean placeBid(Long auctionId, Long bidderId, BigDecimal amount) {
         boolean ok = placeBidInternal(auctionId, bidderId, amount, false);
 

@@ -374,10 +374,11 @@ public class AuctionService {
                 throw new RuntimeException("Khong cap nhat duoc trang thai auction FINISHED");
             }
         } catch (Exception e) {
-            System.err.println(">>> [AuctionService] Loi ket thuc phien #" + auctionId + ": " + e.getMessage());
-            data.put("message", e.getMessage());
-            data.put("highestBid", highestBid);
-            return data;
+//            System.err.println(">>> [AuctionService] Loi ket thuc phien #" + auctionId + ": " + e.getMessage());
+//            data.put("message", e.getMessage());
+//            data.put("highestBid", highestBid);
+//            return data;
+            throw new RuntimeException("Lỗi kết thúc phiên: " + e.getMessage());
         }
 
         BaseResponse sellerEvent = new BaseResponse(
