@@ -1,6 +1,5 @@
 package client.controller;
 import client.service.ClientNetworkService;
-import client.state.ClientSession;
 import client.util.StageUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,8 +17,6 @@ import client.model.Item;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
-
-import javax.security.auth.login.AccountLockedException;
 
 public class AdminDashboardController {
     private static final String HOME_PAGE = "/view/admin/admin-home.fxml";

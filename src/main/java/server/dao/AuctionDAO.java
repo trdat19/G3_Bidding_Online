@@ -316,4 +316,28 @@ public class AuctionDAO {
             return false;
         }
     }
+
+    public boolean existsActiveAuctionByItemId(long itemId) {
+        String sql = """
+            SELECT 1
+            FROM auctions
+            WHERE id_item = ?
+              AND status_auction IN ('WAITING_APPROVAL', 'OPEN', 'RUNNING')
+            LIMIT 1
+            """;
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, itemId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            System.err.println("existsActiveAuctionByItemId error: " + e.getMessage());
+            return false;
+        }
+    }
 }

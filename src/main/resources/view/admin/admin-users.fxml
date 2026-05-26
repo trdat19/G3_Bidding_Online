@@ -18,18 +18,16 @@
         <Button onAction="#handleRefresh" styleClass="primary-btn" text="Refresh" />
     </HBox>
 
-    <VBox styleClass="table-card" VBox.vgrow="ALWAYS">
-        <TableView fx:id="userTable" prefHeight="500" VBox.vgrow="ALWAYS">
-            <columns>
-                <TableColumn fx:id="idColumn" prefWidth="120" text="User ID" />
-                <TableColumn fx:id="usernameColumn" prefWidth="220" text="Username" />
-                <TableColumn fx:id="roleColumn" prefWidth="150" text="Role" />
-                <TableColumn fx:id="statusColumn" prefWidth="150" text="Status" />
-                <TableColumn fx:id="createAtColumn" prefWidth="180" text="Created At" />
-                <TableColumn fx:id="actionColumn" prefWidth="160" text="Action" />
-                <TableColumn fx:id="fullnameColumn" prefWidth="200" text="Full name" />
-                <TableColumn fx:id="emailColumn" prefWidth="240" text="Email" />
-            </columns>
-        </TableView>
-    </VBox>
+    <TableView fx:id="userTable" prefHeight="500">
+        <columns>
+            <TableColumn fx:id="idColumn" prefWidth="120" text="User ID" />
+            <TableColumn fx:id="usernameColumn" prefWidth="220" text="Username" />
+            <TableColumn fx:id="roleColumn" prefWidth="150" text="Role" />
+            <TableColumn fx:id="statusColumn" prefWidth="150" text="Status" />
+            <TableColumn fx:id="createAtColumn" prefWidth="180" text="Created At" />
+            <TableColumn fx:id="actionColumn" prefWidth="160" text="Action" />
+            <TableColumn fx:id="fullnameColumn" prefWidth="200" text="Full name" />
+            <TableColumn fx:id="emailColumn" prefWidth="240" text="Email" />
+        </columns>
+    </TableView>
 </VBox>

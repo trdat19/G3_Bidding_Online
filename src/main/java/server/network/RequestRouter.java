@@ -158,15 +158,33 @@ public class RequestRouter {
 
 
                 case Action.SUBSCRIBE_AUCTION_LIST:
+                {
                     requireRole(handler, UserRole.BIDDER);
                     RealtimePushServer.subscribeToAuctionList(handler);
                     return new BaseResponse(true, "Đã subscribe danh sách phiên đấu giá ", null);
+                }
+
+
+                case Action.REGISTER_AUTO_BID_RULE: {
+                    requireRole(handler, UserRole.BIDDER);
+                    return AutoBidController.getInstance().registerRule(request, handler);
+                }
                 /**
                  * Thao tác của Admin
                  */
                 case Action.GET_USERS_LIST: {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().getAllUsers();
+                }
+
+                case Action.GET_ALL_AUCTIONS: {
+                    requireRole(handler, UserRole.ADMIN);
+                    return AdminServerController.getInstance().getAllAuctions();
+                }
+
+                case Action.GET_ALL_ITEMS: {
+                    requireRole(handler, UserRole.ADMIN);
+                    return AdminServerController.getInstance().getAllItems();
                 }
 
                 case Action.ENABLE_USER: {

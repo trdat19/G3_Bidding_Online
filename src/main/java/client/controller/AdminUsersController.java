@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.service.ClientNetworkService;
+import client.session.ClientSession;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -14,6 +15,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.layout.HBox;
 import shared.enums.UserStatus;
+import shared.enums.UserRole;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -123,9 +125,18 @@ public class AdminUsersController {
                 UserDTO user = getTableView().getItems().get(getIndex());
                 boolean active = user.getStatus() == UserStatus.ACTIVE;
 
-                statusButton.setText(active ? "Khóa" : "Mở khóa");
-                statusButton.getStyleClass().setAll(active ? "danger-btn" : "success-btn");
+                Long currentUserId = ClientSession.getCurrentUserId();
 
+                if (user.getId().equals(currentUserId)) {
+                    statusButton.setDisable(true);
+                    statusButton.setText("Tài khoản hiện tại");
+                } else if (user.getRole() == UserRole.ADMIN && active) {
+                    statusButton.setDisable(true);
+                    statusButton.setText("Không thể khóa Admin");
+                } else {
+                    statusButton.setDisable(false);
+                    statusButton.setText(active ? "Khóa" : "Mở khóa");
+                }
                 setGraphic(new HBox(8, statusButton));
             }
         });

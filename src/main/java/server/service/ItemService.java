@@ -137,6 +137,10 @@ public class ItemService {
         return itemDAO.findBySellerId(sellerId);
     }
 
+    public List<Item> findAllItems() {
+        return itemDAO.getAllItems();
+    }
+
     private void deleteNoBidAuctionsForItem(Long itemId) {
         List<Auction> auctions = auctionDAO.getAllAuctionsByItemId(itemId);
         if (auctions == null || auctions.isEmpty()) {
