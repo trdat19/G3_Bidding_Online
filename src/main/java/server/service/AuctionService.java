@@ -472,6 +472,31 @@ public class AuctionService {
 
         return dtos;
     }
+    /**Lấy phiên đã thắng */
+    public List<AuctionDTO> getWonAuctionsByBidderId(Long bidderId) {
+        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.FINISHED);
+        List<AuctionDTO> dtos = new ArrayList<>();
+
+        if (bidderId == null) {
+            return dtos;
+        }
+
+        for (Auction auction : auctions) {
+            Bid highestBid = bidDAO.getHighestBidByAuctionId(auction.getId());
+
+            if (highestBid == null || !bidderId.equals(highestBid.getBidderId())) {
+                continue;
+            }
+
+            Item item = itemDAO.findById(auction.getItemId());
+
+            if (item != null) {
+                dtos.add(toDTO(auction, item));
+            }
+        }
+
+        return dtos;
+    }
 
     /** Lấy tất cả phiên (dành cho Admin) */
     public List<AuctionDTO> getAllAuctions() {

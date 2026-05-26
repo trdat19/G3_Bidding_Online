@@ -27,6 +27,7 @@ public enum Action {
     /**
      * Bidder
      */
+    GET_WON_AUCTIONS,
     PLACE_BID,
     SUBSCRIBE_AUCTION,
     UNSUBSCRIBE_AUCTION,
