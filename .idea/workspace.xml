@@ -5,20 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="46d58188-6a47-4a70-8660-102ddfb8c121" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/server/controller/AutoBidController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/diagram.puml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/BiddingViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/BiddingViewController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/AutoBidRuleDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/AutoBidRuleDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AutoBidService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AutoBidService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/BidService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/AuctionServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/AuctionServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/AuthServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/AuthServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/BidServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/BidServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/ItemServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/ItemServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/SingletonTestUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/SingletonTestUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/UserServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/UserServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dependency-reduced-pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/dependency-reduced-pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,12 +47,13 @@
     </persistenceIdMap>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="182" />
+    <option name="cachedIndexableFilesCount" value="183" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="UML Sequence" />
       </list>
     </option>
   </component>
@@ -94,10 +84,12 @@
   "keyToString": {
     "Application.ClientLauncher.executor": "Run",
     "Application.SocketServer.executor": "Run",
+    "DefaultPlantUmlFileTemplate": "UML Sequence",
     "JUnit.java in G3_BiddingOnline.executor": "Run",
     "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "git-widget-placeholder": "Duong__Socket",
@@ -108,6 +100,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -167,12 +160,18 @@
       <option name="presentableId" value="Default" />
       <updated>1779723606575</updated>
       <workItem from="1779723631634" duration="11439000" />
-      <workItem from="1779736004071" duration="3928000" />
+      <workItem from="1779736004071" duration="4957000" />
+      <workItem from="1779764763330" duration="1959000" />
+      <workItem from="1779768039647" duration="1608000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
