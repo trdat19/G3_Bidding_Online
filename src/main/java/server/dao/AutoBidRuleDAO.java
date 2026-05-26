@@ -58,7 +58,7 @@ public class AutoBidRuleDAO {
         String sql ="SELECT * FROM auto_bid_rules WHERE id = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, id);
 
@@ -106,7 +106,7 @@ public class AutoBidRuleDAO {
         List<AutoBidRule> rules = new ArrayList<>();
 
         try (Connection con = DBconnection.getInstance().getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, auctionId);
 
@@ -230,7 +230,7 @@ public class AutoBidRuleDAO {
         String sql = "DELETE FROM auto_bid_rules WHERE id = ?";
 
         try (Connection con = DBconnection.getInstance().getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;

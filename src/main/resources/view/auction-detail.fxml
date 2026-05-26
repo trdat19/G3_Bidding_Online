@@ -6,9 +6,17 @@
 <?import javafx.scene.layout.*?>
 
 
-<ScrollPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AuctionDetailController">
+<ScrollPane fitToWidth="true"
+            fitToHeight="true"
+            hbarPolicy="NEVER"
+            vbarPolicy="AS_NEEDED"
+            styleClass="auction-detail-scroll"
+            stylesheets="@../css/auction-detail.css"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.controller.AuctionDetailController">
    <content>
-      <BorderPane styleClass="root" stylesheets="@../css/auction-detail.css">
+      <BorderPane styleClass="auction-detail-root">
       
           <top>
               <HBox alignment="CENTER_LEFT" spacing="18">

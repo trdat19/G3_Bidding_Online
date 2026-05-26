@@ -31,7 +31,8 @@
 
             <VBox spacing="12.0" styleClass="sidebar-menu">
                <children>
-                  <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="sidebar-menu-button-active" text="⌂  Trang chủ" />
+                  <Button fx:id="homeButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleShowHome" styleClass="sidebar-menu-button-active" text="⌂  Trang chủ" />
+                  <Button fx:id="wonAuctionsButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleShowWonAuctions" styleClass="sidebar-menu-button" text="Đã thắng" />
                   <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleOpenWalletPopup" styleClass="sidebar-menu-button" text="💳  Ví" />
                   <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleRefresh" styleClass="sidebar-menu-button" text="↻  Làm mới" />
                   <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleLogout" styleClass="sidebar-logout-button" text="🚪  Đăng xuất" />
@@ -69,8 +70,13 @@
                            <children>
                               <VBox spacing="6.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Label styleClass="section-title" text="Phiên đấu giá đang diễn ra" />
-                                    <Label styleClass="section-subtitle" text="Cạnh tranh ngay để sở hữu những sản phẩm tốt nhất." />
+                                    <Label fx:id="sectionTitleLabel"
+                                           styleClass="section-title"
+                                           text="Phiên đấu giá đang diễn ra" />
+
+                                    <Label fx:id="sectionSubtitleLabel"
+                                           styleClass="section-subtitle"
+                                           text="Cạnh tranh ngay để sở hữu những sản phẩm tốt nhất." />
                                  </children>
                               </VBox>
 

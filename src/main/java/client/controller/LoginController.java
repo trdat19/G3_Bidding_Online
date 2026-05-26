@@ -1,8 +1,8 @@
 package client.controller;
 
 import client.service.ClientNetworkService;
-import client.state.ClientSession;
 import client.util.StageUtils;
+import client.session.ClientSession;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
@@ -11,7 +11,6 @@ import javafx.scene.Parent;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 import server.model.user.User;
-import shared.dto.common.UserDTO;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
 import shared.enums.UserRole;
@@ -50,7 +49,7 @@ public class LoginController {
             User LogginUser = (User) response.getData();
             UserRole role = LogginUser.getRole();
             String fullName = LogginUser.getFullName();
-            ClientSession.setFullName(fullName);
+            ClientSession.setCurrentUser(LogginUser);
             if (role == UserRole.BIDDER) {
                 loadScene("/view/bidder-dashboard.fxml", event, fullName);
 

@@ -359,10 +359,6 @@ public class SellerDashboardController {
 
         loadProducts();
     }
-    public void setSellerName(String sellerName) {
-        sellerNameLabel.setText(sellerName);
-    }
-
     private boolean canManageItem(Item item) {
         return "PENDING".equals(item.getStatus())
                 || "CANCELLED".equals(item.getStatus());

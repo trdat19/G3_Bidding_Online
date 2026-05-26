@@ -2,7 +2,6 @@
 package server.network;
 
 import server.controller.*;
-import server.service.AutoBidService;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
@@ -125,6 +124,10 @@ public class RequestRouter {
                     requireRole(handler, UserRole.BIDDER);
                     return BidServerController.getInstance().placeBid(request, handler);
                 }
+                case Action.GET_WON_AUCTIONS: {
+                    requireRole(handler, UserRole.BIDDER);
+                    return AuctionServerController.getInstance().getWonAuctions(handler);
+                }
 
                 case Action.SUBSCRIBE_AUCTION: {
                     requireRole(handler, UserRole.BIDDER);
@@ -145,9 +148,11 @@ public class RequestRouter {
                                 "ID phiên đấu giá phải là số nguyên hợp lệ!", null);
                     }
                 }
+
                 case Action.GET_AUCTION_LIST: {
                     return AuctionServerController.getInstance().getAuctions();
                 }
+
                 case Action.GET_AUCTION_DETAILS: {
                     return AuctionServerController.getInstance().getAuctionDetail(request);
                 }
@@ -179,6 +184,16 @@ public class RequestRouter {
                 case Action.GET_USERS_LIST: {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().getAllUsers();
+                }
+
+                case Action.GET_ALL_AUCTIONS: {
+                    requireRole(handler, UserRole.ADMIN);
+                    return AdminServerController.getInstance().getAllAuctions();
+                }
+
+                case Action.GET_ALL_ITEMS: {
+                    requireRole(handler, UserRole.ADMIN);
+                    return AdminServerController.getInstance().getAllItems();
                 }
 
                 case Action.ENABLE_USER: {
