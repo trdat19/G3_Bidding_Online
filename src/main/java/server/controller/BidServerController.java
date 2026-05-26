@@ -67,7 +67,7 @@ public class BidServerController {
             return new BaseResponse(false, "Số tiền đặt giá không hợp lệ!", null);
         }
         catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             return new BaseResponse(false, "Lỗi hệ thống: " + e.getMessage(), null);
         }
     }
