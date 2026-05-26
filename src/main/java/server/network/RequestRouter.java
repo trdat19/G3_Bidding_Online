@@ -124,6 +124,10 @@ public class RequestRouter {
                     requireRole(handler, UserRole.BIDDER);
                     return BidServerController.getInstance().placeBid(request, handler);
                 }
+                case Action.GET_WON_AUCTIONS: {
+                    requireRole(handler, UserRole.BIDDER);
+                    return AuctionServerController.getInstance().getWonAuctions(handler);
+                }
 
                 case Action.SUBSCRIBE_AUCTION: {
                     requireRole(handler, UserRole.BIDDER);

@@ -54,6 +54,19 @@ public class AuctionServerController {
 
         return new BaseResponse(true, "Danh sách tất cả phiên đấu giá:", auctions);
     }
+    /** getWonAuctions - lấy phiên đã thắng */
+    public BaseResponse getWonAuctions(ClientConnectionHandler handler) {
+        List<AuctionDTO> auctions =
+                auctionService.getWonAuctionsByBidderId(handler.getUser().getId());
+
+        return new BaseResponse(
+                true,
+                auctions.isEmpty()
+                        ? "Bạn chưa thắng phiên đấu giá nào."
+                        : "Danh sách sản phẩm đã thắng:",
+                auctions
+        );
+    }
 
     /** getAuctionDetail - lấy chi tiết thông tin của 1 phiên đấu giá */
     public BaseResponse getAuctionDetail(BaseRequest request) {

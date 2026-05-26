@@ -24,16 +24,18 @@
         <Button text="Refresh" styleClass="primary-btn"/>
     </HBox>
 
-    <TableView fx:id="productTable" prefHeight="500">
-        <columns>
-            <TableColumn text="Product ID" prefWidth="120"/>
-            <TableColumn text="Title" prefWidth="230"/>
-            <TableColumn text="Category" prefWidth="150"/>
-            <TableColumn text="Seller" prefWidth="150"/>
-            <TableColumn text="Start Price" prefWidth="150"/>
-            <TableColumn text="Current Price" prefWidth="150"/>
-            <TableColumn text="Status" prefWidth="120"/>
-            <TableColumn text="Action" prefWidth="160"/>
-        </columns>
-    </TableView>
+    <VBox styleClass="table-card" VBox.vgrow="ALWAYS">
+        <TableView fx:id="productTable" prefHeight="500" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn text="Product ID" prefWidth="120"/>
+                <TableColumn text="Title" prefWidth="230"/>
+                <TableColumn text="Category" prefWidth="150"/>
+                <TableColumn text="Seller" prefWidth="150"/>
+                <TableColumn text="Start Price" prefWidth="150"/>
+                <TableColumn text="Current Price" prefWidth="150"/>
+                <TableColumn text="Status" prefWidth="120"/>
+                <TableColumn text="Action" prefWidth="160"/>
+            </columns>
+        </TableView>
+    </VBox>
 </VBox>

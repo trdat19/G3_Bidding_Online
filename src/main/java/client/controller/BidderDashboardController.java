@@ -40,14 +40,21 @@ import shared.enums.Action;
 
 public class BidderDashboardController
 {
-    @FXML
-    private FlowPane auctionContainer;
+    @FXML private FlowPane auctionContainer;
 
-    @FXML
-    private Label bidderNameLabel;
+    @FXML private Label bidderNameLabel;
 
-    @FXML
-    private Label bidderWalletBalanceLabel;
+    @FXML private Label bidderWalletBalanceLabel;
+
+    @FXML private Label sectionTitleLabel;
+
+    @FXML private Label sectionSubtitleLabel;
+
+    @FXML private Button homeButton;
+
+    @FXML private Button wonAuctionsButton;
+
+    private boolean showingWonAuctions = false;
 
     private final List<Item> itemList = new ArrayList<>();
     private final List<Timeline> countdownTimelines = new ArrayList<>();
@@ -59,6 +66,7 @@ public class BidderDashboardController
         bidderNameLabel.setText(ClientSession.getCurrentUserFullName());
         loadWalletBalance();
         loadAuctionsFromServer();
+        loadWonAuctionsFromServer();
 
         ClientNetworkService.getInstance().addEventListener(realtimeListener);
         ClientNetworkService.getInstance()
@@ -80,6 +88,7 @@ public class BidderDashboardController
     @FXML
     private void handleRefresh() {
         loadAuctionsFromServer();
+        loadWonAuctionsFromServer();
     }
 
     @FXML
@@ -105,7 +114,11 @@ public class BidderDashboardController
         {
             return;
         }
-        Platform.runLater(this::loadAuctionsFromServer);
+        Platform.runLater(() -> {
+            loadAuctionsFromServer();
+            loadWonAuctionsFromServer();
+        });
+
     }
 
     private void loadAuctionsFromServer() {
@@ -133,6 +146,63 @@ public class BidderDashboardController
             itemList.add(item);
             auctionContainer.getChildren().add(createProductCard(item));
         }
+    }
+    @FXML
+    private void handleShowHome() {
+        showingWonAuctions = false;
+
+        sectionTitleLabel.setText("Phiên đấu giá đang diễn ra");
+        sectionSubtitleLabel.setText("Chọn một sản phẩm để xem chi tiết và tham gia đấu giá.");
+
+        homeButton.getStyleClass().setAll("sidebar-menu-button-active");
+        wonAuctionsButton.getStyleClass().setAll("sidebar-menu-button");
+
+        loadAuctionsFromServer();
+    }
+    @FXML
+    private void handleShowWonAuctions() {
+        showingWonAuctions = true;
+
+        sectionTitleLabel.setText("Sản phẩm đã thắng");
+        sectionSubtitleLabel.setText("Những sản phẩm bạn đã thắng sau khi phiên đấu giá kết thúc.");
+
+        homeButton.getStyleClass().setAll("sidebar-menu-button");
+        wonAuctionsButton.getStyleClass().setAll("sidebar-menu-button-active");
+
+        loadWonAuctionsFromServer();
+    }
+    private void loadWonAuctionsFromServer() {
+        BaseResponse response = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest(Action.GET_WON_AUCTIONS, null));
+
+        stopCountdowns();
+        itemList.clear();
+        auctionContainer.getChildren().clear();
+
+        if (response == null || !response.isSuccess() || response.getData() == null) {
+            showEmptyMessage("Bạn chưa thắng phiên đấu giá nào.");
+            return;
+        }
+
+        List<?> auctions = (List<?>) response.getData();
+
+        if (auctions.isEmpty()) {
+            showEmptyMessage("Bạn chưa thắng phiên đấu giá nào.");
+            return;
+        }
+
+        for (Object obj : auctions) {
+            AuctionDTO auction = (AuctionDTO) obj;
+            Item item = toItem(auction);
+
+            itemList.add(item);
+            auctionContainer.getChildren().add(createProductCard(item));
+        }
+    }
+    private void showEmptyMessage(String message) {
+        Label emptyLabel = new Label(message);
+        emptyLabel.getStyleClass().add("section-subtitle");
+        auctionContainer.getChildren().add(emptyLabel);
     }
     private Item toItem(AuctionDTO auction) {
         Item item = new Item(

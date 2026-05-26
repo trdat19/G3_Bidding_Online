@@ -24,15 +24,17 @@
         <Button text="Refresh" styleClass="primary-btn"/>
     </HBox>
 
-    <TableView fx:id="auctionTable" prefHeight="500">
-        <columns>
-            <TableColumn fx:id="idColumn" text="Auction ID" prefWidth="120"/>
-            <TableColumn fx:id="productColumn" text="Product" prefWidth="220"/>
-            <TableColumn fx:id="sellerColumn" text="Seller" prefWidth="150"/>
-            <TableColumn fx:id="leaderColumn" text="Leader" prefWidth="150"/>
-            <TableColumn fx:id="currentPriceColumn" text="Current Price" prefWidth="150"/>
-            <TableColumn fx:id="statusColumn" text="Status" prefWidth="120"/>
-            <TableColumn fx:id="endTimeColumn" text="End Time" prefWidth="180"/>
-        </columns>
-    </TableView>
+    <VBox styleClass="table-card" VBox.vgrow="ALWAYS">
+        <TableView fx:id="auctionTable" prefHeight="500" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="idColumn" text="Auction ID" prefWidth="120"/>
+                <TableColumn fx:id="productColumn" text="Product" prefWidth="220"/>
+                <TableColumn fx:id="sellerColumn" text="Seller" prefWidth="150"/>
+                <TableColumn fx:id="leaderColumn" text="Leader" prefWidth="150"/>
+                <TableColumn fx:id="currentPriceColumn" text="Current Price" prefWidth="150"/>
+                <TableColumn fx:id="statusColumn" text="Status" prefWidth="120"/>
+                <TableColumn fx:id="endTimeColumn" text="End Time" prefWidth="180"/>
+            </columns>
+        </TableView>
+    </VBox>
 </VBox>
