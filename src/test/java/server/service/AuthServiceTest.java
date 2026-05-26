@@ -46,6 +46,7 @@ public class AuthServiceTest {
         User mockUser = new Seller();
         mockUser.setUsername("seller");
         mockUser.setPassword("123456");
+        mockUser.setStatus(UserStatus.ACTIVE);
 
         // thông báo kiểu: tí nữa nếu có ai gọi .findByUsername() thì không trả về đối tượng thật
         // mà trả về mockUser đã tạo ở trên
@@ -125,10 +126,10 @@ public class AuthServiceTest {
 
         Exception exception = assertThrows(Exception.class, () -> {
             authService.register("existingUser",
-                                    "password",
-                                    "Existing User",
-                                        "existingUser@example.com",
-                                            UserRole.BIDDER);
+                    "password",
+                    "Existing User",
+                    "existingUser@example.com",
+                    UserRole.BIDDER);
         });
 
         assertEquals("USERNAME_EXISTS", exception.getMessage());
@@ -144,10 +145,10 @@ public class AuthServiceTest {
 
         Exception exception = assertThrows(Exception.class, () -> {
             authService.register("existingUser",
-                                    "password",
-                                    "New User",
-                                        "existingEmail",
-                                            UserRole.BIDDER);
+                    "password",
+                    "New User",
+                    "existingEmail",
+                    UserRole.BIDDER);
         });
 
         assertEquals("EMAIL_EXISTS", exception.getMessage());

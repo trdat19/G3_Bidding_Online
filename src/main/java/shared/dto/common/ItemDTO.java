@@ -2,6 +2,7 @@ package shared.dto.common;
 
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
+import shared.enums.AuctionStatus;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -28,10 +29,16 @@ public class ItemDTO implements Serializable {
     private ItemCategory category;
     private ItemStatus status;
     private Long sellerId;
-    private String sellerName;      // Tên seller để hiển thị, không cần query thêm
+    private String sellerName;
     private BigDecimal priceStart;
+    private BigDecimal currentPrice;
     private String imageUrl;
     private LocalDateTime createdAt;
+    private byte[] imageBytes;
+    private String imageContentType;
+
+
+
 
     // ─── CONSTRUCTORS ─────────────────────────────────────────────────────────
 
@@ -77,6 +84,10 @@ public class ItemDTO implements Serializable {
     public BigDecimal getPriceStart() { return priceStart; }
     public String getImageUrl()       { return imageUrl; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public byte[] getImageBytes() {return imageBytes;}
+    public String getImageContentType() {return imageContentType;}
+    public BigDecimal getCurrentPrice() { return currentPrice; }
+
 
     // ─── SETTERS ──────────────────────────────────────────────────────────────
 
@@ -90,6 +101,9 @@ public class ItemDTO implements Serializable {
     public void setPriceStart(BigDecimal price)    { this.priceStart = price; }
     public void setImageUrl(String imageUrl)       { this.imageUrl = imageUrl; }
     public void setCreatedAt(LocalDateTime t)      { this.createdAt = t; }
+    public void setImageBytes(byte[] imageBytes) {this.imageBytes = imageBytes;}
+    public void setImageContentType(String imageContentType) {this.imageContentType = imageContentType;}
+    public void setCurrentPrice(BigDecimal currentPrice) {this.currentPrice = currentPrice;}
 
     @Override
     public String toString() {

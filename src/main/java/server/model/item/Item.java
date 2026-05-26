@@ -18,6 +18,8 @@ public abstract class Item extends Entity {
     protected ItemStatus statusItem;
     protected LocalDateTime createdAtItem;
     protected String imageUrl;
+    protected byte[] imageBytes;
+    protected String imageContentType;
 
     public Item() {}
 
@@ -51,6 +53,10 @@ public abstract class Item extends Entity {
         return createdAtItem;
     }
     public String getImageUrl() { return imageUrl; }
+    public byte[] getImageBytes() { return imageBytes; }
+    public String getImageContentType() {
+        return imageContentType;
+    }
 
     // setter
     public void setNameItem(String nameItem) {
@@ -68,6 +74,10 @@ public abstract class Item extends Entity {
         this.createdAtItem = createdAtItem;
     }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public void setImageBytes(byte[] imageBytes) {
+        this.imageBytes = imageBytes;
+    }
+    public void setImageContentType(String imageContentType) { this.imageContentType = imageContentType; }
 
     @Override
     public String getInfo() {

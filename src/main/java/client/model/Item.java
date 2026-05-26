@@ -15,6 +15,12 @@ public class Item {
     private LocalDateTime endTime;
     private String status;
     private int bidCount;
+    private Long id;
+    private String imageUrl;
+    private byte[] imageBytes;
+    private String imageContentType;
+    private double minIncrement;
+
 
     public Item(String title, String category, String description,
                 double startPrice, double currentPrice,
@@ -33,19 +39,19 @@ public class Item {
     }
     //setter
     public void setTitle(String title) {
-         this.title = title;
+        this.title = title;
     }
 
     public void setCategory(String category) {
-         this.category = category;
+        this.category = category;
     }
 
     public void setDescription(String description) {
-         this.description = description;
+        this.description = description;
     }
 
     public void setStartPrice(double startPrice) {
-         this.startPrice = startPrice;
+        this.startPrice = startPrice;
     }
 
     public void setCurrentPrice(double currentPrice) {
@@ -60,17 +66,23 @@ public class Item {
         this.startTime = startTime;
     }
 
-    public void setEndTime(LocalDateTime startTime) {
-        this.endTime = endTime;
-    }
+    public void setEndTime(LocalDateTime endTime) {this.endTime = endTime;}
 
     public void setStatus(String status) {
-         this.status = status;
+        this.status = status;
     }
 
-    public void setBidCount(int BidCount) {
+    public void setBidCount(int bidCount) { this.bidCount = bidCount;}
 
-        this.bidCount = bidCount;
+    public void setId(Long id) {this.id = id;}
+
+    public void setImageUrl(String imageUrl) {this.imageUrl = imageUrl;}
+
+    public void setMinIncrement(double minIncrement) {this.minIncrement = minIncrement;}
+
+    public void setImageBytes(byte[] imageBytes) {this.imageBytes = imageBytes;}
+    public void setImageContentType(String imageContentType) {
+        this.imageContentType = imageContentType;
     }
 
     //getter
@@ -112,5 +124,17 @@ public class Item {
 
     public int getBidCount() {
         return bidCount;
+    }
+
+    public Long getId() {return id;}
+
+    public String getImageUrl() {return imageUrl;}
+
+    public double getMinIncrement() {return minIncrement;}
+    public byte[] getImageBytes() {
+        return imageBytes;
+    }
+    public String getImageContentType() {
+        return imageContentType;
     }
 }

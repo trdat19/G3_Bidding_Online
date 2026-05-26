@@ -29,6 +29,8 @@ public class AuctionDTO implements Serializable {
     private String itemDescription;
     private String itemCategory;
     private String itemImageUrl;
+    private byte[] imageBytes;
+    private String imageContentType;
 
     // Thông tin seller
     private Long sellerId;
@@ -101,7 +103,9 @@ public class AuctionDTO implements Serializable {
     public LocalDateTime getEndTime()    { return endTime; }
     public Long getLeaderId()            { return leaderId; }
     public String getLeaderName()        { return leaderName; }
-    public int getBidCount()             { return bidCount; }
+    public int getBidCount() { return bidCount; }
+    public byte[] getImageBytes() {return imageBytes;}
+    public String getImageContentType() {return imageContentType;}
 
     // ─── SETTERS ──────────────────────────────────────────────────────────────
 
@@ -123,6 +127,9 @@ public class AuctionDTO implements Serializable {
     public void setLeaderId(Long leaderId)           { this.leaderId = leaderId; }
     public void setLeaderName(String leaderName)     { this.leaderName = leaderName; }
     public void setBidCount(int bidCount)            { this.bidCount = bidCount; }
+    public void setImageBytes(byte[] imageBytes) {this.imageBytes = imageBytes;}
+    public void setImageContentType(String imageContentType) {this.imageContentType = imageContentType;}
+
 
     // ─── HELPERS ──────────────────────────────────────────────────────────────
 

@@ -47,8 +47,10 @@ public class RealtimePushServer {
      * Key: auctionId (int)
      * Value: list các ClientConnectionHandler đang xem phiên đó
      */
-    private static final Map<Long, List<ClientConnectionHandler>> auctionSubcribers
+    private static final Map<Long, List<ClientConnectionHandler>> auctionSubscribers
             = new ConcurrentHashMap<>();
+
+    private static final List<ClientConnectionHandler> auctionListSubscribers = new CopyOnWriteArrayList<>();
 
 
     // ---PHƯƠNG THỨC CHÍNH---
@@ -83,7 +85,7 @@ public class RealtimePushServer {
      * @param event     Sự kiện xảy ra
      */
     public static void pushToAuctionSubscribers(Long auctionId, BaseResponse event) {
-        List<ClientConnectionHandler> subscribers = auctionSubcribers.get(auctionId);
+        List<ClientConnectionHandler> subscribers = auctionSubscribers.get(auctionId);
 
         if (subscribers != null && !subscribers.isEmpty()) {
             System.out.println(">>> Đang đẩy tin Realtime tới " + subscribers.size()
@@ -122,7 +124,7 @@ public class RealtimePushServer {
 
     public static void subscribeToAuction(Long auctionId, ClientConnectionHandler handler) {
         // computeIfAbsent: nếu phòng chưa có thì tạo, có rồi thì lấy ra
-        List<ClientConnectionHandler> room = auctionSubcribers
+        List<ClientConnectionHandler> room = auctionSubscribers
                 .computeIfAbsent(auctionId, k -> new CopyOnWriteArrayList<>());
 
         // Tránh subscribe trùng user (người cùng mở tab 2 lần)
@@ -140,7 +142,7 @@ public class RealtimePushServer {
      * @param handler   Đường dây socket của người rời phòng
      */
     public static void unsubscribeFromAuction(Long auctionId, ClientConnectionHandler handler) {
-        List<ClientConnectionHandler> room = auctionSubcribers.get(auctionId);
+        List<ClientConnectionHandler> room = auctionSubscribers.get(auctionId);
         if (room != null) {
             room.remove(handler);
             System.out.printf(">>> [Realtime] Phiên #%d: còn %d người đang xem%n",
@@ -159,7 +161,9 @@ public class RealtimePushServer {
         userRegistry.values().remove(handler);
 
         // 2. Xóa khỏi tất cả các phòng đang tham gia
-        auctionSubcribers.values().forEach(room -> room.remove(handler));
+        auctionSubscribers.values().forEach(room -> room.remove(handler));
+
+        auctionListSubscribers.remove(handler);
 
         System.out.printf(">>> [Realtime] Một client ngắt kết nối. Còn %d online.%n",
                 userRegistry.size());
@@ -173,7 +177,7 @@ public class RealtimePushServer {
 
     /** Số lượng người đang xem một phiên cụ thể */
     public static int countRoomSubscribers(int auctionId) {
-        List<ClientConnectionHandler> room = auctionSubcribers.get(auctionId);
+        List<ClientConnectionHandler> room = auctionSubscribers.get(auctionId);
         return (room != null) ? room.size() : 0;
     }
 
@@ -186,8 +190,26 @@ public class RealtimePushServer {
     public static void printStatus() {
         System.out.println("=== [Realtime] Trạng thái hiện tại ===");
         System.out.println("Online: " + userRegistry.keySet());
-        auctionSubcribers.forEach((id, room) ->
+        auctionSubscribers.forEach((id, room) ->
                 System.out.printf("  Phiên #%d: %d người xem%n", id, room.size()));
         System.out.println("======================================");
+    }
+
+    public static void subscribeToAuctionList(ClientConnectionHandler handler)
+    {
+        if(!auctionListSubscribers.contains(handler))
+        {
+            auctionListSubscribers.add(handler);
+            System.out.println(">>> [Realtime] Bidder dashboard subscribers: "
+                    + auctionListSubscribers.size());
+
+        }
+    }
+    public static void pushToAuctionListSubscribers(BaseResponse event)
+    {
+        for(ClientConnectionHandler handler : auctionListSubscribers)
+        {
+            handler.sendResponse(event);
+        }
     }
 }

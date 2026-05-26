@@ -202,7 +202,12 @@ public class AuctionDAO {
     // cập nhật riêng giá cao nhất hiện tại
     // dùng khi có người bid thành công
     public boolean updateMaxPrice(long idAuction, BigDecimal newMaxPrice) {
-        String sql = "UPDATE auctions SET max_price = ? WHERE id_auction = ?";
+        String sql = """
+            UPDATE auctions
+            SET max_price = ?
+            WHERE id_auction = ?
+              AND (max_price IS NULL OR max_price < ?)
+            """;
 
         try (Connection con = DBconnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -248,6 +253,21 @@ public class AuctionDAO {
         }
         return false;
     }
+    //Kiem tra item nay co auction chưa
+    public boolean existsAuctionByItemId(long itemId) {
+        String sql = "SELECT 1 FROM auctions WHERE id_item = ? LIMIT 1";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, itemId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("existsAuctionByItemId error: " + e.getMessage());
+        }
+        return false;
+    }
 
     // xóa auction theo id
     public boolean deleteAuction(long idAuction) {
@@ -282,8 +302,47 @@ public class AuctionDAO {
         }
         Timestamp endTs = rs.getTimestamp("end_time");
         if (endTs != null) {
-            auction.setStartTime(endTs.toLocalDateTime());
+            auction.setEndTime(endTs.toLocalDateTime());
         }
+
         return auction;
+    }
+
+    public boolean deleteAuctionsByItemId(long itemId) {
+        String sql = "DELETE FROM auctions WHERE id_item = ?";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, itemId);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("deleteAuctionsByItemId error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean existsActiveAuctionByItemId(long itemId) {
+        String sql = """
+            SELECT 1
+            FROM auctions
+            WHERE id_item = ?
+              AND status_auction IN ('WAITING_APPROVAL', 'OPEN', 'RUNNING')
+            LIMIT 1
+            """;
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, itemId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            System.err.println("existsActiveAuctionByItemId error: " + e.getMessage());
+            return false;
+        }
     }
 }

@@ -1,5 +1,6 @@
 package server.controller;
 
+import server.model.core.Bid;
 import server.network.ClientConnectionHandler;
 import server.service.BidService;
 import shared.dto.request.BaseRequest;
@@ -66,10 +67,41 @@ public class BidServerController {
             return new BaseResponse(false, "Số tiền đặt giá không hợp lệ!", null);
         }
         catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             return new BaseResponse(false, "Lỗi hệ thống: " + e.getMessage(), null);
         }
     }
 
+//    //-------------AUTO_BID----------------
+//    public BaseResponse registerAutoBid(BaseRequest request, ClientConnectionHandler handler) {
+//        try {
+//            // Lấy bidderId từ session
+//            Long bidderId = handler.getUser().getId();
+//
+//            // 1. request.getData() là một Object/Map chứa {auctionId, bidderId, maxAmount, stepAmount}
+//            // Bóc tách dữ liệu
+//            Map<String, Object> data = (Map<String, Object>) request.getData();
+//            Long auctionId = Long.parseLong(data.get("auctionId").toString());
+//            BigDecimal maxAmount = new BigDecimal(data.get("maxAmount").toString());
+//            BigDecimal stepAmount = new BigDecimal(data.get("stepAmount").toString());
+//
+//            boolean ok = bidService.registerAutoBid(auctionId, bidderId, maxAmount, stepAmount);
+//            if (!ok) {
+//                return new BaseResponse(false, "Đăng ký Auto-Bid thất bại! Vui lòng thử lại sau.", null);
+//            }
+//
+//            return new BaseResponse(true, "Bạn đã đăng ký Auto-Bid thành công!", null);
+//        } catch (Exception e) {
+//            return new BaseResponse(false, "Lỗi hệ thống: " + e.getMessage(), null);
+//        }
+//    }
+//
+//    public BaseResponse removeAutoBid(BaseRequest request, ClientConnectionHandler handler) {
+//
+//    }
+//
+//    public BaseResponse getAutoBidRule(BaseRequest request, ClientConnectionHandler handler) {
+//
+//    }
 
 }

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="640.0" prefWidth="720.0" stylesheets="@../css/edit-product-view.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.EditProductController">
+
+    <children>
+
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" pannable="true" styleClass="modal-scroll" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <content>
+                <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="root-container">
+
+                    <padding>
+                        <Insets bottom="24" left="30" right="30" top="24" />
+                    </padding>
+
+            <!-- HEADER -->
+            <VBox alignment="CENTER" spacing="8">
+                <Label styleClass="form-title" text="Chỉnh sửa sản phẩm" />
+
+                <Label styleClass="form-subtitle" />
+            </VBox>
+
+            <!-- MAIN CARD -->
+            <VBox maxWidth="620" spacing="18" styleClass="form-card">
+
+                <padding>
+                    <Insets bottom="24" left="28" right="28" top="24" />
+                </padding>
+
+                <!-- IMAGE PICKER -->
+                <VBox spacing="14">
+
+                    <Label styleClass="section-label" text="Ảnh sản phẩm" />
+
+                    <StackPane fx:id="imagePickerBox" prefHeight="190" prefWidth="540" styleClass="image-picker-box">
+
+                        <ImageView fx:id="productImageView" fitHeight="170" fitWidth="520" preserveRatio="true" />
+
+                        <VBox alignment="CENTER" spacing="12">
+
+                            <Label styleClass="upload-icon" text="🖼" />
+
+                            <Button onAction="#handleChooseImage" styleClass="upload-button" text="+ Chọn ảnh từ máy tính" />
+
+                            <Label fx:id="imageNameLabel" styleClass="upload-hint" />
+                        </VBox>
+
+                    </StackPane>
+                </VBox>
+
+                <!-- PRODUCT NAME -->
+                <VBox spacing="10">
+                    <Label styleClass="section-label" text="Tên sản phẩm" />
+
+                    <TextField fx:id="nameField" promptText="Ví dụ: MacBook Pro M3 Max" />
+                </VBox>
+
+                <!-- CATEGORY -->
+                <VBox spacing="10">
+                    <Label styleClass="section-label" text="Loại sản phẩm" />
+                    <ComboBox fx:id="categoryBox" maxWidth="Infinity" prefWidth="520.0" promptText="Chọn loại sản phẩm" />
+                </VBox>
+
+                <!-- DESCRIPTION -->
+                <VBox spacing="10">
+                    <Label styleClass="section-label" text="Mô tả sản phẩm" />
+
+                    <TextArea fx:id="descriptionField" promptText="Nhập mô tả chi tiết sản phẩm..." wrapText="true" />
+                </VBox>
+
+                <!-- STATUS INFO -->
+                <HBox alignment="CENTER_LEFT" spacing="12" styleClass="pending-box">
+
+                    <Label styleClass="pending-icon" text="⏳" />
+
+                    <VBox spacing="4">
+                        <Label styleClass="pending-title" text="Sản phẩm sẽ ở trạng thái PENDING" />
+
+                        <Label styleClass="pending-desc" text="Admin sẽ duyệt trước khi sản phẩm xuất hiện cho bidder" />
+                    </VBox>
+                </HBox>
+
+                <!-- ERROR -->
+                <Label fx:id="errorLabel" styleClass="error-label" />
+
+                <!-- BUTTONS -->
+                <HBox alignment="CENTER_RIGHT" spacing="14">
+
+                    <Button onAction="#handleCancel" styleClass="cancel-button" text="Hủy" />
+
+                    <Button onAction="#handleSave" styleClass="save-button" text="Gửi yêu cầu" />
+                </HBox>
+
+            </VBox>
+
+        </VBox>
+            </content>
+        </ScrollPane>
+
+    </children>
+</AnchorPane>

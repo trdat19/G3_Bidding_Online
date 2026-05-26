@@ -4,11 +4,9 @@ import server.model.user.User;
 import server.network.ClientConnectionHandler;
 import server.network.RealtimePushServer;
 import server.service.AuthService;
-
 import shared.enums.UserRole;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
-
 import java.util.Map;
 
 /**
@@ -114,6 +112,9 @@ public class AuthServerController {
 
     // 3.Đăng xuất
     public BaseResponse logout(ClientConnectionHandler handler) {
+        if (handler.getUser() == null) {
+            return new BaseResponse(false, "Bạn chưa đăng nhập!", null);
+        }
         AuthService.getInstance().logout(handler);
         RealtimePushServer.removeConnection(handler);
         return new BaseResponse(true, "Đã đăng xuất", null);

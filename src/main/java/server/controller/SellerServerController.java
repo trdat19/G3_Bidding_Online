@@ -4,9 +4,12 @@ import server.model.item.Item;
 import server.network.ClientConnectionHandler;
 import server.service.ItemService;
 
+import shared.dto.common.ItemDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -113,7 +116,24 @@ public class SellerServerController {
             Long sellerId = handler.getUser().getId();
 
             List<Item> items = itemService.findBySeller(sellerId);
-            return new BaseResponse(true, "Lấy danh sách sản phẩm thành công!", items);
+            List<ItemDTO> dtos = new ArrayList<>();
+            for (Item item : items) {
+                ItemDTO dto = new ItemDTO();
+                dto.setId(item.getId());
+                dto.setName(item.getNameItem());
+                dto.setDescription(item.getDescription());
+                dto.setCategory(item.getCategory());
+                dto.setStatus(item.getStatusItem());
+                dto.setSellerId(item.getSellerId());
+                dto.setPriceStart(BigDecimal.ZERO);
+                dto.setImageUrl(item.getImageUrl());
+                dto.setCreatedAt(item.getCreatedAtItem());
+                dto.setImageBytes(item.getImageBytes());
+                dto.setImageContentType(item.getImageContentType());
+
+                dtos.add(dto);
+            }
+            return new BaseResponse(true, "Lấy danh sách sản phẩm thành công!", dtos);
 
         } catch (Exception e) {
             return new BaseResponse(false, "Lỗi lấy danh sách sản phẩm: " + e.getMessage(), null);

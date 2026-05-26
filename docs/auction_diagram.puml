@@ -1,0 +1,970 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+left to right direction
+
+' ================= CLIENT =================
+
+package "client" {
+
+  class ClientLauncher {
+    +main(args: String[]) : void
+  }
+
+  class MainApplication {
+    +main(args: String[]) : void
+    +start(primaryStage: Stage) : void
+    +stop() : void
+  }
+
+  package "controller" {
+    class AddProductController {
+      +setSellerDashboardController(controller: SellerDashboardController) : void
+      -initialize() : void
+      -handleChooseImage() : void
+      -handleSave() : void
+      -handleCancel() : void
+      -closeWindow() : void
+    }
+
+    class AdminDashboardController {
+      -handleLogout(event: ActionEvent) : void
+      -initialize() : void
+      -showDashboard() : void
+      -showUsers() : void
+      -showAuctions() : void
+      -showProducts() : void
+      -showReports() : void
+      -showSettings() : void
+      -loadPage(fxmlPath: String) : void
+      -showPeoductRequests() : void
+    }
+
+    class AdminRequestController
+
+    class AdminUsersController {
+      +initialize() : void
+      +handleRefresh() : void
+      -loadUsers() : void
+    }
+
+    class AuctionDetailController {
+      +setItemData(item: ClientItem) : void
+      -loadScene(fxmlPath: String, event: ActionEvent) : void
+      -handleBack(event: ActionEvent) : void
+      -handleJoinAuction(event: ActionEvent) : void
+    }
+
+    class BidderDashboardController {
+      +initialize() : void
+      -loadAuctionsFromServer() : void
+      -toItem(auction: AuctionDTO) : ClientItem
+      -createProductCard(item: ClientItem) : VBox
+      -formatTimeLeft(endTime: LocalDateTime) : String
+      -handleLogout(event: ActionEvent) : void
+      -viewDetail(item: ClientItem) : void
+    }
+
+    class BidingViewController {
+      +initialize() : void
+      -startRealtimeListener() : void
+      -sendBidRequest() : void
+    }
+
+    class BiddingViewController {
+      +setItem(item: ClientItem) : void
+      -startCountDown(endTime: LocalDateTime) : void
+      -updateTimeLeft(endTime: LocalDateTime) : void
+      -handleBack() : void
+      -handlePlaceBid() : void
+    }
+
+    class LoginController {
+      -handleLogin(event: ActionEvent) : void
+      -loadScene(fxmlPath: String, event: ActionEvent) : void
+      -handleRegister() : void
+    }
+
+    class RegisterFormController {
+      +initialize() : void
+      -handleRegister() : void
+      -showAlert(title: String, content: String) : void
+      -goToLogin() : void
+    }
+
+    class SellerDashboardController {
+      +initialize() : void
+      -loadProducts() : void
+      -createProductCard(item: ClientItem) : VBox
+      -getStatusText(status: String) : String
+      -getStatusDescription(status: String) : String
+      -getStatusStyleClass(status: String) : String
+      -handleLogout(event: ActionEvent) : void
+      -handleAddProduct() : void
+      +addNewProduct(item: ClientItem) : void
+      -handleRefresh() : void
+      -handleEditProduct(productName: String) : void
+      -handleDeleteProduct(item: ClientItem) : void
+      -handleCreateAuction(item: ClientItem) : void
+      +refreshProducts() : void
+    }
+
+    class SetupAuctionViewController {
+      +setData(item: ClientItem, sellerDashboardController: SellerDashboardController) : void
+      -initialize() : void
+      -handleSave() : void
+      -handleCancel() : void
+      -closeWindow() : void
+    }
+  }
+
+  package "model" {
+    class "Item" as ClientItem {
+      +Item(title: String, category: String, description: String, startPrice: double, currentPrice: double, leader: String, startTime: LocalDateTime, endTime: LocalDateTime, status: String, bidCount: int)
+      +setTitle(title: String) : void
+      +setCategory(category: String) : void
+      +setDescription(description: String) : void
+      +setStartPrice(startPrice: double) : void
+      +setCurrentPrice(currentPrice: double) : void
+      +setLeader(leader: String) : void
+      +setStartTime(startTime: LocalDateTime) : void
+      +setEndTime(startTime: LocalDateTime) : void
+      +setStatus(status: String) : void
+      +setBidCount(BidCount: int) : void
+      +getTitle() : String
+      +getCategory() : String
+      +getDescription() : String
+      +getStartPrice() : double
+      +getCurrentPrice() : double
+      +getLeader() : String
+      +getStartTime() : LocalDateTime
+      +getEndTime() : LocalDateTime
+      +getStatus() : String
+      +getBidCount() : int
+    }
+  }
+
+  package "realtime" {
+  }
+
+  package "service" {
+    class ClientNetworkService {
+      +getInstance() : ClientNetworkService
+      -connect() : void
+      +sendRequest(request: BaseRequest) : BaseResponse
+      +closeConnection() : void
+    }
+
+    class "ItemService" as ClientItemService {
+      +addItem(item: ClientItem) : boolean
+      +getSellerItem() : List<ClientItem>
+    }
+  }
+
+  package "state" {
+  }
+
+  package "util" {
+    class StageUtils {
+      +setMaximizedScene(stage: Stage, root: Parent) : void
+    }
+  }
+
+  package "view" {
+  }
+}
+
+' ================= SERVER =================
+
+package "server" {
+
+  package "concurrency" {
+  }
+
+  package "config" {
+  }
+
+  package "controller" {
+    class AdminServerController {
+      +getInstance() : AdminServerController
+      -toDTO(user: User) : UserDTO
+      +getAllUsers() : BaseResponse
+      +enableUser(request: BaseRequest) : BaseResponse
+      +disableUser(request: BaseRequest) : BaseResponse
+      +getAuditData(request: BaseRequest) : BaseResponse
+    }
+
+    class AuctionServerController {
+      +getInstance() : AuctionServerController
+      +getAuctions() : BaseResponse
+      +getAllAuctions() : BaseResponse
+      +getAuctionDetail(request: BaseRequest) : BaseResponse
+      +createAuction(request: BaseRequest) : BaseResponse
+      +closeAuction(request: BaseRequest) : BaseResponse
+      +getBidHistory(request: BaseRequest) : BaseResponse
+    }
+
+    class AuthServerController {
+      +getInstance() : AuthServerController
+      +login(request: BaseRequest, handler: ClientConnectionHandler) : BaseResponse
+      +register(request: BaseRequest) : BaseResponse
+      +logout(handler: ClientConnectionHandler) : BaseResponse
+    }
+
+    class BidServerController {
+      +getInstance() : BidServerController
+      +placeBid(request: BaseRequest, handler: ClientConnectionHandler) : BaseResponse
+    }
+
+    class SellerServerController {
+      +getInstance() : SellerServerController
+      +createItem(request: BaseRequest, handler: ClientConnectionHandler) : BaseResponse
+      +updateItem(request: BaseRequest) : BaseResponse
+      +deleteItem(itemId: Long) : BaseResponse
+      +getItemsBySeller(handler: ClientConnectionHandler) : BaseResponse
+    }
+  }
+
+  package "dao" {
+    class AuctionDAO {
+      +insertAuction(auction: Auction) : boolean
+      +findById(id: long) : Auction
+      +getAllAuctions() : List<Auction>
+      +getAllAuctionsBySellerId(sellerId: long) : List<Auction>
+      +getAllAuctionsByItemId(itemId: long) : List<Auction>
+      +getAllAuctionsByStatus(status: AuctionStatus) : List<Auction>
+      +findOpeningAuctionsByItemId(itemId: long) : Auction
+      +updateAuction(auction: Auction) : boolean
+      +updateStatus(idAuction: long, status: AuctionStatus) : boolean
+      +updateMaxPrice(idAuction: long, newMaxPrice: BigDecimal) : boolean
+      +existsAuctionById(idAuction: long) : boolean
+      +existsOpenAuctionByItemId(itemId: long) : boolean
+      +deleteAuction(idAuction: long) : boolean
+      -mapResultSetToAuction(rs: ResultSet) : Auction
+    }
+
+    class BidDAO {
+      +insertBid(bid: Bid) : boolean
+      +findById(id: long) : Bid
+      +getAllBids() : List<Bid>
+      +getAllBidsInAuctionId(auctionId: long) : List<Bid>
+      +getAllBidsByBidderId(bidderId: long) : List<Bid>
+      +getHighestBidByAuctionId(auctionId: long) : Bid
+      +getLatestBidByAuctionId(auctionId: long) : Bid
+      +countBidByAuctionId(auctionId: long) : int
+      +existsBidById(id: long) : boolean
+      +deleteBidById(id: long) : boolean
+      -mapResultSetToBid(rs: ResultSet) : Bid
+    }
+
+    class ItemDAO {
+      +insertItem(item: ServerItem) : boolean
+      +findById(id: long) : ServerItem
+      +findByName(nameItem: String) : ServerItem
+      +getAllItems() : List<ServerItem>
+      +findBySellerId(sellerId: long) : List<ServerItem>
+      +updateItem(item: ServerItem) : boolean
+      +updateStatus(idItem: long, status: ItemStatus) : boolean
+      +deleteItem(idItem: long) : boolean
+      -mapResultSetToItem(rs: ResultSet) : ServerItem
+    }
+
+    class UserDAO {
+      +insertUser(user: User) : boolean
+      +findById(id: long) : User
+      +findByUsername(username: String) : User
+      +getAllUsers() : List<User>
+      +updateUser(user: User) : boolean
+      +updatePassword(id: long, passwordNew: String) : boolean
+      +updateUsername(id: long, newUsername: String) : boolean
+      +updateStatus(id: long, status: UserStatus) : boolean
+      +deleteUser(id: long) : boolean
+      +existsByUsername(username: String) : boolean
+      +existsByEmail(email: String) : boolean
+      -mapResultSetToUser(rs: ResultSet) : User
+      +findAll() : List<User>
+    }
+  }
+
+  package "database" {
+    class DBconnection {
+      +getInstance() : DBconnection
+      +getConnection() : Connection
+    }
+
+    class TestDBconection {
+      +main(args: String[]) : void
+    }
+  }
+
+  package "model" {
+    abstract class Entity {
+      +Entity()
+      +Entity(id: Long)
+      +getId() : Long
+      +setId(id: Long) : void
+      +getInfo() : String
+      +toString() : String
+    }
+
+    package "core" {
+      class Auction {
+        +Auction()
+        +Auction(itemId: Long, sellerId: Long, startPrice: BigDecimal, minIncrement: BigDecimal, buyNowPrice: BigDecimal, startTime: LocalDateTime, endTime: LocalDateTime)
+        +open() : void
+        +close() : void
+        +isRunning() : boolean
+        +add(bid: Bid) : void
+        +getItemId() : Long
+        +getSellerId() : Long
+        +getStartPrice() : BigDecimal
+        +getMaxPrice() : BigDecimal
+        +getMinIncrement() : BigDecimal
+        +getBuyNowPrice() : BigDecimal
+        +getStatus() : AuctionStatus
+        +getStartTime() : LocalDateTime
+        +getEndTime() : LocalDateTime
+        +getAllBids() : List<Bid>
+        +getHighestBid() : Bid
+        +setStatus(status: AuctionStatus) : void
+        +getInfo() : String
+      }
+
+      class AuctionManager {
+        +getInstance() : AuctionManager
+        +placeBid(bidderId: Long, auctionId: Long, amount: BigDecimal) : void
+      }
+
+      class Bid {
+        +Bid()
+        +Bid(auctionId: Long, bidderId: Long, amount: BigDecimal)
+        +getAuctionId() : Long
+        +getBidderId() : Long
+        +getAmount() : BigDecimal
+        +getTimestamp() : LocalDateTime
+        +setAuctionId(auctionId: Long) : void
+        +setBidderId(bidderId: Long) : void
+        +setAmount(amount: BigDecimal) : void
+        +setTimestamp(timestamp: LocalDateTime) : void
+        +getInfo() : String
+        +isHigherThan(other: Bid) : boolean
+      }
+
+      class BidTransaction {
+        +BidTransaction(bid: Bid)
+        +execute(auction: Auction) : void
+      }
+    }
+
+    package "item" {
+      abstract class "Item" as ServerItem {
+        +Item()
+        +Item(nameItem: String, description: String, sellerId: Long, category: ItemCategory, statusItem: ItemStatus)
+        +getNameItem() : String
+        +getDescription() : String
+        +getSellerId() : Long
+        +getCategory() : ItemCategory
+        +getStatusItem() : ItemStatus
+        +getCreatedAtItem() : LocalDateTime
+        +getImageUrl() : String
+        +setNameItem(nameItem: String) : void
+        +setDescription(description: String) : void
+        +setSellerId(sellerId: Long) : void
+        +setCategory(category: ItemCategory) : void
+        +setStatusItem(statusItem: ItemStatus) : void
+        +setCreatedAtItem(createdAtItem: LocalDateTime) : void
+        +setImageUrl(imageUrl: String) : void
+        +getInfo() : String
+      }
+
+      class Art {
+        +Art()
+        +Art(nameItem: String, description: String, sellerId: Long, statusItem: ItemStatus)
+        +getArtist() : String
+        +getYear() : int
+        +getMaterial() : String
+        +setArtist(artist: String) : void
+        +setYear(year: int) : void
+        +setMaterial(material: String) : void
+        +getInfo() : String
+      }
+
+      class Electronics {
+        +Electronics()
+        +Electronics(nameItem: String, description: String, sellerId: Long, statusItem: ItemStatus)
+        +getBrand() : String
+        +getWarrantyMonth() : int
+        +getModel() : String
+        +getYear() : int
+        +setBrand(brand: String) : void
+        +setWarrantyMonth(warrantyMonth: int) : void
+        +setModel(model: String) : void
+        +setYear(year: int) : void
+        +getInfo() : String
+      }
+
+      class Vehicle {
+        +Vehicle()
+        +Vehicle(nameItem: String, description: String, sellerId: Long, statusItem: ItemStatus)
+        +getManufacturer() : String
+        +getYear() : int
+        +setManufacturer(manufacturer: String) : void
+        +setYear(year: int) : void
+        +getInfo() : String
+      }
+
+      class ServerItemFactory {
+        +createItem(category: ItemCategory, name: String, description: String, sellerId: Long, status: ItemStatus) : ServerItem
+      }
+
+      package "factory" {
+        interface ItemFactory {
+          +createItem() : ServerItem
+        }
+
+        class ArtFactory {
+          +createItem() : ServerItem
+        }
+
+        class ElectronicsFactory {
+          +createItem() : ServerItem
+        }
+
+        class VehicleFactory {
+          +createItem() : ServerItem
+        }
+
+        class ItemFactoryRegistry {
+          +create(category: ItemCategory) : ServerItem
+          +isSupported(category: ItemCategory) : boolean
+        }
+      }
+    }
+
+    package "user" {
+      abstract class User {
+        +User()
+        +User(username: String, password: String, fullname: String, email: String)
+        +getUsername() : String
+        +getPassword() : String
+        +getFullName() : String
+        +getEmail() : String
+        +getRole() : UserRole
+        +getStatus() : UserStatus
+        +getCreatedAt() : LocalDateTime
+        +setUsername(username: String) : void
+        +setPassword(password: String) : void
+        +setFullname(fullname: String) : void
+        +setEmail(email: String) : void
+        +setRole(role: UserRole) : void
+        +setStatus(status: UserStatus) : void
+        +setCreatedAt(createdAt: LocalDateTime) : void
+        +getInfo() : String
+      }
+
+      class Admin {
+        +Admin()
+        +Admin(username: String, password: String, fullname: String, email: String)
+        +suspendUser(id: String) : void
+        +viewReport() : void
+        +getInfo() : String
+      }
+
+      class Bidder {
+        +Bidder()
+        +Bidder(username: String, password: String, fullName: String, email: String)
+        +getBalance() : BigDecimal
+        +getMaxBid() : BigDecimal
+        +getBidIncrement() : BigDecimal
+        +setBalance(balance: BigDecimal) : void
+        +setMaxBid(maxBid: BigDecimal) : void
+        +setBidIncrement(increment: BigDecimal) : void
+        +getInfo() : String
+        +deposit(amount: BigDecimal) : void
+        +withdraw(amount: BigDecimal) : void
+        +canAfford(amount: BigDecimal) : boolean
+      }
+
+      class Seller {
+        +Seller()
+        +Seller(username: String, password: String, fullname: String, email: String)
+        +getInfo() : String
+        +getTotalEarnings() : BigDecimal
+        +setTotalEarnings(totalEarnings: BigDecimal) : void
+      }
+    }
+  }
+
+  package "network" {
+    class AuctionServer
+
+    class ClientConnectionHandler {
+      +ClientConnectionHandler(socket: Socket)
+      +run() : void
+      +dispatch(request: BaseRequest) : void
+      +sendResponse(response: Object) : void
+      -closeConnection() : void
+      +getUser() : User
+      +setUser(user: User) : void
+    }
+
+    class RealtimePushServer {
+      +pushToUser(userId: Long, event: BaseResponse) : void
+      +pushToAuctionSubscribers(auctionId: Long, event: BaseResponse) : void
+      +registerUser(userId: Long, handler: ClientConnectionHandler) : void
+      +subscribeToAuction(auctionId: Long, handler: ClientConnectionHandler) : void
+      +unsubscribeFromAuction(auctionId: Long, handler: ClientConnectionHandler) : void
+      +removeConnection(handler: ClientConnectionHandler) : void
+      +countOnlineUsers() : int
+      +countRoomSubscribers(auctionId: int) : int
+      +getOnlineUsers() : Set<Long>
+      +printStatus() : void
+    }
+
+    class RequestRouter {
+      -requireLogin(handler: ClientConnectionHandler) : void
+      -requireRole(handler: ClientConnectionHandler, requiredRole: UserRole) : void
+      +route(request: BaseRequest, handler: ClientConnectionHandler) : BaseResponse
+    }
+
+    class SocketSever {
+      +start() : void
+      -acceptLoop() : void
+      -stop() : void
+      +main(args: String[]) : void
+    }
+  }
+
+  package "realtime" {
+  }
+
+  package "scheduler" {
+    class AuctionScheduler {
+      +getInstance() : AuctionScheduler
+      +start() : void
+      -checkAuctions() : void
+      +stop() : void
+    }
+  }
+
+  package "service" {
+    class AuctionService {
+      +getInstance() : AuctionService
+      -toDTO(auction: Auction, item: ServerItem) : AuctionDTO
+      +createAuction(data: Map<String, Object>) : AuctionDTO
+      +cancelAuction(auctionId: Long) : boolean
+      +startAuction(auctionId: Long) : boolean
+      +finishAuction(auctionId: Long) : Map<String, Object>
+      +extendAuction(auctionId: Long, extraSeconds: int) : boolean
+      +getOpenAuctions() : List<AuctionDTO>
+      +getAllAuctions() : List<AuctionDTO>
+      +countAllAuctions() : long
+      +getAuctionDetail(auctionId: Long) : AuctionDTO
+      +getBidHistory(auctionId: Long) : List<BidDTO>
+    }
+
+    class AuditService {
+      +logAction() : void
+      +getLogs() : void
+    }
+
+    class AuthService {
+      +getInstance() : AuthService
+      +login(username: String, password: String) : User
+      +register(username: String, password: String, fullname: String, email: String, role: UserRole) : User
+      +logout(handler: ClientConnectionHandler) : void
+      +verifySession() : void
+    }
+
+    class AutoBidService {
+      +registerRule() : void
+      +removeRule() : void
+      +reactToIncomingBid() : void
+    }
+
+    class BidService {
+      +getInstance() : BidService
+      +placeBid(auctionId: Long, bidderId: Long, amount: BigDecimal) : boolean
+      +isAmountValid(amount: BigDecimal, minBid: BigDecimal) : boolean
+    }
+
+    class "ItemService" as ServerItemService {
+      +getInstance() : ServerItemService
+      +createItem(sellerId: Long, data: Map<String, Object>) : ServerItem
+      +updateItem(data: Map<String, Object>) : ServerItem
+      +deleteItem(itemId: Long) : boolean
+      +findBySeller(sellerId: Long) : List<ServerItem>
+    }
+
+    class RealtimeEventService {
+      +publishNewBid() : void
+      +publishExtension() : void
+      +publishClosure() : void
+    }
+
+    class UserService {
+      +getInstance() : UserService
+      +findAllUsers() : List<User>
+      +findUser(userId: Long) : User
+      +countAllUsers() : long
+      +changeStatus(userId: Long, status: UserStatus) : boolean
+    }
+  }
+}
+
+' ================= SHARED =================
+
+package "shared" {
+
+  package "dto" {
+    class AdminDashboardDTO
+
+    package "common" {
+      class AuctionDTO {
+        +AuctionDTO()
+        +AuctionDTO(id: Long, itemId: Long, itemName: String, ...)
+        +getDisplayPrice() : BigDecimal
+        +isOpen() : boolean
+        +toString() : String
+        +getters/setters()
+      }
+
+      class BidDTO {
+        +BidDTO()
+        +BidDTO(id: Long, auctionId: Long, bidderId: Long, bidderName: String, amount: BigDecimal, timestamp: LocalDateTime)
+        +toString() : String
+        +getters/setters()
+      }
+
+      class ItemDTO {
+        +ItemDTO()
+        +ItemDTO(id: Long, name: String, description: String, category: ItemCategory, ...)
+        +ItemDTO(name: String, description: String, category: ItemCategory, ...)
+        +toString() : String
+        +getters/setters()
+      }
+
+      class UserDTO {
+        +UserDTO()
+        +UserDTO(id: Long, username: String, fullname: String, email: String, role: UserRole, status: UserStatus, createdAt: LocalDateTime)
+        +UserDTO(id: Long, username: String, fullname: String)
+        +isActive() : boolean
+        +toString() : String
+        +getters/setters()
+      }
+    }
+
+    package "request" {
+      class BaseRequest {
+        +BaseRequest(action: Action, data: Object)
+        +getAction() : Action
+        +getData() : Object
+      }
+    }
+
+    package "response" {
+      class BaseResponse {
+        +BaseResponse(success: boolean, message: String, data: Object)
+        +isSuccess() : boolean
+        +getAction() : String
+        +getData() : Object
+        +getMessage() : String
+        +setSuccess(success: boolean) : void
+        +setAction(action: String) : void
+        +setData(data: Object) : void
+        +setMessage(message: String) : void
+      }
+    }
+  }
+
+  package "enums" {
+    enum Action {
+      LOGIN
+      REGISTER
+      LOGOUT
+      CREATE_ITEM
+      UPDATE_ITEM
+      DELETE_ITEM
+      SEND_CREATE_AUCTION_REQUEST
+      PLACE_BID
+      SUBSCRIBE_AUCTION
+      UNSUBSCRIBE_AUCTION
+      GET_USERS_LIST
+      ENABLE_USER
+      DISABLE_USER
+      ACCEPT_CREATE_AUCTION_REQUEST
+      EJECT_CREATE_AUCTION_REQUEST
+      GET_BID_HISTORY
+      GET_AUCTION_LIST
+      GET_AUCTION_DETAILS
+      GET_USER_PROFILE
+      UPDATE_USER_PROFILE
+      GET_LEADERBOARD
+      GET_NOTIFICATIONS
+    }
+
+    enum AuctionStatus {
+      PREPARING
+      OPEN
+      RUNNING
+      FINISHED
+      CLOSED
+      CANCELLED
+    }
+
+    enum ItemCategory {
+      ELECTRONICS
+      ART
+      VEHICLE
+    }
+
+    enum ItemStatus {
+      PENDING
+      ACTIVE
+      SOLD
+      CANCELLED
+    }
+
+    enum UserRole {
+      ADMIN
+      BIDDER
+      SELLER
+    }
+
+    enum UserStatus {
+      ACTIVE
+      BLOCKED
+    }
+  }
+
+  package "event" {
+  }
+
+  package "exception" {
+    class AuctionException {
+      +AuctionException(message: String)
+    }
+
+    class AuctionClosedException {
+      +AuctionClosedException()
+    }
+
+    class AuctionNotFoundException {
+      +AuctionNotFoundException(auctionId: Long)
+    }
+
+    class BidExceededLimitException {
+      +BidExceededLimitException(maxPrice: BigDecimal)
+    }
+
+    class BidTooLowException {
+      +BidTooLowException(minBid: BigDecimal)
+    }
+
+    class InsufficientBalanceException {
+      +InsufficientBalanceException(balance: BigDecimal)
+    }
+
+    class InvalidAuctionTimeException {
+      +InvalidAuctionTimeException(now: LocalDateTime)
+    }
+
+    class InvalidBidException {
+      +InvalidBidException(message: String)
+      +InvalidBidException()
+      +InvalidBidException(amount: double)
+      +InvalidBidException(timestamp: LocalDateTime)
+    }
+  }
+
+  package "utility" {
+  }
+}
+
+' ================= CLIENT RELATIONS =================
+
+ClientLauncher --> MainApplication
+MainApplication --> ClientNetworkService
+
+LoginController --> ClientNetworkService
+LoginController --> BaseRequest
+LoginController --> BaseResponse
+LoginController --> Action
+LoginController --> UserRole
+
+RegisterFormController --> ClientNetworkService
+RegisterFormController --> BaseRequest
+RegisterFormController --> BaseResponse
+RegisterFormController --> Action
+RegisterFormController --> UserRole
+
+BidderDashboardController --> ClientNetworkService
+BidderDashboardController --> AuctionDTO
+BidderDashboardController --> ClientItem
+
+BiddingViewController --> ClientItem
+BidingViewController --> ClientNetworkService
+AuctionDetailController --> ClientItem
+SellerDashboardController --> ClientItem
+SellerDashboardController --> AddProductController
+SellerDashboardController --> SetupAuctionViewController
+AddProductController --> SellerDashboardController
+AddProductController --> ClientItem
+SetupAuctionViewController --> SellerDashboardController
+SetupAuctionViewController --> ClientItem
+AdminUsersController --> ClientNetworkService
+
+ClientNetworkService --> BaseRequest
+ClientNetworkService --> BaseResponse
+ClientNetworkService ..> SocketSever : TCP socket
+
+StageUtils --> MainApplication
+
+' ================= SERVER NETWORK / ROUTING =================
+
+SocketSever --> ClientConnectionHandler
+ClientConnectionHandler ..|> Runnable
+ClientConnectionHandler --> RequestRouter
+ClientConnectionHandler --> BaseRequest
+ClientConnectionHandler --> BaseResponse
+ClientConnectionHandler --> User
+ClientConnectionHandler --> RealtimePushServer
+
+RequestRouter --> AuthServerController
+RequestRouter --> AuctionServerController
+RequestRouter --> BidServerController
+RequestRouter --> AdminServerController
+RequestRouter --> SellerServerController
+RequestRouter --> Action
+RequestRouter --> UserRole
+
+RealtimePushServer --> ClientConnectionHandler
+RealtimePushServer --> BaseResponse
+
+' ================= SERVER CONTROLLER -> SERVICE =================
+
+AuthServerController --> AuthService
+AuctionServerController --> AuctionService
+BidServerController --> BidService
+AdminServerController --> UserService
+AdminServerController --> AuditService
+SellerServerController --> ServerItemService
+
+' ================= SERVER SERVICE -> DAO / MODEL =================
+
+AuthService --> UserDAO
+AuthService --> Admin
+AuthService --> Bidder
+AuthService --> Seller
+
+UserService --> UserDAO
+AuctionService --> AuctionDAO
+AuctionService --> ItemDAO
+AuctionService --> BidDAO
+AuctionService --> AuctionDTO
+AuctionService --> BidDTO
+BidService --> AuctionService
+BidService --> AuctionDAO
+BidService --> BidDAO
+BidService --> UserDAO
+BidService --> RealtimePushServer
+ServerItemService --> ItemDAO
+ServerItemService --> ServerItemFactory
+AuctionScheduler --> AuctionService
+AuctionScheduler --> RealtimePushServer
+AuctionManager --> AuctionDAO
+
+' ================= DAO -> DATABASE =================
+
+AuctionDAO --> DBconnection
+BidDAO --> DBconnection
+ItemDAO --> DBconnection
+UserDAO --> DBconnection
+TestDBconection --> DBconnection
+
+' ================= DOMAIN MODEL =================
+
+Entity <|-- User
+User <|-- Admin
+User <|-- Bidder
+User <|-- Seller
+
+Entity <|-- ServerItem
+ServerItem <|-- Art
+ServerItem <|-- Electronics
+ServerItem <|-- Vehicle
+
+Entity <|-- Auction
+Entity <|-- Bid
+
+Auction --> AuctionStatus
+Auction "1" o-- "*" Bid
+Auction --> ServerItem : itemId
+Auction --> Seller : sellerId
+Bid --> Bidder : bidderId
+BidTransaction --> Bid
+BidTransaction --> Auction
+
+ServerItem --> ItemCategory
+ServerItem --> ItemStatus
+
+User --> UserRole
+User --> UserStatus
+
+Bidder --> Bid
+Seller --> ServerItem
+
+' ================= FACTORY PATTERN =================
+
+ItemFactory <|.. ArtFactory
+ItemFactory <|.. ElectronicsFactory
+ItemFactory <|.. VehicleFactory
+
+ArtFactory --> Art
+ElectronicsFactory --> Electronics
+VehicleFactory --> Vehicle
+ItemFactoryRegistry --> ItemFactory
+ItemFactoryRegistry --> ItemCategory
+ServerItemFactory --> Art
+ServerItemFactory --> Electronics
+ServerItemFactory --> Vehicle
+ServerItemFactory --> ItemCategory
+ServerItemFactory --> ItemStatus
+
+' ================= SHARED DTO / ENUM RELATIONS =================
+
+BaseRequest --> Action
+BaseResponse --> BaseRequest
+
+AuctionDTO --> AuctionStatus
+ItemDTO --> ItemCategory
+ItemDTO --> ItemStatus
+UserDTO --> UserRole
+UserDTO --> UserStatus
+BidDTO --> AuctionDTO
+
+AuctionService --> AuctionDTO
+AuctionService --> BidDTO
+ServerItemService --> ItemDTO
+UserService --> UserDTO
+
+' ================= EXCEPTION HIERARCHY =================
+
+AuctionException <|-- AuctionClosedException
+AuctionException <|-- AuctionNotFoundException
+AuctionException <|-- BidExceededLimitException
+AuctionException <|-- BidTooLowException
+AuctionException <|-- InsufficientBalanceException
+AuctionException <|-- InvalidAuctionTimeException
+AuctionException <|-- InvalidBidException
+
+BidService ..> AuctionClosedException
+BidService ..> AuctionNotFoundException
+BidService ..> BidTooLowException
+BidService ..> InvalidAuctionTimeException
+AuctionManager ..> AuctionClosedException
+AuctionManager ..> BidTooLowException
+AuctionManager ..> InsufficientBalanceException
+
+@enduml

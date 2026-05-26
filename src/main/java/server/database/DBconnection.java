@@ -10,9 +10,9 @@ public class DBconnection {
     private static DBconnection instance;
     private final HikariDataSource dataSource;
 
-    private String url = "jdbc:mysql://2gHYcGAmktnRtig.root:tMk8jhH0IqFvkJq5@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/Auction_System?sslMode=VERIFY_IDENTITY";
-    private String user = "2gHYcGAmktnRtig.root";
-    private String pass = "tMk8jhH0IqFvkJq5";
+    private String url = "jdbc:mysql://4Fh6tercQZ88ojp.root:Pcw7mel45GAdVwvl@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/Bidding?sslMode=VERIFY_IDENTITY";
+    private String user = "4Fh6tercQZ88ojp.root";
+    private String pass = "Pcw7mel45GAdVwvl";
 
     private DBconnection() {
         HikariConfig config = new HikariConfig();

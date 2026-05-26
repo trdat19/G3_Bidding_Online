@@ -3,10 +3,18 @@ package server.controller;
 import server.model.user.User;
 import server.service.AuctionService;
 import server.service.UserService;
+import shared.dto.common.AuctionDTO;
 import shared.dto.common.UserDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.UserStatus;
+import server.model.item.Item;
+import server.service.ItemService;
+import shared.dto.common.ItemDTO;
+import server.dao.AuctionDAO;
+import server.model.core.Auction;
+import shared.enums.ItemStatus;
+import shared.enums.UserRole;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +30,8 @@ public class AdminServerController {
 
     private final UserService userService = UserService.getInstance();
     private final AuctionService auctionService = AuctionService.getInstance();
+    private final ItemService itemService = ItemService.getInstance();
+    private final AuctionDAO auctionDAO = new AuctionDAO();
 
     private AdminServerController() {}
 
@@ -50,6 +60,8 @@ public class AdminServerController {
         return dto;
     }
 
+
+
     //--------------USER MANAGEMENT-------------------------
     public BaseResponse getAllUsers() {
         try {
@@ -64,6 +76,26 @@ public class AdminServerController {
 
         } catch (Exception e) {
             return new BaseResponse(false, "Lỗi lấy danh sách người dùng: " + e.getMessage(), null);
+        }
+    }
+
+    public BaseResponse getAllItems() {
+        try {
+            List<Item> itemList = itemService.findAllItems();
+
+            List<ItemDTO> items = new ArrayList<>();
+            for (Item item : itemList) {
+                items.add(toDTO(item));
+            }
+
+            return new BaseResponse(true,
+                    "Lấy danh sách sản phẩm thành công!",
+                    items);
+
+        } catch (Exception e) {
+            return new BaseResponse(false,
+                    "Lỗi lấy danh sách sản phẩm: " + e.getMessage(),
+                    null);
         }
     }
 
@@ -96,18 +128,28 @@ public class AdminServerController {
         try {
             Long userId = Long.parseLong(request.getData().toString());
 
+            User targetUser = userService.findUser(userId);
+
+            if (targetUser.getRole() == UserRole.ADMIN) {
+                return new BaseResponse(false,
+                        "Không thể khóa tài khoản Admin!",
+                        null);
+            }
+
             boolean ok = userService.changeStatus(userId, UserStatus.BLOCKED);
 
             return ok
                     ? new BaseResponse(true,
-                                String.format("Đã khóa tài khoản #%d", userId), null)
+                    String.format("Đã khóa tài khoản #%d", userId),
+                    null)
                     : new BaseResponse(false,
-                                String.format("Không thể khóa tài khoản #%d", userId), null);
+                    String.format("Không thể khóa tài khoản #%d", userId),
+                    null);
 
         } catch (IllegalArgumentException e) {
             return new BaseResponse(false, e.getMessage(), null);
         } catch (Exception e) {
-            return new BaseResponse(false, "Lỗi khóa tài khoản: " + e.getMessage(), null);
+            return new BaseResponse(false, "Lỗi khóa: " + e.getMessage(), null);
         }
     }
 
@@ -127,5 +169,82 @@ public class AdminServerController {
         } catch (Exception e) {
             return new BaseResponse(false, "Lỗi lấy dữ liệu thống kê: " + e.getMessage(), null);
         }
+    }
+
+    public BaseResponse getCreateAuctionRequests() {
+        return new BaseResponse(
+                true,
+                "Danh sách yêu cầu tạo đấu giá",
+                auctionService.getAuctionApprovalRequests()
+        );
+    }
+
+    public BaseResponse acceptCreateAuctionRequest(BaseRequest request) {
+        Long auctionId = Long.parseLong(request.getData().toString());
+
+        boolean ok = auctionService.approveAuctionRequest(auctionId);
+
+        return ok
+                ? new BaseResponse(true, "Đã duyệt yêu cầu tạo đấu giá", null)
+                : new BaseResponse(false, "Không thể duyệt yêu cầu này", null);
+
+    }
+
+    public BaseResponse rejectCreateAuctionRequest(BaseRequest request) {
+        Long auctionId = Long.parseLong(request.getData().toString());
+
+        boolean ok = auctionService.rejectAuctionRequest(auctionId);
+
+        return ok
+                ? new BaseResponse(true, "Đã từ chối yêu cầu tạo đấu giá", null)
+                : new BaseResponse(false, "Không thể từ chối yêu cầu này", null);
+    }
+
+    public BaseResponse getAllAuctions() {
+        try {
+            List<AuctionDTO> auctions = auctionService.getAllAuctions();
+            return new BaseResponse(true, "Lấy danh sách phiên đấu giá thành công", auctions);
+        } catch (Exception e) {
+            return new BaseResponse(false,
+                    "Lỗi lấy danh sách phiên đấu giá: " + e.getMessage(),
+                    null);
+        }
+    }
+
+    private ItemDTO toDTO(Item item) {
+        ItemDTO dto = new ItemDTO();
+
+        dto.setId(item.getId());
+        dto.setName(item.getNameItem());
+        dto.setDescription(item.getDescription());
+        dto.setCategory(item.getCategory());
+        dto.setStatus(item.getStatusItem());
+        dto.setSellerId(item.getSellerId());
+        dto.setCreatedAt(item.getCreatedAtItem());
+
+        try {
+            dto.setSellerName(userService.findUser(item.getSellerId()).getFullName());
+        } catch (Exception e) {
+            dto.setSellerName("Không xác định");
+        }
+
+        if (item.getStatusItem() == ItemStatus.PENDING) {
+            dto.setPriceStart(null);
+            dto.setCurrentPrice(null);
+            return dto;
+        }
+
+        List<Auction> auctions = auctionDAO.getAllAuctionsByItemId(item.getId());
+
+        if (auctions != null && !auctions.isEmpty()) {
+            Auction latestAuction = auctions.get(0);
+
+            dto.setPriceStart(latestAuction.getStartPrice());
+            dto.setCurrentPrice(latestAuction.getMaxPrice() != null
+                    ? latestAuction.getMaxPrice()
+                    : latestAuction.getStartPrice());
+        }
+
+        return dto;
     }
 }

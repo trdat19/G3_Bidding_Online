@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" spacing="18" styleClass="page">
+<VBox xmlns:fx="http://javafx.com/fxml" spacing="18" styleClass="page" fx:controller="client.controller.AdminAuctionsController">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
@@ -19,21 +19,28 @@
     <HBox alignment="CENTER_LEFT" spacing="12">
         <Label text="Auction Management" styleClass="page-title"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <TextField promptText="Search auction..." prefWidth="240"/>
-        <ComboBox promptText="Status" prefWidth="130"/>
-        <Button text="Refresh" styleClass="primary-btn"/>
+        <TextField fx:id="searchField"
+                   promptText="Search auction..."
+                   prefWidth="240"/>
+
+        <ComboBox fx:id="statusFilterBox"
+                  promptText="Status"
+                  prefWidth="160"/>
+
+        <Button text="Refresh"
+                onAction="#handleRefresh"
+                styleClass="primary-btn"/>
     </HBox>
 
     <TableView fx:id="auctionTable" prefHeight="500">
         <columns>
-            <TableColumn text="Auction ID" prefWidth="120"/>
-            <TableColumn text="Product" prefWidth="220"/>
-            <TableColumn text="Seller" prefWidth="150"/>
-            <TableColumn text="Leader" prefWidth="150"/>
-            <TableColumn text="Current Price" prefWidth="150"/>
-            <TableColumn text="Status" prefWidth="120"/>
-            <TableColumn text="End Time" prefWidth="180"/>
-            <TableColumn text="Action" prefWidth="160"/>
+            <TableColumn fx:id="idColumn" text="Auction ID" prefWidth="120"/>
+            <TableColumn fx:id="productColumn" text="Product" prefWidth="220"/>
+            <TableColumn fx:id="sellerColumn" text="Seller" prefWidth="150"/>
+            <TableColumn fx:id="leaderColumn" text="Leader" prefWidth="150"/>
+            <TableColumn fx:id="currentPriceColumn" text="Current Price" prefWidth="150"/>
+            <TableColumn fx:id="statusColumn" text="Status" prefWidth="120"/>
+            <TableColumn fx:id="endTimeColumn" text="End Time" prefWidth="180"/>
         </columns>
     </TableView>
 </VBox>

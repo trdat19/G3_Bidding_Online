@@ -3,6 +3,15 @@
     -fx-font-family: "Segoe UI";
 }
 
+.modal-scroll,
+.modal-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.modal-scroll {
+    -fx-background: transparent;
+}
+
 .form-card {
     -fx-background-color: white;
     -fx-background-radius: 24;

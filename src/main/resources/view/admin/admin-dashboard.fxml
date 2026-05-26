@@ -17,7 +17,7 @@
 
             <TextField prefWidth="250" promptText="Search..." />
             <Label text="Admin" />
-            <Button onAction="#handleLogout" styleClass="logout-btn" text="Logout" />
+            <Button onAction="#handleLogout" styleClass="logout-btn" text="Đăng xuất" />
         </HBox>
     </top>
 
@@ -27,12 +27,13 @@
                 <Insets bottom="20" left="10" right="10" top="20" />
             </padding>
 
-            <Button maxWidth="Infinity" onAction="#showDashboard" text="Dashboard" />
-            <Button maxWidth="Infinity" onAction="#showUsers" text="Users" />
-            <Button maxWidth="Infinity" onAction="#showAuctions" text="Auctions" />
-            <Button maxWidth="Infinity" onAction="#showProducts" text="Products" />
-            <Button maxWidth="Infinity" onAction="#showReports" text="Reports" />
-            <Button maxWidth="Infinity" onAction="#showSettings" text="Settings" />
+            <Button maxWidth="Infinity" onAction="#showDashboard" text="Màn hình chính" />
+            <Button maxWidth="Infinity" onAction="#showProductRequests" text="Yêu cầu" />
+            <Button maxWidth="Infinity" onAction="#showUsers" text="Người dùng" />
+            <Button maxWidth="Infinity" onAction="#showAuctions" text="Phiên đấu giá" />
+            <Button maxWidth="Infinity" onAction="#showProducts" text="Sản phẩm" />
+            <Button maxWidth="Infinity" onAction="#showReports" text="Báo cáo" />
+            <Button maxWidth="Infinity" onAction="#showSettings" text="Cài đặt" />
         </VBox>
     </left>
 

@@ -1,15 +1,31 @@
 package client.controller;
-import client.model.Item;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 import shared.enums.ItemCategory;
 
 import java.io.File;
+import client.service.ClientNetworkService;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
+import shared.enums.Action;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
+
+
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddProductController {
     @FXML private TextField nameField;
@@ -76,23 +92,30 @@ public class AddProductController {
             errorLabel.setText("Vui lòng chọn ảnh sản phẩm");
             return;
         }
-
-        Item item = new Item(
-                title,
-                category.name(),
-                description,
-                0,
-                0,
-                "",
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                "PENDING",
-                0
-        );
-        if (sellerDashboardController != null) {
-            sellerDashboardController.addNewProduct(item);
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", title);
+        data.put("category", category.name());
+        data.put("description", description);
+        try {
+            data.put("imageBytes", Files.readAllBytes(selectedImageFile.toPath()));
+            data.put("imageFileName", selectedImageFile.getName());
+            data.put("imageContentType", Files.probeContentType(selectedImageFile.toPath()));
+        }catch(IOException e) {
+            e.printStackTrace();
         }
-        closeWindow();
+
+        BaseRequest request = new BaseRequest(Action.CREATE_ITEM, data);
+        BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
+
+        if (response != null && response.isSuccess() && response.getData() != null)  {
+            if (sellerDashboardController != null) {
+                sellerDashboardController.refreshProducts();
+            }
+            closeWindow();
+        }
+        else {
+            errorLabel.setText(response != null ? response.getMessage() : "Không kết nối được server");
+        }
     }
 
     @FXML

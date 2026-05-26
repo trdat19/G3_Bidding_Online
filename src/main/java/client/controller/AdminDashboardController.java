@@ -1,11 +1,11 @@
 package client.controller;
+import client.service.ClientNetworkService;
 import client.util.StageUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -14,6 +14,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import client.model.Item;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 
 public class AdminDashboardController {
     private static final String HOME_PAGE = "/view/admin/admin-home.fxml";
@@ -38,10 +41,24 @@ public class AdminDashboardController {
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            StageUtils.setMaximizedScene(stage, root);
-            stage.show();
+            BaseRequest logoutRequest = new BaseRequest(Action.LOGOUT, null);
+            BaseResponse response = ClientNetworkService.getInstance().sendRequest(logoutRequest);
+
+            if (response != null && response.isSuccess()) {
+                Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                StageUtils.setMaximizedScene(stage, root);
+                stage.show();
+            }
+            else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Đăng xuất thất bại");
+                alert.setHeaderText(null);
+                alert.setContentText(response != null
+                        ? response.getMessage()
+                        : "Không kết nối được server");
+                alert.showAndWait();
+            }
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,6 +95,11 @@ public class AdminDashboardController {
     private void showSettings() {
         loadPage(SETTINGS_PAGE);
     }
+    @FXML
+    private void showProductRequests() {
+        loadPage(REQUEST_PAGE);
+    }
+
     private void loadPage(String fxmlPath) {
         if (fxmlPath.equals(currentPage)) {
             return;
@@ -100,9 +122,5 @@ public class AdminDashboardController {
         }catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    @FXML
-    private void showPeoductRequests() {
-        loadPage(REQUEST_PAGE);
     }
 }

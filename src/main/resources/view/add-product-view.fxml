@@ -19,9 +19,9 @@
 
             <!-- HEADER -->
             <VBox alignment="CENTER" spacing="8">
-                <Label styleClass="form-title" text="Gửi yêu cầu đăng sản phẩm" />
+                <Label styleClass="form-title" text="Tạo sản phẩm mới" />
 
-                <Label styleClass="form-subtitle" text="Sản phẩm sẽ được admin kiểm duyệt trước khi mở đấu giá" />
+                <Label styleClass="form-subtitle" />
             </VBox>
 
             <!-- MAIN CARD -->
@@ -46,7 +46,7 @@
 
                             <Button onAction="#handleChooseImage" styleClass="upload-button" text="+ Chọn ảnh từ máy tính" />
 
-                            <Label fx:id="imageNameLabel" styleClass="upload-hint" text="Chưa chọn ảnh" />
+                            <Label fx:id="imageNameLabel" styleClass="upload-hint" />
                         </VBox>
 
                     </StackPane>
@@ -80,7 +80,7 @@
                     <VBox spacing="4">
                         <Label styleClass="pending-title" text="Sản phẩm sẽ ở trạng thái PENDING" />
 
-                        <Label styleClass="pending-desc" text="Admin sẽ duyệt trước khi sản phẩm xuất hiện cho bidder" />
+                        <Label styleClass="pending-desc" text="Sản phẩm sẽ ở trang seller cho đến khi seller gửi yêu câuf tạo phiên đấu giá" />
                     </VBox>
                 </HBox>
 

@@ -1,7 +1,7 @@
 package server.controller;
 
 import server.service.AuctionService;
-
+import server.network.ClientConnectionHandler;
 import shared.dto.common.AuctionDTO;
 import shared.dto.common.BidDTO;
 import shared.dto.request.BaseRequest;
@@ -54,6 +54,19 @@ public class AuctionServerController {
 
         return new BaseResponse(true, "Danh sách tất cả phiên đấu giá:", auctions);
     }
+    /** getWonAuctions - lấy phiên đã thắng */
+    public BaseResponse getWonAuctions(ClientConnectionHandler handler) {
+        List<AuctionDTO> auctions =
+                auctionService.getWonAuctionsByBidderId(handler.getUser().getId());
+
+        return new BaseResponse(
+                true,
+                auctions.isEmpty()
+                        ? "Bạn chưa thắng phiên đấu giá nào."
+                        : "Danh sách sản phẩm đã thắng:",
+                auctions
+        );
+    }
 
     /** getAuctionDetail - lấy chi tiết thông tin của 1 phiên đấu giá */
     public BaseResponse getAuctionDetail(BaseRequest request) {
@@ -77,9 +90,14 @@ public class AuctionServerController {
     }
 
     /** createAuction – Seller tạo phiên mới */
-    public BaseResponse createAuction(BaseRequest request) {
+    public BaseResponse createAuction(BaseRequest request, ClientConnectionHandler handler) {
         try {
             Map<String, Object> data = (Map<String, Object>) request.getData();
+            if (data == null) {
+                return new BaseResponse(false,
+                        "Thieu thong tin can thiet de tao phien dau gia!", null);
+            }
+            data.put("sellerId", handler.getUser().getId());
 
             if (!(data.containsKey("startPrice")
                     && data.containsKey("minIncrement")
@@ -87,7 +105,7 @@ public class AuctionServerController {
                     && data.containsKey("startTime")
                     && data.containsKey("endTime")
                     && data.containsKey("itemId")
-                    && data.containsKey("sellerId")))
+            ))
             {
                 return new BaseResponse(false,
                         "Thiếu thông tin cần thiết để tạo phiên đấu giá!", null);
@@ -98,7 +116,8 @@ public class AuctionServerController {
                             auctionService.createAuction(data));
 
         } catch (Exception e) {
-            return new BaseResponse(false, "Dữ liệu phiên không hợp lệ!", null);
+            e.printStackTrace();
+            return new BaseResponse(false, "Loi tao yeu cau dau gia: " + e.getMessage(), null);
         }
     }
 

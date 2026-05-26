@@ -35,6 +35,9 @@ public class AuthService {
         User user = userDAO.findByUsername(username);
 
         if (user != null && user.getPassword().equals(password)) {
+            if (user.getStatus() != UserStatus.ACTIVE) {
+                return null;
+            }
             System.out.println(">>> [AuthService] Đăng nhập thành công: " + username);
             return user;
         }

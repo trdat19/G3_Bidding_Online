@@ -10,12 +10,13 @@ import shared.enums.UserStatus;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.math.BigDecimal;
 
 public class UserDAO {
 
     public boolean insertUser(User user) {
-        String sql = "INSERT INTO users(username, password, full_name, email, role, status) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users(username, password, full_name, email, role, status, balance) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DBconnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
@@ -26,6 +27,7 @@ public class UserDAO {
             ps.setString(4, user.getEmail());
             ps.setString(5, user.getRole().name());
             ps.setString(6, user.getStatus().name());
+            ps.setBigDecimal(7, BigDecimal.ZERO);
 
             int rowsAffected = ps.executeUpdate(); // 1 nếu insert thành công, 0 nếu thất bại
             if (rowsAffected > 0) {
@@ -265,6 +267,9 @@ public class UserDAO {
         user.setEmail(rs.getString("email"));
         user.setRole(UserRole.valueOf(rs.getString("role")));
         user.setStatus(UserStatus.valueOf(rs.getString("status")));
+        if (user instanceof Bidder bidder) {
+            bidder.setBalance(rs.getBigDecimal("balance"));
+        }
 
         Timestamp ts = rs.getTimestamp("created_at");
         if (ts != null) {
@@ -290,5 +295,107 @@ public class UserDAO {
             System.err.println("findAll error: " + e.getMessage());
         }
         return users;
+    }
+
+    public BigDecimal getBalance(long userId) {
+        String sql = "SELECT balance FROM users WHERE id = ?";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBigDecimal("balance");
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("getBalance error: " + e.getMessage());
+        }
+
+        return BigDecimal.ZERO;
+    }
+
+    public boolean increaseBalance(long userId, BigDecimal amount) {
+        String sql = "UPDATE users SET balance = balance + ? WHERE id = ?";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setBigDecimal(1, amount);
+            ps.setLong(2, userId);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("increaseBalance error: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    public boolean decreaseBalanceIfEnough(long userId, BigDecimal amount) {
+        String sql = "UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setBigDecimal(1, amount);
+            ps.setLong(2, userId);
+            ps.setBigDecimal(3, amount);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("decreaseBalanceIfEnough error: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    public boolean transferBalanceIfEnough(long fromUserId, long toUserId, BigDecimal amount) {
+        String subtractSql = "UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?";
+        String addSql = "UPDATE users SET balance = balance + ? WHERE id = ?";
+
+        try (Connection con = DBconnection.getInstance().getConnection()) {
+            con.setAutoCommit(false);
+
+            try (PreparedStatement subtractPs = con.prepareStatement(subtractSql);
+                 PreparedStatement addPs = con.prepareStatement(addSql)) {
+
+                subtractPs.setBigDecimal(1, amount);
+                subtractPs.setLong(2, fromUserId);
+                subtractPs.setBigDecimal(3, amount);
+
+                if (subtractPs.executeUpdate() == 0) {
+                    con.rollback();
+                    return false;
+                }
+
+                addPs.setBigDecimal(1, amount);
+                addPs.setLong(2, toUserId);
+
+                if (addPs.executeUpdate() == 0) {
+                    con.rollback();
+                    return false;
+                }
+
+                con.commit();
+                return true;
+
+            } catch (Exception e) {
+                con.rollback();
+                System.err.println("transferBalanceIfEnough error: " + e.getMessage());
+                return false;
+            } finally {
+                con.setAutoCommit(true);
+            }
+
+        } catch (Exception e) {
+            System.err.println("transferBalanceIfEnough connection error: " + e.getMessage());
+            return false;
+        }
     }
 }
