@@ -224,6 +224,9 @@ public class RequestRouter {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().rejectCreateAuctionRequest(request);
                 }
+                case Action.GET_ADMIN_DASHBOARD_STATS:
+                    requireRole(handler, UserRole.ADMIN);
+                    return AdminServerController.getInstance().getDashboardStats();
                 default: {
                     return new BaseResponse(false,
                             "Hành động '" + action + "' không tồn tại trên hệ thống", null);

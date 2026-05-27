@@ -6,29 +6,29 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.layout.Region?>
-<VBox xmlns:fx="http://javafx.com/fxml" spacing="20" styleClass="page">
+<VBox xmlns:fx="http://javafx.com/fxml" spacing="20" styleClass="page" fx:controller="client.controller.AdminHomeController">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
     <HBox spacing="20">
         <VBox styleClass="stat-card" prefWidth="180">
-            <Label text="120" styleClass="stat-number"/>
+            <Label fx:id="totalUsersLabel" text="0" styleClass="stat-number"/>
             <Label text="Tổng người dùng"/>
         </VBox>
 
         <VBox styleClass="stat-card" prefWidth="180">
-            <Label text="18" styleClass="stat-number"/>
+            <Label fx:id="runningAuctionsLabel" text="0" styleClass="stat-number"/>
             <Label text="Phiên đang diễn ra"/>
         </VBox>
 
         <VBox styleClass="stat-card" prefWidth="180">
-            <Label text="54" styleClass="stat-number"/>
+            <Label fx:id="finishedAuctionsLabel" text="0" styleClass="stat-number"/>
             <Label text="Phiên đã kết thúc"/>
         </VBox>
 
         <VBox styleClass="stat-card" prefWidth="180">
-            <Label text="73" styleClass="stat-number"/>
+            <Label fx:id="totalProductsLabel" text="0" styleClass="stat-number"/>
             <Label text="Sản phẩm"/>
         </VBox>
     </HBox>
@@ -68,19 +68,19 @@
             <HBox styleClass="summary-row">
                 <Label text="Phiên đang diễn ra"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="18" styleClass="summary-number"/>
+                <Label fx:id = "runningAuctions" text="0" styleClass="summary-number"/>
             </HBox>
 
             <HBox styleClass="summary-row">
                 <Label text="Phiên đang chờ duyệt"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="6" styleClass="summary-number"/>
+                <Label fx:id = "preparingAuctions" text="6" styleClass="summary-number"/>
             </HBox>
 
             <HBox styleClass="summary-row">
                 <Label text="Phiên đã kết thúc"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="54" styleClass="summary-number"/>
+                <Label fx:id = "finishedAuctions" text="54" styleClass="summary-number"/>
             </HBox>
         </VBox>
     </HBox>

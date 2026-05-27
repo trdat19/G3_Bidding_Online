@@ -3,17 +3,15 @@ package server.controller;
 import server.model.user.User;
 import server.service.AuctionService;
 import server.service.UserService;
+import shared.dto.AdminDashboardDTO;
 import shared.dto.common.AuctionDTO;
 import shared.dto.common.UserDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
+import shared.enums.AuctionStatus;
 import shared.enums.UserStatus;
-import server.model.item.Item;
 import server.service.ItemService;
 import shared.dto.common.ItemDTO;
-import server.dao.AuctionDAO;
-import server.model.core.Auction;
-import shared.enums.ItemStatus;
 import shared.enums.UserRole;
 
 import java.util.HashMap;
@@ -31,8 +29,6 @@ public class AdminServerController {
     private final UserService userService = UserService.getInstance();
     private final AuctionService auctionService = AuctionService.getInstance();
     private final ItemService itemService = ItemService.getInstance();
-    private final AuctionDAO auctionDAO = new AuctionDAO();
-
     private AdminServerController() {}
 
     public static AdminServerController getInstance() {
@@ -81,12 +77,7 @@ public class AdminServerController {
 
     public BaseResponse getAllItems() {
         try {
-            List<Item> itemList = itemService.findAllItems();
-
-            List<ItemDTO> items = new ArrayList<>();
-            for (Item item : itemList) {
-                items.add(toDTO(item));
-            }
+            List<ItemDTO> items = itemService.findAllItemsForAdmin();
 
             return new BaseResponse(true,
                     "Lấy danh sách sản phẩm thành công!",
@@ -202,7 +193,7 @@ public class AdminServerController {
 
     public BaseResponse getAllAuctions() {
         try {
-            List<AuctionDTO> auctions = auctionService.getAllAuctions();
+            List<AuctionDTO> auctions = auctionService.getAllAuctionsForAdmin();
             return new BaseResponse(true, "Lấy danh sách phiên đấu giá thành công", auctions);
         } catch (Exception e) {
             return new BaseResponse(false,
@@ -210,41 +201,21 @@ public class AdminServerController {
                     null);
         }
     }
-
-    private ItemDTO toDTO(Item item) {
-        ItemDTO dto = new ItemDTO();
-
-        dto.setId(item.getId());
-        dto.setName(item.getNameItem());
-        dto.setDescription(item.getDescription());
-        dto.setCategory(item.getCategory());
-        dto.setStatus(item.getStatusItem());
-        dto.setSellerId(item.getSellerId());
-        dto.setCreatedAt(item.getCreatedAtItem());
-
+    public BaseResponse getDashboardStats() {
         try {
-            dto.setSellerName(userService.findUser(item.getSellerId()).getFullName());
+            AdminDashboardDTO dto = new AdminDashboardDTO(
+                    userService.countAllUsers(),
+                    itemService.countAllItems(),
+                    auctionService.countAuctionsByStatus(AuctionStatus.RUNNING),
+                    auctionService.countAuctionsByStatus(AuctionStatus.FINISHED),
+                    auctionService.countAuctionsByStatus(AuctionStatus.PREPARING)
+            );
+
+            return new BaseResponse(true, "Lấy thống kê dashboard thành công", dto);
+
         } catch (Exception e) {
-            dto.setSellerName("Không xác định");
+            return new BaseResponse(false, "Lỗi lấy thống kê dashboard: " + e.getMessage(), null);
         }
-
-        if (item.getStatusItem() == ItemStatus.PENDING) {
-            dto.setPriceStart(null);
-            dto.setCurrentPrice(null);
-            return dto;
-        }
-
-        List<Auction> auctions = auctionDAO.getAllAuctionsByItemId(item.getId());
-
-        if (auctions != null && !auctions.isEmpty()) {
-            Auction latestAuction = auctions.get(0);
-
-            dto.setPriceStart(latestAuction.getStartPrice());
-            dto.setCurrentPrice(latestAuction.getMaxPrice() != null
-                    ? latestAuction.getMaxPrice()
-                    : latestAuction.getStartPrice());
-        }
-
-        return dto;
     }
+
 }
