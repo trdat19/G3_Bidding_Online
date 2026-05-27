@@ -1,6 +1,5 @@
 package server.service;
 
-import server.concurrency.AuctionLockManager;
 import server.dao.AuctionDAO;
 import server.dao.BidDAO;
 import server.dao.UserDAO;
@@ -20,7 +19,6 @@ import shared.exception.InvalidAuctionTimeException;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.concurrent.locks.ReentrantLock;
 
 /** Xử lý logic đặt giá, kết nối vơi DB
  * Singleton
@@ -72,16 +70,16 @@ public class BidService {
             throw new InvalidAuctionTimeException(now);
         }
 
-        // 4. Chỉ cho đặt giá nếu đang RUNNING, OPEN
-        AuctionStatus status = auction.getStatus();
-        if (status != AuctionStatus.OPEN && status != AuctionStatus.RUNNING) {
-            throw new AuctionClosedException();
-        }
-
-        // 5. Đổi trạng thái nếu cần (Nếu là bid đầu tiên)
+        // 4. Đổi trạng thái nếu cần (Nếu là bid đầu tiên)
         if (auction.getStatus() == AuctionStatus.OPEN) {
             auctionDAO.updateStatus(auctionId, AuctionStatus.RUNNING);
             auction.setStatus(AuctionStatus.RUNNING);
+        }
+
+        // 5. Chỉ cho đặt giá nếu đang RUNNING
+        AuctionStatus status = auction.getStatus();
+        if (status != AuctionStatus.OPEN && status != AuctionStatus.RUNNING) {
+            throw new AuctionClosedException();
         }
 
         // 6. Tính mức giá tối thiểu hợp lệ
@@ -102,7 +100,7 @@ public class BidService {
         }
 
         // 8. Kiểm tra ví
-        WalletService.getInstance().checkCanBid(bidderId, amount);
+        WalletService.getInstance().checkCanBid(bidderId, auctionId, amount);
 
         // 9. Kiểm tra Buy-Now: Nếu bid >= buyNow -> chốt ngay
         boolean buyNowTriggered = auction.getBuyNowPrice() != null
@@ -148,6 +146,14 @@ public class BidService {
 
         RealtimePushServer.pushToAuctionSubscribers(auctionId, bidEvent);
 
+        BaseResponse listEvent = new BaseResponse(
+                true,
+                "Danh sach phien dau gia da thay doi",
+                null
+        );
+        listEvent.setAction("AUCTION_LIST_CHANGED");
+        RealtimePushServer.pushToAuctionListSubscribers(listEvent);
+
         System.out.printf(
                 ">>> [BidService] %s %s giá %s cho phiên #%d%n",
                 bidderName,
@@ -159,44 +165,30 @@ public class BidService {
         return true;
     }
 
-    /** Xử lí đặt giá tay, cấp khoá riêng ReentrantLock tránh lost update khi nhiều người đặt cùng lúc */
-    public boolean placeBid(Long auctionId, Long bidderId, BigDecimal amount) {
-        ReentrantLock lock = AuctionLockManager.getInstance().getLock(auctionId);
-        lock.lock(); // lấy lock
-        try {
-            boolean ok = placeBidInternal(auctionId, bidderId, amount, false);
+    /** Xử lí đặt giá tay, synchronized tránh lost update khi nhiều người đặt cùng lúc */
+    public synchronized boolean placeBid(Long auctionId, Long bidderId, BigDecimal amount) {
+        boolean ok = placeBidInternal(auctionId, bidderId, amount, false);
 
-            if (!ok) {
-                return false;
-            }
-
-            // Sau khi có bid tay mới, cho các AutoBid rule đang bật của người khác phản ứng
-            Auction auction = auctionDAO.findById(auctionId);
-            boolean buyNowTriggered = auction != null
-                    && auction.getBuyNowPrice() != null
-                    && amount.compareTo(auction.getBuyNowPrice()) >= 0;
-
-            if (!buyNowTriggered) {
-                // Có bid mới → kiểm tra các rule AutoBid đang bật của người khác
-                AutoBidService.getInstance().reactToIncomingBid(auctionId);
-            }
-
-            return true;
+        if (!ok) {
+            return false;
         }
-        finally {
-            lock.unlock();
+
+        // Sau khi có bid tay mới, cho các AutoBid rule đang bật của người khác phản ứng
+        Auction auction = auctionDAO.findById(auctionId);
+        boolean buyNowTriggered = auction != null
+                && auction.getBuyNowPrice() != null
+                && amount.compareTo(auction.getBuyNowPrice()) >= 0;
+
+        if (!buyNowTriggered) {
+            // Có bid mới → kiểm tra các rule AutoBid đang bật của người khác
+            AutoBidService.getInstance().reactToIncomingBid(auctionId, bidderId);
         }
+
+        return true;
     }
 
-    public boolean placeAutoBid(Long auctionId, Long bidderId, BigDecimal amount) {
-        ReentrantLock lock = AuctionLockManager.getInstance().getLock(auctionId);
-        lock.lock();
-
-        try {
-            return placeBidInternal(auctionId, bidderId, amount, true);
-        } finally {
-            lock.unlock();
-        }
+    public synchronized boolean placeAutoBid(Long auctionId, Long bidderId, BigDecimal amount) {
+        return placeBidInternal(auctionId, bidderId, amount, true);
     }
     /**
      * Validate không kết nối DB dùng để test

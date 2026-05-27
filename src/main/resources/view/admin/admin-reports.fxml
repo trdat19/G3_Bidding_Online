@@ -14,9 +14,9 @@
     <HBox alignment="CENTER_LEFT" spacing="12">
         <Label text="Báo cáo &amp; Nhật ký hệ thống" styleClass="page-title"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <TextField fx:id="searchField" promptText="Tìm kiếm nhật ký..." prefWidth="240"/>
-        <ComboBox fx:id="statusFilterBox" prefWidth="140"/>
-        <Button text="Làm mới"  styleClass="primary-btn"/>
+        <TextField disable="true" promptText="Chưa có dữ liệu nhật ký" prefWidth="240"/>
+        <ComboBox disable="true" prefWidth="140"/>
+        <Button disable="true" text="Làm mới" styleClass="primary-btn"/>
     </HBox>
 
     <HBox spacing="16">

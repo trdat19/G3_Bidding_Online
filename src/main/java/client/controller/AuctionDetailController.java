@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.model.Item;
+import client.service.ClientNetworkService;
 import client.util.StageUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -15,6 +16,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import shared.dto.request.BaseRequest;
+import shared.dto.response.BaseResponse;
+import shared.enums.Action;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -73,12 +77,28 @@ public class AuctionDetailController {
     }
     @FXML
     private void handleBack(ActionEvent event) {
-        loadScene("/view/bidder-dashboard.fxml", event);
+        stopCountdown();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
+    }
+
+    @FXML
+    private void handleFollowAuction() {
+        if (currentItem == null) {
+            showAlert("Không tìm thấy thông tin phiên đấu giá.");
+            return;
+        }
+        BaseResponse response = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest(Action.FOLLOW_AUCTION, currentItem.getId()));
+        showAlert(response != null ? response.getMessage() : "Không kết nối được server.");
     }
 
     @FXML
     private void handleJoinAuction(ActionEvent event) {
-        stopCountdown();
+        if (currentItem == null) {
+            showAlert("Không tìm thấy thông tin phiên đấu giá.");
+            return;
+        }
         if (currentItem.getStartTime() != null
                 && LocalDateTime.now().isBefore(currentItem.getStartTime())) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -87,6 +107,14 @@ public class AuctionDetailController {
             alert.showAndWait();
             return;
         }
+        BaseResponse joinResponse = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest(Action.JOIN_AUCTION, currentItem.getId()));
+        if (joinResponse == null || !joinResponse.isSuccess()) {
+            showAlert(joinResponse != null
+                    ? joinResponse.getMessage() : "Không kết nối được server.");
+            return;
+        }
+        stopCountdown();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/bidding-view.fxml"));
             Parent root = loader.load();
@@ -101,6 +129,13 @@ public class AuctionDetailController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private String formatDateTime(LocalDateTime dateTime) {

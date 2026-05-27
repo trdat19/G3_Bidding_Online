@@ -96,6 +96,26 @@ public class AuthService {
         }
     }
 
+    public void changePassword(User sessionUser, String oldPassword, String newPassword)
+            throws Exception {
+        if (sessionUser == null || sessionUser.getId() == null) {
+            throw new Exception("Phiên đăng nhập không hợp lệ.");
+        }
+
+        User storedUser = userDAO.findById(sessionUser.getId());
+        if (storedUser == null || !oldPassword.equals(storedUser.getPassword())) {
+            throw new Exception("Mật khẩu cũ không chính xác.");
+        }
+        if (newPassword.equals(storedUser.getPassword())) {
+            throw new Exception("Mật khẩu mới phải khác mật khẩu cũ.");
+        }
+        if (!userDAO.updatePassword(sessionUser.getId(), newPassword)) {
+            throw new Exception("Không thể cập nhật mật khẩu.");
+        }
+
+        sessionUser.setPassword(newPassword);
+    }
+
     public void verifySession() {
         // Kiểm tra token hoặc session sau này
     }

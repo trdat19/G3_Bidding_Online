@@ -22,7 +22,7 @@ public class AutoBidRule extends Entity {
         this.auctionId = auctionId;
         this.bidderId = bidderId;
         this.maxAmount = maxAmount;
-        this.stepAmount = stepAmount;
+        this.stepAmount = stepAmount != null ? stepAmount : BigDecimal.ZERO;
         this.isActive = true;
     }
 

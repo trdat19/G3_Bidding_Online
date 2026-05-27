@@ -2,6 +2,7 @@ package server.controller;
 
 import server.network.ClientConnectionHandler;
 import server.service.WalletService;
+import shared.dto.common.SellerWalletDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 
@@ -36,6 +37,23 @@ public class WalletServerController {
 
             return new BaseResponse(true, "Nạp tiền thành công", newBalance);
 
+        } catch (Exception e) {
+            return new BaseResponse(false, e.getMessage(), null);
+        }
+    }
+
+    public BaseResponse getSellerWalletSummary(ClientConnectionHandler handler) {
+        Long sellerId = handler.getUser().getId();
+        SellerWalletDTO summary = walletService.getSellerWalletSummary(sellerId);
+        return new BaseResponse(true, "Lấy thông tin ví seller thành công.", summary);
+    }
+
+    public BaseResponse withdrawSellerWallet(BaseRequest request, ClientConnectionHandler handler) {
+        try {
+            Long sellerId = handler.getUser().getId();
+            BigDecimal amount = new BigDecimal(request.getData().toString());
+            SellerWalletDTO summary = walletService.withdrawSellerWallet(sellerId, amount);
+            return new BaseResponse(true, "Rút tiền thành công.", summary);
         } catch (Exception e) {
             return new BaseResponse(false, e.getMessage(), null);
         }
