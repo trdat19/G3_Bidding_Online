@@ -38,7 +38,7 @@ public class AuctionService {
     private final ItemDAO itemDAO = new ItemDAO();
     private final UserDAO userDAO =  new UserDAO();
     private final BidDAO bidDAO = new BidDAO();
-
+    private final WalletService walletService = WalletService.getInstance();
     private AuctionService() {}
 
     /**
@@ -146,7 +146,7 @@ public class AuctionService {
             throw new RuntimeException("Bước nhảy giá phải lớn hơn 0");
         }
 
-//        clearReusableNoBidAuctions(itemId);
+        clearReusableNoBidAuctions(itemId);
 
         Auction auction = new Auction(itemId, sellerId, startPrice, startPrice,
                                         minIncrement, buyNowPrice, startTime, endTime);
@@ -372,7 +372,7 @@ public class AuctionService {
 
         try {
             if (highestBid != null) {
-                WalletService.getInstance().payWinnerToSeller(
+                walletService.payWinnerToSeller(
                         highestBid.getBidderId(),
                         auction.getSellerId(),
                         highestBid.getAmount()

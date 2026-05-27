@@ -38,6 +38,7 @@ public class BidService {
     private final AuctionDAO auctionDAO = new AuctionDAO();
     private final BidDAO bidDAO = new BidDAO();
     private final UserDAO userDAO =  new UserDAO();
+    private final WalletService walletService = WalletService.getInstance();
 
     private BidService() {}
 
@@ -102,7 +103,7 @@ public class BidService {
         }
 
         // 8. Kiểm tra ví
-        WalletService.getInstance().checkCanBid(bidderId, amount);
+        walletService.checkCanBid(bidderId, amount);
 
         // 9. Kiểm tra Buy-Now: Nếu bid >= buyNow -> chốt ngay
         boolean buyNowTriggered = auction.getBuyNowPrice() != null

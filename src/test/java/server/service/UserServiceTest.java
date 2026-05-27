@@ -92,10 +92,11 @@ public class UserServiceTest {
         User mockUser = new Admin();
 
         when(userDAO.findById(1L)).thenReturn(mockUser);
-        when(userService.changeStatus(1L, UserStatus.BLOCKED)).thenReturn(true);
+        when(userDAO.updateStatus(1L, UserStatus.BLOCKED)).thenReturn(true);
 
         assertTrue(userService.changeStatus(1L, UserStatus.BLOCKED));
 
-        verify(userDAO, times(2)).findById(1L);
+        verify(userDAO, times(1)).findById(1L);
+        verify(userDAO, times(1)).updateStatus(1L, UserStatus.BLOCKED);
     }
 }

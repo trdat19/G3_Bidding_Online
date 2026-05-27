@@ -39,6 +39,7 @@ public class AuctionServiceTest {
     @Mock private ItemDAO itemDAO;
     @Mock private UserDAO userDAO;
     @Mock private BidDAO bidDAO;
+    @Mock private WalletService walletService;
 
     private AuctionService auctionService;
 
@@ -50,6 +51,7 @@ public class AuctionServiceTest {
         inject("itemDAO", itemDAO);
         inject("userDAO", userDAO);
         inject("bidDAO", bidDAO);
+        inject("walletService", walletService);
     }
 
     private void inject(String name, Object mock) throws Exception {
@@ -68,7 +70,6 @@ public class AuctionServiceTest {
         User seller = user(7L, "Seller One");
 
         when(itemDAO.findById(10L)).thenReturn(item);
-        when(auctionDAO.getAllAuctionsByItemId(10L)).thenReturn(List.of());
         when(auctionDAO.insertAuction(any(Auction.class))).thenAnswer(invocation -> {
             Auction auction = invocation.getArgument(0);
             auction.setId(99L);
@@ -118,7 +119,7 @@ public class AuctionServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
                 auctionService.createAuction(auctionData(10L, 7L, start, end)));
 
-        assertEquals("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING!", exception.getMessage());
+        assertEquals("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING hoặc CANCELLED!", exception.getMessage());
         verify(auctionDAO, never()).insertAuction(any(Auction.class));
     }
 
@@ -177,7 +178,7 @@ public class AuctionServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
                 auctionService.createAuction(auctionData(10L, 7L, start, end)));
 
-        assertEquals("Chỉ có thể tạo đấu giá cho sản phẩm đang PENDING!", exception.getMessage());
+        assertEquals("Sản phẩm đã có lịch sử đấu giá, không thể tạo lại phiên mới!", exception.getMessage());
         verify(auctionDAO, never()).insertAuction(any(Auction.class));
         verify(auctionDAO, never()).deleteAuctionsByItemId(10L);
     }
@@ -285,6 +286,10 @@ public class AuctionServiceTest {
         when(auctionDAO.findById(5L)).thenReturn(auction);
         when(bidDAO.getHighestBidByAuctionId(5L)).thenReturn(highestBid);
         when(userDAO.findById(3L)).thenReturn(user(3L, "Bidder One"));
+        when(itemDAO.findById(10L)).thenReturn(item(10L, 7L, ItemStatus.ACTIVE));
+        doNothing().when(walletService).payWinnerToSeller(3L, 7L, new BigDecimal("150.00"));
+        when(itemDAO.updateStatus(10L, ItemStatus.SOLD)).thenReturn(true);
+        when(auctionDAO.updateStatus(5L, AuctionStatus.FINISHED)).thenReturn(true);
 
         Map<String, Object> result = auctionService.finishAuction(5L);
 
@@ -307,6 +312,9 @@ public class AuctionServiceTest {
                 LocalDateTime.now().plusMinutes(5));
         when(auctionDAO.findById(5L)).thenReturn(auction);
         when(bidDAO.getHighestBidByAuctionId(5L)).thenReturn(null);
+        when(itemDAO.findById(10L)).thenReturn(item(10L, 7L, ItemStatus.ACTIVE));
+        when(itemDAO.updateStatus(10L, ItemStatus.CANCELLED)).thenReturn(true);
+        when(auctionDAO.updateStatus(5L, AuctionStatus.FINISHED)).thenReturn(true);
 
         Map<String, Object> result = auctionService.finishAuction(5L);
 
