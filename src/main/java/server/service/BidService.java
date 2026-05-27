@@ -38,7 +38,6 @@ public class BidService {
     private final AuctionDAO auctionDAO = new AuctionDAO();
     private final BidDAO bidDAO = new BidDAO();
     private final UserDAO userDAO =  new UserDAO();
-    private final WalletService walletService = WalletService.getInstance();
 
     private BidService() {}
 
@@ -103,7 +102,7 @@ public class BidService {
         }
 
         // 8. Kiểm tra ví
-        walletService.checkCanBid(bidderId, amount);
+        WalletService.getInstance().checkCanBid(bidderId, auctionId, amount);
 
         // 9. Kiểm tra Buy-Now: Nếu bid >= buyNow -> chốt ngay
         boolean buyNowTriggered = auction.getBuyNowPrice() != null
@@ -148,6 +147,14 @@ public class BidService {
         bidEvent.setAction("NEW_BID");
 
         RealtimePushServer.pushToAuctionSubscribers(auctionId, bidEvent);
+
+        BaseResponse listEvent = new BaseResponse(
+                true,
+                "Danh sach phien dau gia da thay doi",
+                null
+        );
+        listEvent.setAction("AUCTION_LIST_CHANGED");
+        RealtimePushServer.pushToAuctionListSubscribers(listEvent);
 
         System.out.printf(
                 ">>> [BidService] %s %s giá %s cho phiên #%d%n",

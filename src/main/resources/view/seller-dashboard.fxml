@@ -31,10 +31,10 @@
 
                 <VBox spacing="12.0" styleClass="sidebar-menu">
                     <children>
-                        <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="sidebar-menu-button-active" text="⌂  Sản phẩm" />
-                        <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleAddProduct" styleClass="sidebar-menu-button" text="＋  Thêm sản phẩm" />
-                        <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleRefresh" styleClass="sidebar-menu-button" text="↻  Làm mới" />
-                        <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleOpenSellerWalletPopup" styleClass="sidebar-menu-button" text="💰  Ví bán hàng" />
+                        <Button fx:id="productsButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleShowProducts" styleClass="sidebar-menu-button-active" text="⌂  Sản phẩm" />
+                        <Button fx:id="approvedAuctionsButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleShowApprovedAuctions" styleClass="sidebar-menu-button" text="▦  Quản lý sản phẩm đấu giá" />
+                        <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleOpenSellerWalletPopup" styleClass="sidebar-menu-button" text="💰  Ví của tôi" />
+                        <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleChangePassword" styleClass="sidebar-menu-button" text="🔒  Đổi mật khẩu" />
                         <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleLogout" styleClass="sidebar-logout-button" text="🚪  Đăng xuất" />
                     </children>
                 </VBox>
@@ -77,8 +77,8 @@
                                     <children>
                                         <VBox spacing="6.0" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Label styleClass="section-title" text="Sản phẩm của bạn" />
-                                                <Label styleClass="section-subtitle" text="Thêm mới, chỉnh sửa, xóa hoặc tạo đấu giá tùy theo trạng thái sản phẩm." />
+                                                <Label fx:id="sectionTitleLabel" styleClass="section-title" text="Sản phẩm của bạn" />
+                                                <Label fx:id="sectionSubtitleLabel" styleClass="section-subtitle" text="Thêm mới, chỉnh sửa, xóa hoặc tạo đấu giá tùy theo trạng thái sản phẩm." />
                                             </children>
                                         </VBox>
                                         <Button mnemonicParsing="false" onAction="#handleAddProduct" styleClass="primary-button" text="+ Thêm sản phẩm" />
@@ -86,7 +86,27 @@
                                     </children>
                                 </HBox>
 
-                                <FlowPane fx:id="productContainer" hgap="28.0" prefWrapLength="980.0" vgap="18.0" />
+                                <StackPane>
+                                    <children>
+                                        <FlowPane fx:id="productContainer" hgap="28.0" prefWrapLength="980.0" vgap="18.0" />
+                                        <VBox fx:id="approvedAuctionPane" managed="false" spacing="14.0" visible="false">
+                                            <children>
+                                                <TableView fx:id="approvedAuctionTable" prefHeight="560.0" styleClass="seller-auction-table">
+                                                    <columns>
+                                                        <TableColumn fx:id="auctionIdColumn" prefWidth="90.0" text="Mã phiên" />
+                                                        <TableColumn fx:id="auctionProductColumn" prefWidth="175.0" text="Tên sản phẩm" />
+                                                        <TableColumn fx:id="auctionStartPriceColumn" prefWidth="125.0" text="Giá khởi điểm" />
+                                                        <TableColumn fx:id="auctionCurrentPriceColumn" prefWidth="125.0" text="Giá hiện tại" />
+                                                        <TableColumn fx:id="auctionStartTimeColumn" prefWidth="170.0" text="Bắt đầu" />
+                                                        <TableColumn fx:id="auctionEndTimeColumn" prefWidth="170.0" text="Kết thúc" />
+                                                        <TableColumn fx:id="auctionStatusColumn" prefWidth="120.0" text="Trạng thái" />
+                                                        <TableColumn fx:id="auctionBidCountColumn" prefWidth="100.0" text="Số lượt bid" />
+                                                    </columns>
+                                                </TableView>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </StackPane>
                             </children>
                         </VBox>
                     </content>

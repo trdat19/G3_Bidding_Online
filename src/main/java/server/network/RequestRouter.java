@@ -65,6 +65,11 @@ public class RequestRouter {
                     return AuthServerController.getInstance().logout(handler);
                 }
 
+                case Action.CHANGE_PASSWORD: {
+                    requireLogin(handler);
+                    return AuthServerController.getInstance().changePassword(request, handler);
+                }
+
                 /**
                  * Thao tác của ví
                  */
@@ -77,6 +82,16 @@ public class RequestRouter {
                 case DEPOSIT_WALLET: {
                     requireRole(handler, UserRole.BIDDER);
                     return WalletServerController.getInstance().deposit(request, handler);
+                }
+
+                case GET_SELLER_WALLET_SUMMARY: {
+                    requireRole(handler, UserRole.SELLER);
+                    return WalletServerController.getInstance().getSellerWalletSummary(handler);
+                }
+
+                case WITHDRAW_SELLER_WALLET: {
+                    requireRole(handler, UserRole.SELLER);
+                    return WalletServerController.getInstance().withdrawSellerWallet(request, handler);
                 }
 
                 /**
@@ -111,6 +126,10 @@ public class RequestRouter {
                     requireRole(handler, UserRole.SELLER);
                     return SellerServerController.getInstance().getItemsBySeller(handler);
                 }
+                case Action.GET_SELLER_APPROVED_AUCTIONS: {
+                    requireRole(handler, UserRole.SELLER);
+                    return AuctionServerController.getInstance().getApprovedAuctionsBySeller(handler);
+                }
                 case Action.SEND_CREATE_AUCTION_REQUEST: {
                     requireRole(handler, UserRole.SELLER);
                     return AuctionServerController.getInstance().createAuction(request, handler);
@@ -127,6 +146,18 @@ public class RequestRouter {
                 case Action.GET_WON_AUCTIONS: {
                     requireRole(handler, UserRole.BIDDER);
                     return AuctionServerController.getInstance().getWonAuctions(handler);
+                }
+                case Action.FOLLOW_AUCTION: {
+                    requireRole(handler, UserRole.BIDDER);
+                    return AuctionServerController.getInstance().followAuction(request, handler);
+                }
+                case Action.JOIN_AUCTION: {
+                    requireRole(handler, UserRole.BIDDER);
+                    return AuctionServerController.getInstance().joinAuction(request, handler);
+                }
+                case Action.GET_INTERESTED_AUCTIONS: {
+                    requireRole(handler, UserRole.BIDDER);
+                    return AuctionServerController.getInstance().getInterestedAuctions(handler);
                 }
 
                 case Action.SUBSCRIBE_AUCTION: {
@@ -148,31 +179,27 @@ public class RequestRouter {
                                 "ID phiên đấu giá phải là số nguyên hợp lệ!", null);
                     }
                 }
-
-                case Action.GET_AUCTION_LIST: {
+                case Action.GET_AUCTION_LIST:
                     return AuctionServerController.getInstance().getAuctions();
-                }
-
-                case Action.GET_AUCTION_DETAILS: {
+                case Action.GET_AUCTION_DETAILS:
                     return AuctionServerController.getInstance().getAuctionDetail(request);
-                }
 
-                case Action.GET_BID_HISTORY: {
+                case Action.GET_BID_HISTORY:
                     return AuctionServerController.getInstance().getBidHistory(request);
-                }
 
 
-                case Action.SUBSCRIBE_AUCTION_LIST: {
+                case Action.SUBSCRIBE_AUCTION_LIST:
+                {
                     requireRole(handler, UserRole.BIDDER);
                     RealtimePushServer.subscribeToAuctionList(handler);
                     return new BaseResponse(true, "Đã subscribe danh sách phiên đấu giá ", null);
                 }
 
+
                 case Action.REGISTER_AUTO_BID_RULE: {
                     requireRole(handler, UserRole.BIDDER);
                     return AutoBidController.getInstance().registerRule(request, handler);
                 }
-
                 case Action.REMOVE_AUTO_BID_RULE: {
                     requireRole(handler, UserRole.BIDDER);
                     return AutoBidController.getInstance().removeRule(request, handler);
@@ -181,6 +208,7 @@ public class RequestRouter {
                 /**
                  * Thao tác của Admin
                  */
+
                 case Action.GET_USERS_LIST: {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().getAllUsers();

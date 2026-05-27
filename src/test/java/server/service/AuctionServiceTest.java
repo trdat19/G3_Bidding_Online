@@ -355,6 +355,37 @@ public class AuctionServiceTest {
         assertEquals(5L, result.get(0).getId());
     }
 
+    @Test
+    @DisplayName("getApprovedAuctionsBySellerId - chỉ trả các phiên đã được duyệt")
+    public void getApprovedAuctionsBySellerId_excludesPendingAndRejectedAuctions() {
+        Auction openAuction = auction(
+                5L, 10L, 7L, AuctionStatus.OPEN,
+                LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(3));
+        Auction finishedAuction = auction(
+                6L, 11L, 7L, AuctionStatus.FINISHED,
+                LocalDateTime.now().minusHours(3), LocalDateTime.now().minusHours(1));
+        Auction pendingAuction = auction(
+                7L, 12L, 7L, AuctionStatus.WAITING_APPROVAL,
+                LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(3));
+        Auction rejectedAuction = auction(
+                8L, 13L, 7L, AuctionStatus.CANCELLED,
+                LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(3));
+
+        when(auctionDAO.getAllAuctionsBySellerId(7L)).thenReturn(List.of(
+                openAuction, finishedAuction, pendingAuction, rejectedAuction));
+        when(itemDAO.findById(10L)).thenReturn(item(10L, 7L, ItemStatus.ACTIVE));
+        when(itemDAO.findById(11L)).thenReturn(item(11L, 7L, ItemStatus.SOLD));
+        when(userDAO.findById(7L)).thenReturn(user(7L, "Seller One"));
+
+        List<AuctionDTO> result = auctionService.getApprovedAuctionsBySellerId(7L);
+
+        assertEquals(2, result.size());
+        assertEquals(5L, result.get(0).getId());
+        assertEquals(6L, result.get(1).getId());
+        verify(itemDAO, never()).findById(12L);
+        verify(itemDAO, never()).findById(13L);
+    }
+
     private Map<String, Object> auctionData(Long itemId, Long sellerId,
                                             LocalDateTime startTime,
                                             LocalDateTime endTime) {

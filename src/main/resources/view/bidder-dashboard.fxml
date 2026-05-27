@@ -32,9 +32,9 @@
             <VBox spacing="12.0" styleClass="sidebar-menu">
                <children>
                   <Button fx:id="homeButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleShowHome" styleClass="sidebar-menu-button-active" text="⌂  Trang chủ" />
-                  <Button fx:id="wonAuctionsButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleShowWonAuctions" styleClass="sidebar-menu-button" text="Đã thắng" />
-                  <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleOpenWalletPopup" styleClass="sidebar-menu-button" text="💳  Ví" />
-                  <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleRefresh" styleClass="sidebar-menu-button" text="↻  Làm mới" />
+                  <Button fx:id="wonAuctionsButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleShowWonAuctions" styleClass="sidebar-menu-button" text="🏆 Phiên đấu giá đã thắng" />
+                  <Button fx:id="interestedAuctionsButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleShowInterestedAuctions" styleClass="sidebar-menu-button" text="❤  Phiên đấu giá quan tâm" />
+                  <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleChangePassword" styleClass="sidebar-menu-button" text="🔒  Đổi mật khẩu" />
                   <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleLogout" styleClass="sidebar-logout-button" text="🚪  Đăng xuất" />
                </children>
             </VBox>
@@ -96,7 +96,33 @@
 
                            </children>
                         </HBox>
-                        <FlowPane fx:id="auctionContainer" hgap="28.0" prefWrapLength="980.0" vgap="28.0" />
+                        <StackPane>
+                           <children>
+                              <FlowPane fx:id="auctionContainer" hgap="28.0" prefWrapLength="980.0" vgap="28.0" />
+                              <VBox fx:id="interestedAuctionPane" managed="false" spacing="16.0" visible="false">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                       <children>
+                                          <TextField fx:id="interestedSearchField" prefWidth="240.0" promptText="Tìm phiên đấu giá..." />
+                                          <ComboBox fx:id="interestedStatusFilterBox" prefWidth="170.0" promptText="Trạng thái" />
+                                          <Button mnemonicParsing="false" onAction="#handleRefreshInterested" styleClass="wallet-open-button" text="Làm mới" />
+                                       </children>
+                                    </HBox>
+                                    <TableView fx:id="interestedAuctionTable" prefHeight="520.0">
+                                       <columns>
+                                          <TableColumn fx:id="interestIdColumn" prefWidth="105.0" text="Auction ID" />
+                                          <TableColumn fx:id="interestProductColumn" prefWidth="190.0" text="Product" />
+                                          <TableColumn fx:id="interestSellerColumn" prefWidth="145.0" text="Seller" />
+                                          <TableColumn fx:id="interestLeaderColumn" prefWidth="145.0" text="Leader" />
+                                          <TableColumn fx:id="interestPriceColumn" prefWidth="145.0" text="Current Price" />
+                                          <TableColumn fx:id="interestStatusColumn" prefWidth="120.0" text="Status" />
+                                          <TableColumn fx:id="interestEndTimeColumn" prefWidth="170.0" text="End Time" />
+                                       </columns>
+                                    </TableView>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </StackPane>
                      </children>
                   </VBox>
                </content>

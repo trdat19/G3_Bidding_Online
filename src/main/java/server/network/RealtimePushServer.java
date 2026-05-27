@@ -1,6 +1,7 @@
 package server.network;
 
 import shared.dto.response.BaseResponse;
+import shared.enums.UserRole;
 
 import java.util.Map;
 import java.util.Set;
@@ -72,6 +73,14 @@ public class RealtimePushServer {
         }
         else {
             System.out.println(">>> [Realtime] User ID: " + userId + " không online!");
+        }
+    }
+
+    public static void pushToRole(UserRole role, BaseResponse event) {
+        for (ClientConnectionHandler handler : userRegistry.values()) {
+            if (handler.getUser() != null && handler.getUser().getRole() == role) {
+                handler.sendResponse(event);
+            }
         }
     }
 

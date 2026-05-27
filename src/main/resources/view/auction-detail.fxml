@@ -5,16 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-
-<ScrollPane fitToWidth="true"
-            fitToHeight="true"
-            hbarPolicy="NEVER"
-            vbarPolicy="AS_NEEDED"
-            styleClass="auction-detail-scroll"
-            stylesheets="@../css/auction-detail.css"
-            xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.controller.AuctionDetailController">
+<ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" styleClass="auction-detail-scroll" stylesheets="@../css/auction-detail.css" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AuctionDetailController">
    <content>
       <BorderPane styleClass="auction-detail-root">
       
@@ -72,8 +63,8 @@
       
                           <HBox spacing="12">
                               <Button onAction="#handleJoinAuction" styleClass="primary-button" text="Tham gia đấu giá" />
-      
-                              <Button onAction="#handleBack" styleClass="secondary-button" text="Đóng" />
+
+                              <Button onAction="#handleFollowAuction" styleClass="primary-button" text="Theo dõi" />
                           </HBox>
       
                       </VBox>
@@ -114,7 +105,7 @@
       
                       <VBox spacing="6" styleClass="stat-box" GridPane.columnIndex="2" GridPane.rowIndex="1">
                           <Label styleClass="stat-label" text="TRẠNG THÁI" />
-                          <Label styleClass="stat-value" text="Theo dõi realtime" />
+                          <Label styleClass="stat-value" text="ĐANG HOẠT ĐỘNG" />
                       </VBox>
                   <rowConstraints>
                      <RowConstraints />

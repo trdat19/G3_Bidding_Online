@@ -21,6 +21,7 @@ import shared.dto.response.BaseResponse;
 import shared.dto.common.AuctionDTO;
 import javafx.application.Platform;
 import shared.dto.common.BidDTO;
+import javafx.util.StringConverter;
 
 import java.io.ByteArrayInputStream;
 import java.util.*;
@@ -86,6 +87,8 @@ public class BiddingViewController {
     private NumberAxis priceChartYAxis;
 
     private final XYChart.Series<Number, Number> priceSeries = new XYChart.Series<>();
+    private final List<String> priceChartTimeLabels = new ArrayList<>();
+
 
 
     private Item currentItem;
@@ -94,6 +97,7 @@ public class BiddingViewController {
     private final ObservableList<BidDTO> bidHistory = FXCollections.observableArrayList();
     private final DateTimeFormatter bidTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     private boolean returnedToDashboard = false;
+    private boolean auctionFinishedAlertShown = false;
 
     @FXML
     private void initialize() {
@@ -144,6 +148,7 @@ public class BiddingViewController {
         ClientNetworkService.getInstance()
                 .sendRequest(new BaseRequest(Action.SUBSCRIBE_AUCTION, currentItem.getId()));
         loadBidHistory();
+        refreshAuctionDetail();
     }
 
     private void loadBidHistory() {
@@ -182,7 +187,7 @@ public class BiddingViewController {
                 countdownTimeLine.stop();
             }
 
-            goToBidderDashboard();
+            messageLabel.setText("Phiên đấu giá đã kết thúc, đang chờ kết quả");
             return;
         }
         long hours = seconds / 3600;
@@ -287,12 +292,17 @@ public class BiddingViewController {
             return;
         }
 
-        currentItem.setCurrentPrice(bid.getAmount().doubleValue());
-        currentItem.setLeader(bid.getBidderName());
+        if (bid.getAmount().doubleValue() >= currentItem.getCurrentPrice()) {
+            currentItem.setCurrentPrice(bid.getAmount().doubleValue());
+            currentItem.setLeader(bid.getBidderName());
 
-        currentPriceLabel.setText(String.valueOf(currentItem.getCurrentPrice()));
-        leaderLabel.setText(currentItem.getLeader());
+            currentPriceLabel.setText(String.valueOf(currentItem.getCurrentPrice()));
+            leaderLabel.setText(currentItem.getLeader());
+        }
 
+        if (bid.getId() != null) {
+            bidHistory.removeIf(existingBid -> Objects.equals(existingBid.getId(), bid.getId()));
+        }
         bidHistory.add(0, bid);
         rebuildPriceChart();
 
@@ -309,6 +319,10 @@ public class BiddingViewController {
     }
 
     private void handleAuctionFinishedEvent(BaseResponse response) {
+        if (auctionFinishedAlertShown || returnedToDashboard) {
+            return;
+        }
+        auctionFinishedAlertShown = true;
         statusTextLabel.setText("FINISHED");
         timeLeftLabel.setText("00:00:00");
         messageLabel.setText(response.getMessage());
@@ -317,6 +331,21 @@ public class BiddingViewController {
             countdownTimeLine.stop();
         }
 
+        showAuctionFinishedAlert(response.getMessage());
+    }
+    private void showAuctionFinishedAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Kết quả phiên đấu giá");
+        alert.setHeaderText("Phiên đấu giá đã kết thúc");
+        alert.setContentText(message);
+        ButtonType exitButton = new ButtonType("Thoát", ButtonBar.ButtonData.OK_DONE);
+        alert.getButtonTypes().setAll(exitButton);
+
+        if (nameLabel.getScene() != null) {
+            alert.initOwner(nameLabel.getScene().getWindow());
+        }
+
+        alert.showAndWait();
         goToBidderDashboard();
     }
 
@@ -382,30 +411,37 @@ public class BiddingViewController {
 
             }
         });
-        priceChartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(priceChartYAxis) {
+        priceChartXAxis.setAutoRanging(false);
+        priceChartXAxis.setForceZeroInRange(false);
+        priceChartXAxis.setMinorTickVisible(false);
+
+        priceChartXAxis.setTickLabelFormatter(new StringConverter<>() {
             @Override
-            public String toString (Number value){
-                double price = value.doubleValue();
+            public String toString(Number value) {
+                int bidOrder = value.intValue();
 
-                if (price >= 1_000_000_000) {
-                    return String.format("%.1fB", price / 1_000_000_000);
+                if (Math.abs(value.doubleValue() - bidOrder) > 0.001) {
+                    return "";
                 }
 
-                if (price >= 1_000_000) {
-                    return String.format("%.1fM", price / 1_000_000);
+                if (bidOrder < 0 || bidOrder >= priceChartTimeLabels.size()) {
+                    return "";
                 }
 
-                if (price >= 1_000) {
-                    return String.format("%.0fK", price / 1_000);
-                }
+                return priceChartTimeLabels.get(bidOrder);
+            }
 
-                return String.format("%.0f", price);
+            @Override
+            public Number fromString(String value) {
+                return 0;
             }
         });
     }
 
     private void rebuildPriceChart() {
         priceSeries.getData().clear();
+        priceChartTimeLabels.clear();
+
         List<BidDTO> validBids = new ArrayList<>();
 
         for (BidDTO bid : bidHistory) {
@@ -413,20 +449,52 @@ public class BiddingViewController {
                 validBids.add(bid);
             }
         }
-        validBids.sort(Comparator.comparing(BidDTO::getTimestamp));
+
+        validBids.sort(
+                Comparator.comparing(
+                                BidDTO::getId,
+                                Comparator.nullsLast(Comparator.naturalOrder())
+                        )
+                        .thenComparing(BidDTO::getTimestamp)
+                        .thenComparing(BidDTO::getAmount)
+        );
 
         int startIndex = Math.max(0, validBids.size() - 30);
-        for (int i = startIndex; i < validBids.size(); i++) {
-            BidDTO bid = validBids.get(i);
+        List<BidDTO> visibleBids = validBids.subList(startIndex, validBids.size());
 
-            long timeOnXAxis = bid.getTimestamp()
-                    .atZone(java.time.ZoneId.systemDefault())
-                    .toEpochSecond();
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-            double priceOnYAxis = bid.getAmount().doubleValue();
-            priceSeries.getData().add(new XYChart.Data<>(timeOnXAxis, priceOnYAxis));
+        for (int index = 0; index < visibleBids.size(); index++) {
+            BidDTO bid = visibleBids.get(index);
+
+            priceChartTimeLabels.add(
+                    bid.getTimestamp().format(timeFormatter)
+            );
+
+            priceSeries.getData().add(
+                    new XYChart.Data<>(index, bid.getAmount().doubleValue())
+            );
         }
 
+        int pointCount = visibleBids.size();
+
+        if (pointCount == 0) {
+            priceChartXAxis.setLowerBound(0);
+            priceChartXAxis.setUpperBound(1);
+            priceChartXAxis.setTickUnit(1);
+            return;
+        }
+
+        if (pointCount == 1) {
+            priceChartXAxis.setLowerBound(-0.5);
+            priceChartXAxis.setUpperBound(0.5);
+            priceChartXAxis.setTickUnit(1);
+            return;
+        }
+
+        priceChartXAxis.setLowerBound(0);
+        priceChartXAxis.setUpperBound(pointCount - 1);
+        priceChartXAxis.setTickUnit(Math.max(1, Math.ceil((pointCount - 1) / 6.0)));
     }
 
     /** kích hoạt auto bid */

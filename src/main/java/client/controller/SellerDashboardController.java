@@ -1,11 +1,15 @@
 package client.controller;
 
 import client.model.Item;
+import shared.dto.common.AuctionDTO;
 import shared.dto.common.ItemDTO;
 import client.service.ClientNetworkService;
 import client.session.ClientSession;
 import client.util.StageUtils;
-import javafx.animation.Timeline;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,10 +20,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -30,8 +41,13 @@ import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javafx.application.Platform;
 import shared.enums.Action;
 
@@ -49,14 +65,66 @@ public class SellerDashboardController {
     @FXML
     private Label sellerWalletBalanceLabel;
 
+    @FXML
+    private Button productsButton;
+
+    @FXML
+    private Button approvedAuctionsButton;
+
+    @FXML
+    private Label sectionTitleLabel;
+
+    @FXML
+    private Label sectionSubtitleLabel;
+
+    @FXML
+    private VBox approvedAuctionPane;
+
+    @FXML
+    private TableView<AuctionDTO> approvedAuctionTable;
+
+    @FXML
+    private TableColumn<AuctionDTO, Long> auctionIdColumn;
+
+    @FXML
+    private TableColumn<AuctionDTO, String> auctionProductColumn;
+
+    @FXML
+    private TableColumn<AuctionDTO, String> auctionStartPriceColumn;
+
+    @FXML
+    private TableColumn<AuctionDTO, String> auctionCurrentPriceColumn;
+
+    @FXML
+    private TableColumn<AuctionDTO, String> auctionStartTimeColumn;
+
+    @FXML
+    private TableColumn<AuctionDTO, String> auctionEndTimeColumn;
+
+    @FXML
+    private TableColumn<AuctionDTO, String> auctionStatusColumn;
+
+    @FXML
+    private TableColumn<AuctionDTO, Integer> auctionBidCountColumn;
+
     private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
 
     private final List<Item> itemList = new ArrayList<>();
-    private Timeline refreshTimeline;
+    private final ObservableList<AuctionDTO> approvedAuctions = FXCollections.observableArrayList();
+    private final DateTimeFormatter tableDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private final ExecutorService requestExecutor = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable, "Seller-Dashboard-Request");
+        thread.setDaemon(true);
+        return thread;
+    });
+    private boolean showingApprovedAuctions;
+    private volatile boolean dashboardActive = true;
 
     @FXML
     public void initialize() {
         sellerNameLabel.setText(ClientSession.getCurrentUserFullName());
+        setupApprovedAuctionTable();
+        showProductsLoadingState();
         refreshProducts();
         loadSellerWalletBalance();
 
@@ -66,7 +134,10 @@ public class SellerDashboardController {
     @FXML
     private void handleOpenSellerWalletPopup(ActionEvent event) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/seller-wallet-popup.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/seller-wallet-popup.fxml"));
+            Parent root = loader.load();
+            SellerWalletPopupController controller = loader.getController();
+            controller.setOnWalletUpdated(this::loadSellerWalletBalance);
 
             Stage popup = new Stage();
             popup.setTitle("Ví bán hàng");
@@ -81,9 +152,24 @@ public class SellerDashboardController {
 
     private void loadProducts() {
         productContainer.getChildren().clear();
+        if (itemList.isEmpty()) {
+            showProductsMessage("Bạn chưa có sản phẩm nào.");
+            return;
+        }
+
         for (Item items : itemList) {
             productContainer.getChildren().add(createProductCard(items));
         }
+    }
+
+    private void showProductsLoadingState() {
+        showProductsMessage("Đang tải sản phẩm...");
+    }
+
+    private void showProductsMessage(String message) {
+        Label messageLabel = new Label(message);
+        messageLabel.getStyleClass().add("section-subtitle");
+        productContainer.getChildren().setAll(messageLabel);
     }
 
     private VBox createProductCard(Item item) {
@@ -101,7 +187,9 @@ public class SellerDashboardController {
         imageBox.setPrefHeight(150);
 
         if (item.getImageBytes() != null && item.getImageBytes().length > 0) {
-            ImageView imageView = new ImageView(new Image(new ByteArrayInputStream(item.getImageBytes())));
+            Image image = new Image(
+                    new ByteArrayInputStream(item.getImageBytes()), 340, 150, true, true);
+            ImageView imageView = new ImageView(image);
             imageView.setFitWidth(340);
             imageView.setFitHeight(150);
             imageView.setPreserveRatio(true);
@@ -209,8 +297,10 @@ public class SellerDashboardController {
     }
     @FXML
     private void handleLogout(ActionEvent event) {
+        dashboardActive = false;
         ClientNetworkService.getInstance().removeEventListener(realtimeListener);
         ClientNetworkService.getInstance().sendRequest(new BaseRequest(Action.LOGOUT, null));
+        requestExecutor.shutdown();
         ClientSession.clear();
 
         try {
@@ -254,9 +344,131 @@ public class SellerDashboardController {
         loadProducts();
 
     }
+
+    @FXML
+    private void handleShowProducts() {
+        showingApprovedAuctions = false;
+        sectionTitleLabel.setText("Sản phẩm của bạn");
+        sectionSubtitleLabel.setText(
+                "Thêm mới, chỉnh sửa, xóa hoặc tạo đấu giá tùy theo trạng thái sản phẩm.");
+        productsButton.getStyleClass().setAll("sidebar-menu-button-active");
+        approvedAuctionsButton.getStyleClass().setAll("sidebar-menu-button");
+        productContainer.setManaged(true);
+        productContainer.setVisible(true);
+        approvedAuctionPane.setManaged(false);
+        approvedAuctionPane.setVisible(false);
+        refreshProducts();
+    }
+
+    @FXML
+    private void handleShowApprovedAuctions() {
+        showingApprovedAuctions = true;
+        sectionTitleLabel.setText("Quản lý sản phẩm đấu giá");
+        sectionSubtitleLabel.setText(
+                "Theo dõi các phiên đấu giá của bạn đã được admin phê duyệt.");
+        productsButton.getStyleClass().setAll("sidebar-menu-button");
+        approvedAuctionsButton.getStyleClass().setAll("sidebar-menu-button-active");
+        productContainer.setManaged(false);
+        productContainer.setVisible(false);
+        approvedAuctionPane.setManaged(true);
+        approvedAuctionPane.setVisible(true);
+        loadApprovedAuctions();
+    }
+
     @FXML
     private void handleRefresh() {
-        refreshProducts();
+        if (showingApprovedAuctions) {
+            loadApprovedAuctions();
+        } else {
+            refreshProducts();
+        }
+    }
+
+    @FXML
+    private void handleChangePassword() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Đổi mật khẩu");
+        dialog.initOwner(sellerNameLabel.getScene().getWindow());
+        dialog.getDialogPane().setHeaderText("Cập nhật mật khẩu tài khoản seller");
+
+        PasswordField oldPasswordField = new PasswordField();
+        oldPasswordField.setPromptText("Nhập mật khẩu cũ");
+        PasswordField newPasswordField = new PasswordField();
+        newPasswordField.setPromptText("Nhập mật khẩu mới");
+        PasswordField confirmPasswordField = new PasswordField();
+        confirmPasswordField.setPromptText("Xác nhận mật khẩu mới");
+
+        GridPane form = new GridPane();
+        form.setHgap(12);
+        form.setVgap(12);
+        form.addRow(0, new Label("Mật khẩu cũ"), oldPasswordField);
+        form.addRow(1, new Label("Mật khẩu mới"), newPasswordField);
+        form.addRow(2, new Label("Xác nhận mật khẩu mới"), confirmPasswordField);
+        dialog.getDialogPane().setContent(form);
+
+        ButtonType updateButtonType = new ButtonType(
+                "Cập nhật", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
+        Node updateButton = dialog.getDialogPane().lookupButton(updateButtonType);
+
+        updateButton.addEventFilter(ActionEvent.ACTION, event -> {
+            String oldPassword = oldPasswordField.getText();
+            String newPassword = newPasswordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+            String validationMessage = validatePasswordChange(
+                    oldPassword, newPassword, confirmPassword);
+
+            if (validationMessage != null) {
+                showMessage(Alert.AlertType.WARNING, "Đổi mật khẩu", validationMessage);
+                event.consume();
+                return;
+            }
+
+            Map<String, String> data = new HashMap<>();
+            data.put("oldPassword", oldPassword);
+            data.put("newPassword", newPassword);
+            data.put("confirmPassword", confirmPassword);
+
+            BaseResponse response = ClientNetworkService.getInstance()
+                    .sendRequest(new BaseRequest(Action.CHANGE_PASSWORD, data));
+            if (response == null || !response.isSuccess()) {
+                String message = response != null
+                        ? response.getMessage()
+                        : "Không kết nối được server.";
+                showMessage(Alert.AlertType.ERROR, "Đổi mật khẩu thất bại", message);
+                event.consume();
+                return;
+            }
+
+            if (ClientSession.getCurrentUser() != null) {
+                ClientSession.getCurrentUser().setPassword(newPassword);
+            }
+            showMessage(Alert.AlertType.INFORMATION, "Đổi mật khẩu", response.getMessage());
+        });
+
+        dialog.showAndWait();
+    }
+
+    private String validatePasswordChange(
+            String oldPassword, String newPassword, String confirmPassword) {
+        if (oldPassword.isBlank() || newPassword.isBlank() || confirmPassword.isBlank()) {
+            return "Vui lòng nhập đầy đủ ba trường mật khẩu.";
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            return "Xác nhận mật khẩu mới không khớp.";
+        }
+        if (newPassword.equals(oldPassword)) {
+            return "Mật khẩu mới phải khác mật khẩu cũ.";
+        }
+        return null;
+    }
+
+    private void showMessage(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
     private void handleEditProduct(Item item) {
@@ -323,41 +535,71 @@ public class SellerDashboardController {
 
     }
     public void refreshProducts() {
-        BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest(Action.GET_SELLER_ITEMS, null));
-
-        if (response == null || !response.isSuccess()) {
-            System.out.println(response != null ? response.getMessage() : "Khong ket noi duoc server");
+        if (!dashboardActive) {
             return;
         }
 
-        itemList.clear();
-
-        List<?> serverItems = (List<?>) response.getData();
-        for (Object obj : serverItems) {
-            ItemDTO serverItem = (ItemDTO) obj;
-
-            Item item = new Item(
-                    serverItem.getName(),
-                    serverItem.getCategory().name(),
-                    serverItem.getDescription(),
-                    1,
-                    1,
-                    "",
-                    serverItem.getCreatedAt(),
-                    serverItem.getCreatedAt(),
-                    serverItem.getStatus().name(),
-                    0
-            );
-
-            item.setId(serverItem.getId());
-            item.setImageUrl(serverItem.getImageUrl());
-            item.setImageBytes(serverItem.getImageBytes());
-            item.setImageContentType(serverItem.getImageContentType());
-            itemList.add(item);
+        if (itemList.isEmpty() && !showingApprovedAuctions) {
+            showProductsLoadingState();
         }
 
-        loadProducts();
+        requestExecutor.execute(() -> {
+            if (!dashboardActive) {
+                return;
+            }
+
+            BaseResponse response = ClientNetworkService.getInstance()
+                    .sendRequest(new BaseRequest(Action.GET_SELLER_ITEMS, null));
+
+            if (!dashboardActive) {
+                return;
+            }
+
+            if (response == null || !response.isSuccess()) {
+                Platform.runLater(() -> {
+                    if (dashboardActive && !showingApprovedAuctions) {
+                        showProductsMessage("Không tải được danh sách sản phẩm.");
+                    }
+                });
+                return;
+            }
+
+            List<Item> loadedItems = new ArrayList<>();
+            for (Object obj : (List<?>) response.getData()) {
+                ItemDTO serverItem = (ItemDTO) obj;
+
+                Item item = new Item(
+                        serverItem.getName(),
+                        serverItem.getCategory().name(),
+                        serverItem.getDescription(),
+                        1,
+                        1,
+                        "",
+                        serverItem.getCreatedAt(),
+                        serverItem.getCreatedAt(),
+                        serverItem.getStatus().name(),
+                        0
+                );
+
+                item.setId(serverItem.getId());
+                item.setImageUrl(serverItem.getImageUrl());
+                item.setImageBytes(serverItem.getImageBytes());
+                item.setImageContentType(serverItem.getImageContentType());
+                loadedItems.add(item);
+            }
+
+            Platform.runLater(() -> {
+                if (!dashboardActive) {
+                    return;
+                }
+
+                itemList.clear();
+                itemList.addAll(loadedItems);
+                if (!showingApprovedAuctions) {
+                    loadProducts();
+                }
+            });
+        });
     }
     private boolean canManageItem(Item item) {
         return "PENDING".equals(item.getStatus())
@@ -390,20 +632,127 @@ public class SellerDashboardController {
         }
 
         Platform.runLater(() -> {
-            refreshProducts();
+            if (showingApprovedAuctions) {
+                loadApprovedAuctions();
+            } else {
+                refreshProducts();
+            }
             loadSellerWalletBalance();
+            if (response.getData() instanceof Map<?, ?> data) {
+                Object eventType = data.get("eventType");
+                if ("AUCTION_SOLD".equals(eventType)) {
+                    showMessage(
+                            Alert.AlertType.INFORMATION,
+                            "Sản phẩm đã bán",
+                            response.getMessage()
+                    );
+                } else if ("AUCTION_FINISHED_NO_BID".equals(eventType)) {
+                    showMessage(
+                            Alert.AlertType.INFORMATION,
+                            "Phiên đấu giá kết thúc mà không ai đặt giá",
+                            response.getMessage()
+                    );
+
+                }
+            }
         });
     }
 
-    private void loadSellerWalletBalance() {
-        BaseResponse response = ClientNetworkService.getInstance()
-                .sendRequest(new BaseRequest(Action.GET_WALLET, null));
+    private void setupApprovedAuctionTable() {
+        auctionIdColumn.setCellValueFactory(cell ->
+                new ReadOnlyObjectWrapper<>(cell.getValue().getId()));
+        auctionProductColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getItemName()));
+        auctionStartPriceColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(formatMoney(cell.getValue().getStartPrice())));
+        auctionCurrentPriceColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(formatMoney(cell.getValue().getDisplayPrice())));
+        auctionStartTimeColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(formatDateTime(cell.getValue().getStartTime())));
+        auctionEndTimeColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(formatDateTime(cell.getValue().getEndTime())));
+        auctionStatusColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getStatus() != null
+                        ? cell.getValue().getStatus().name() : ""));
+        auctionBidCountColumn.setCellValueFactory(cell ->
+                new ReadOnlyObjectWrapper<>(cell.getValue().getBidCount()));
+        approvedAuctionTable.setItems(approvedAuctions);
+    }
 
-        if (response != null && response.isSuccess() && response.getData() != null) {
-            BigDecimal balance = new BigDecimal(response.getData().toString());
-            sellerWalletBalanceLabel.setText("$" + balance.toPlainString());
-        } else {
-            sellerWalletBalanceLabel.setText("$0.00");
+    private void loadApprovedAuctions() {
+        if (!dashboardActive) {
+            return;
         }
+
+        approvedAuctionTable.setPlaceholder(new Label("Đang tải dữ liệu..."));
+        requestExecutor.execute(() -> {
+            if (!dashboardActive) {
+                return;
+            }
+
+            BaseResponse response = ClientNetworkService.getInstance()
+                    .sendRequest(new BaseRequest(Action.GET_SELLER_APPROVED_AUCTIONS, null));
+
+            if (!dashboardActive) {
+                return;
+            }
+
+            Platform.runLater(() -> {
+                if (!dashboardActive) {
+                    return;
+                }
+
+                approvedAuctions.clear();
+                if (response != null && response.isSuccess() && response.getData() != null) {
+                    for (Object object : (List<?>) response.getData()) {
+                        approvedAuctions.add((AuctionDTO) object);
+                    }
+                    approvedAuctionTable.setPlaceholder(
+                            new Label("Chưa có phiên đấu giá nào được duyệt."));
+                    return;
+                }
+
+                approvedAuctionTable.setPlaceholder(new Label("Không tải được dữ liệu."));
+                if (showingApprovedAuctions) {
+                    showMessage(Alert.AlertType.INFORMATION, "Phiên đấu giá",
+                            response != null ? response.getMessage() : "Không kết nối được server.");
+                }
+            });
+        });
+    }
+
+    private String formatMoney(BigDecimal amount) {
+        return amount != null ? "$" + amount.toPlainString() : "$0.00";
+    }
+
+    private String formatDateTime(java.time.LocalDateTime dateTime) {
+        return dateTime != null ? dateTime.format(tableDateFormat) : "-";
+    }
+
+    private void loadSellerWalletBalance() {
+        if (!dashboardActive) {
+            return;
+        }
+
+        requestExecutor.execute(() -> {
+            if (!dashboardActive) {
+                return;
+            }
+
+            BaseResponse response = ClientNetworkService.getInstance()
+                    .sendRequest(new BaseRequest(Action.GET_WALLET, null));
+            String balanceText = "$0.00";
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                BigDecimal balance = new BigDecimal(response.getData().toString());
+                balanceText = "$" + balance.toPlainString();
+            }
+
+            String displayBalance = balanceText;
+            Platform.runLater(() -> {
+                if (dashboardActive) {
+                    sellerWalletBalanceLabel.setText(displayBalance);
+                }
+            });
+        });
     }
 }

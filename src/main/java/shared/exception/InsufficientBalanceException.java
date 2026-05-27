@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class InsufficientBalanceException extends AuctionException {
 
-    public InsufficientBalanceException(BigDecimal balance) {
-        super("Không đủ tiền. Số dư hiện tại: " + balance);
+    public InsufficientBalanceException(BigDecimal availableBalance) {
+        super("Không đủ tiền khả dụng để đặt giá. Số dư khả dụng: $" + availableBalance);
     }
 }

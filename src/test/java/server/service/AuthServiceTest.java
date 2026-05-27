@@ -156,4 +156,41 @@ public class AuthServiceTest {
         verify(userDAO, times(1)).existsByUsername("existingUser");
         verify(userDAO, times(1)).existsByEmail("existingEmail");
     }
+
+    @Test
+    @DisplayName("Đổi mật khẩu thành công khi mật khẩu cũ chính xác")
+    public void changePassword_success() throws Exception {
+        User sessionUser = new Seller();
+        sessionUser.setId(7L);
+        sessionUser.setPassword("oldPassword");
+
+        User storedUser = new Seller();
+        storedUser.setId(7L);
+        storedUser.setPassword("oldPassword");
+
+        when(userDAO.findById(7L)).thenReturn(storedUser);
+        when(userDAO.updatePassword(7L, "newPassword")).thenReturn(true);
+
+        authService.changePassword(sessionUser, "oldPassword", "newPassword");
+
+        assertEquals("newPassword", sessionUser.getPassword());
+        verify(userDAO).updatePassword(7L, "newPassword");
+    }
+
+    @Test
+    @DisplayName("Đổi mật khẩu thất bại khi mật khẩu cũ không đúng")
+    public void changePassword_failed_wrongOldPassword() {
+        User sessionUser = new Seller();
+        sessionUser.setId(7L);
+
+        User storedUser = new Seller();
+        storedUser.setPassword("oldPassword");
+        when(userDAO.findById(7L)).thenReturn(storedUser);
+
+        Exception exception = assertThrows(Exception.class, () ->
+                authService.changePassword(sessionUser, "wrongPassword", "newPassword"));
+
+        assertEquals("Mật khẩu cũ không chính xác.", exception.getMessage());
+        verify(userDAO, never()).updatePassword(anyLong(), anyString());
+    }
 }

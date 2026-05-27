@@ -2,6 +2,8 @@ package server.dao;
 
 import server.database.DBconnection;
 import server.model.core.Bid;
+
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -230,4 +232,43 @@ public class BidDAO {
         bid.setIsAutoBid(rs.getBoolean("is_auto_bid"));
         return bid;
     }
+
+
+public BigDecimal getReservedAmountByBidderIdExcludingAuction(
+        long bidderId, long excludedAuctionId) {
+
+    String sql = """
+            SELECT COALESCE(SUM(b.bid_amount), 0) AS reserved_amount
+            FROM bids b
+            JOIN auctions a ON a.id_auction = b.auction_id
+                        WHERE b.bidder_id = ?
+                          AND b.auction_id <> ?
+                          AND a.status_auction IN ('OPEN', 'RUNNING')
+                          AND b.id = (
+                              SELECT b2.id
+                              FROM bids b2
+                              WHERE b2.auction_id = b.auction_id
+                              ORDER BY b2.bid_amount DESC, b2.bid_time ASC, b2.id ASC
+                              LIMIT 1
+                          )
+                        """;
+
+                try (Connection con = DBconnection.getInstance().getConnection();
+                     PreparedStatement ps = con.prepareStatement(sql)) {
+
+                    ps.setLong(1, bidderId);
+                    ps.setLong(2, excludedAuctionId);
+
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            return rs.getBigDecimal("reserved_amount");
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.err.println("getReservedAmount error: " + e.getMessage());
+                }
+
+                return BigDecimal.ZERO;
+            }
+
 }

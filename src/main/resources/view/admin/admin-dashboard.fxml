@@ -15,7 +15,6 @@
             <Label styleClass="logo-label" text="BidZone Admin" />
             <Region HBox.hgrow="ALWAYS" />
 
-            <TextField prefWidth="250" promptText="Search..." />
             <Label text="Admin" />
             <Button onAction="#handleLogout" styleClass="logout-btn" text="Đăng xuất" />
         </HBox>
