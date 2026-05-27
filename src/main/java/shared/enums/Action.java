@@ -7,12 +7,15 @@ public enum Action {
     LOGIN,
     REGISTER,
     LOGOUT,
+    CHANGE_PASSWORD,
 
     /**
     *  Ví
     */
     GET_WALLET,
     DEPOSIT_WALLET,
+    GET_SELLER_WALLET_SUMMARY,
+    WITHDRAW_SELLER_WALLET,
 
     /**
      * Seller
@@ -21,6 +24,7 @@ public enum Action {
     UPDATE_ITEM,
     DELETE_ITEM,
     GET_SELLER_ITEMS,
+    GET_SELLER_APPROVED_AUCTIONS,
     SEND_CREATE_AUCTION_REQUEST,
 
 
@@ -31,6 +35,9 @@ public enum Action {
     PLACE_BID,
     SUBSCRIBE_AUCTION,
     UNSUBSCRIBE_AUCTION,
+    FOLLOW_AUCTION,
+    JOIN_AUCTION,
+    GET_INTERESTED_AUCTIONS,
 
     REGISTER_AUTO_BID_RULE,
     REMOVE_AUTO_BID_RULE,
@@ -39,6 +46,7 @@ public enum Action {
     /**
      * Admin
      */
+    GET_ADMIN_DASHBOARD_SUMMARY,
     GET_USERS_LIST,
     ENABLE_USER,
     DISABLE_USER,

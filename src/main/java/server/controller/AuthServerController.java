@@ -119,4 +119,36 @@ public class AuthServerController {
         RealtimePushServer.removeConnection(handler);
         return new BaseResponse(true, "Đã đăng xuất", null);
     }
+
+    public BaseResponse changePassword(BaseRequest request, ClientConnectionHandler handler) {
+        if (!(request.getData() instanceof Map<?, ?> data)) {
+            return new BaseResponse(false, "Thiếu dữ liệu đổi mật khẩu.", null);
+        }
+
+        Object oldPasswordValue = data.get("oldPassword");
+        Object newPasswordValue = data.get("newPassword");
+        Object confirmPasswordValue = data.get("confirmPassword");
+        if (!(oldPasswordValue instanceof String oldPassword)
+                || !(newPasswordValue instanceof String newPassword)
+                || !(confirmPasswordValue instanceof String confirmPassword)) {
+            return new BaseResponse(false, "Thiếu dữ liệu đổi mật khẩu.", null);
+        }
+
+        if (oldPassword.isBlank() || newPassword.isBlank() || confirmPassword.isBlank()) {
+            return new BaseResponse(false, "Vui lòng nhập đầy đủ ba trường mật khẩu.", null);
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            return new BaseResponse(false, "Xác nhận mật khẩu mới không khớp.", null);
+        }
+        if (newPassword.equals(oldPassword)) {
+            return new BaseResponse(false, "Mật khẩu mới phải khác mật khẩu cũ.", null);
+        }
+
+        try {
+            AuthService.getInstance().changePassword(handler.getUser(), oldPassword, newPassword);
+            return new BaseResponse(true, "Đổi mật khẩu thành công.", null);
+        } catch (Exception e) {
+            return new BaseResponse(false, e.getMessage(), null);
+        }
+    }
 }

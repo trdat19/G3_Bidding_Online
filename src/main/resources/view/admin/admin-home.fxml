@@ -1,35 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.layout.Region?>
-<VBox xmlns:fx="http://javafx.com/fxml" spacing="20" styleClass="page">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="client.controller.AdminHomeController" spacing="20" styleClass="page">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="4">
+            <Label text="Tổng quan quản trị" styleClass="page-title"/>
+            <Label fx:id="dashboardStatusLabel" text="Đang tải dữ liệu hệ thống..." styleClass="muted-text"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Làm mới" onAction="#handleRefresh" styleClass="primary-btn"/>
+    </HBox>
+
     <HBox spacing="20">
         <VBox styleClass="stat-card" prefWidth="180">
-            <Label text="120" styleClass="stat-number"/>
+            <Label fx:id="totalUsersLabel" text="--" styleClass="stat-number"/>
             <Label text="Tổng người dùng"/>
         </VBox>
 
         <VBox styleClass="stat-card" prefWidth="180">
-            <Label text="18" styleClass="stat-number"/>
+            <Label fx:id="runningAuctionsLabel" text="--" styleClass="stat-number"/>
             <Label text="Phiên đang diễn ra"/>
         </VBox>
 
         <VBox styleClass="stat-card" prefWidth="180">
-            <Label text="54" styleClass="stat-number"/>
+            <Label fx:id="finishedAuctionsLabel" text="--" styleClass="stat-number"/>
             <Label text="Phiên đã kết thúc"/>
         </VBox>
 
         <VBox styleClass="stat-card" prefWidth="180">
-            <Label text="73" styleClass="stat-number"/>
-            <Label text="Sản phẩm"/>
+            <Label fx:id="totalProductsLabel" text="--" styleClass="stat-number"/>
+            <Label text="Tổng sản phẩm"/>
         </VBox>
     </HBox>
 
@@ -40,25 +50,25 @@
             <HBox styleClass="focus-row" spacing="12">
                 <Label text="Yêu cầu duyệt" styleClass="focus-label"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="Duyệt sản phẩm người bán gửi lên" styleClass="muted-text"/>
+                <Label fx:id="requestTaskLabel" text="--" styleClass="muted-text"/>
             </HBox>
 
             <HBox styleClass="focus-row" spacing="12">
                 <Label text="Phiên đấu giá" styleClass="focus-label"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="Theo dõi các phiên đang chạy" styleClass="muted-text"/>
+                <Label fx:id="auctionTaskLabel" text="--" styleClass="muted-text"/>
             </HBox>
 
             <HBox styleClass="focus-row" spacing="12">
                 <Label text="Người dùng" styleClass="focus-label"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="Quản lý trạng thái tài khoản" styleClass="muted-text"/>
+                <Label fx:id="userTaskLabel" text="--" styleClass="muted-text"/>
             </HBox>
 
             <HBox styleClass="focus-row" spacing="12">
                 <Label text="Sản phẩm" styleClass="focus-label"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="Theo dõi sản phẩm trong hệ thống" styleClass="muted-text"/>
+                <Label fx:id="productTaskLabel" text="--" styleClass="muted-text"/>
             </HBox>
         </VBox>
 
@@ -68,25 +78,20 @@
             <HBox styleClass="summary-row">
                 <Label text="Phiên đang diễn ra"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="18" styleClass="summary-number"/>
+                <Label fx:id="runningSummaryLabel" text="--" styleClass="summary-number"/>
             </HBox>
 
             <HBox styleClass="summary-row">
                 <Label text="Phiên đang chờ duyệt"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="6" styleClass="summary-number"/>
+                <Label fx:id="pendingRequestsLabel" text="--" styleClass="summary-number"/>
             </HBox>
 
             <HBox styleClass="summary-row">
                 <Label text="Phiên đã kết thúc"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="54" styleClass="summary-number"/>
+                <Label fx:id="finishedSummaryLabel" text="--" styleClass="summary-number"/>
             </HBox>
         </VBox>
     </HBox>
-
-    <VBox styleClass="dashboard-card" spacing="12">
-        <Label text="Tóm tắt quản trị" styleClass="section-title"/>
-        <Label text="Sử dụng menu bên trái để duyệt yêu cầu, quản lý người dùng, theo dõi đấu giá và xem báo cáo hệ thống" styleClass="muted-text"/>
-    </VBox>
 </VBox>

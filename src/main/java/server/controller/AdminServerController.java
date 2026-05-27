@@ -1,8 +1,10 @@
 package server.controller;
 
 import server.model.user.User;
+import server.dao.AdminDashboardDAO;
 import server.service.AuctionService;
 import server.service.UserService;
+import shared.dto.AdminDashboardDTO;
 import shared.dto.common.AuctionDTO;
 import shared.dto.common.UserDTO;
 import shared.dto.request.BaseRequest;
@@ -32,6 +34,7 @@ public class AdminServerController {
     private final AuctionService auctionService = AuctionService.getInstance();
     private final ItemService itemService = ItemService.getInstance();
     private final AuctionDAO auctionDAO = new AuctionDAO();
+    private final AdminDashboardDAO adminDashboardDAO = new AdminDashboardDAO();
 
     private AdminServerController() {}
 
@@ -61,6 +64,15 @@ public class AdminServerController {
     }
 
 
+
+    public BaseResponse getDashboardSummary() {
+        AdminDashboardDTO summary = adminDashboardDAO.getSummary();
+        if (summary == null) {
+            return new BaseResponse(false, "Không thể tải dữ liệu tổng quan quản trị.", null);
+        }
+
+        return new BaseResponse(true, "Lấy dữ liệu tổng quan quản trị thành công.", summary);
+    }
 
     //--------------USER MANAGEMENT-------------------------
     public BaseResponse getAllUsers() {

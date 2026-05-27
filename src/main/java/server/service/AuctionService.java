@@ -2,6 +2,7 @@ package server.service;
 
 import server.dao.AuctionDAO;
 import server.dao.BidDAO;
+import server.dao.InterestedAuctionDAO;
 import server.dao.ItemDAO;
 import server.dao.UserDAO;
 import server.model.core.Auction;
@@ -14,6 +15,7 @@ import shared.dto.common.BidDTO;
 import shared.enums.AuctionStatus;
 import shared.dto.response.BaseResponse;
 import shared.enums.ItemStatus;
+import shared.enums.UserRole;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -36,6 +38,7 @@ public class AuctionService {
     private final ItemDAO itemDAO = new ItemDAO();
     private final UserDAO userDAO =  new UserDAO();
     private final BidDAO bidDAO = new BidDAO();
+    private final InterestedAuctionDAO interestedAuctionDAO = new InterestedAuctionDAO();
 
     private AuctionService() {}
 
@@ -161,6 +164,7 @@ public class AuctionService {
         //Chuển trạng thái của item trong Dao
         itemDAO.updateStatus(itemId, ItemStatus.WAITING_APPROVAL);
         System.out.println(">>> [AuctionService] Tạo auction #" + auction.getId() + " cho item #" + itemId);
+        notifyAdminRequestsChanged();
 
         return toDTO(auction, item);
     }
@@ -498,6 +502,65 @@ public class AuctionService {
         return dtos;
     }
 
+    public boolean followAuction(Long bidderId, Long auctionId) {
+        if (bidderId == null || auctionDAO.findById(auctionId) == null) {
+            return false;
+        }
+        return interestedAuctionDAO.markFollowed(bidderId, auctionId);
+    }
+
+    public boolean joinAuction(Long bidderId, Long auctionId) {
+        if (bidderId == null || auctionDAO.findById(auctionId) == null) {
+            return false;
+        }
+        return interestedAuctionDAO.markJoined(bidderId, auctionId);
+    }
+
+    public List<AuctionDTO> getInterestedAuctionsByBidderId(Long bidderId) {
+        List<AuctionDTO> dtos = new ArrayList<>();
+        if (bidderId == null) {
+            return dtos;
+        }
+
+        for (Long auctionId : interestedAuctionDAO.findInterestedAuctionIds(bidderId)) {
+            Auction auction = auctionDAO.findById(auctionId);
+            if (auction == null) {
+                continue;
+            }
+            Item item = itemDAO.findById(auction.getItemId());
+            if (item != null) {
+                dtos.add(toDTO(auction, item));
+            }
+        }
+        return dtos;
+    }
+
+    public List<AuctionDTO> getApprovedAuctionsBySellerId(Long sellerId) {
+        List<AuctionDTO> dtos = new ArrayList<>();
+        if (sellerId == null) {
+            return dtos;
+        }
+
+        for (Auction auction : auctionDAO.getAllAuctionsBySellerId(sellerId)) {
+            if (!isApprovedSellerAuction(auction.getStatus())) {
+                continue;
+            }
+
+            Item item = itemDAO.findById(auction.getItemId());
+            if (item != null) {
+                dtos.add(toDTO(auction, item));
+            }
+        }
+        return dtos;
+    }
+
+    private boolean isApprovedSellerAuction(AuctionStatus status) {
+        return status == AuctionStatus.OPEN
+                || status == AuctionStatus.RUNNING
+                || status == AuctionStatus.FINISHED
+                || status == AuctionStatus.CLOSED;
+    }
+
     /** Lấy tất cả phiên (dành cho Admin) */
     public List<AuctionDTO> getAllAuctions() {
         List<Auction> auctions = auctionDAO.getAllAuctions();
@@ -579,6 +642,7 @@ public class AuctionService {
         sellerEvent.setAction("SELLER_ITEMS_CHANGED");
 
         RealtimePushServer.pushToUser(auction.getSellerId(), sellerEvent);
+        notifyAdminRequestsChanged();
 
         return true;
     }
@@ -607,8 +671,19 @@ public class AuctionService {
             sellerEvent.setAction("SELLER_ITEMS_CHANGED");
 
             RealtimePushServer.pushToUser(auction.getSellerId(), sellerEvent);
+            notifyAdminRequestsChanged();
         }
 
         return ok;
+    }
+
+    private void notifyAdminRequestsChanged() {
+        BaseResponse event = new BaseResponse(
+                true,
+                "Danh sách yêu cầu duyệt đã thay đổi.",
+                null
+        );
+        event.setAction("ADMIN_REQUESTS_CHANGED");
+        RealtimePushServer.pushToRole(UserRole.ADMIN, event);
     }
 }

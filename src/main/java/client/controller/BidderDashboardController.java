@@ -7,14 +7,28 @@ import client.util.StageUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
@@ -31,7 +45,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -54,19 +70,49 @@ public class BidderDashboardController
 
     @FXML private Button wonAuctionsButton;
 
-    private boolean showingWonAuctions = false;
+    @FXML private Button interestedAuctionsButton;
+
+    @FXML private VBox interestedAuctionPane;
+
+    @FXML private TableView<AuctionDTO> interestedAuctionTable;
+
+    @FXML private TableColumn<AuctionDTO, Long> interestIdColumn;
+
+    @FXML private TableColumn<AuctionDTO, String> interestProductColumn;
+
+    @FXML private TableColumn<AuctionDTO, String> interestSellerColumn;
+
+    @FXML private TableColumn<AuctionDTO, String> interestLeaderColumn;
+
+    @FXML private TableColumn<AuctionDTO, String> interestPriceColumn;
+
+    @FXML private TableColumn<AuctionDTO, String> interestStatusColumn;
+
+    @FXML private TableColumn<AuctionDTO, String> interestEndTimeColumn;
+
+    @FXML private TextField interestedSearchField;
+
+    @FXML private ComboBox<String> interestedStatusFilterBox;
+
+    private enum DashboardView {
+        HOME, WON, INTERESTED
+    }
+
+    private DashboardView currentView = DashboardView.HOME;
 
     private final List<Item> itemList = new ArrayList<>();
     private final List<Timeline> countdownTimelines = new ArrayList<>();
+    private final ObservableList<AuctionDTO> interestedAuctions = FXCollections.observableArrayList();
+    private final FilteredList<AuctionDTO> filteredInterestedAuctions =
+            new FilteredList<>(interestedAuctions, auction -> true);
     private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
-    private Timeline refreshTimeLine;
 
     @FXML
     public void initialize() {
         bidderNameLabel.setText(ClientSession.getCurrentUserFullName());
+        setupInterestedAuctionTable();
         loadWalletBalance();
         loadAuctionsFromServer();
-        loadWonAuctionsFromServer();
 
         ClientNetworkService.getInstance().addEventListener(realtimeListener);
         ClientNetworkService.getInstance()
@@ -87,8 +133,94 @@ public class BidderDashboardController
 
     @FXML
     private void handleRefresh() {
-        loadAuctionsFromServer();
-        loadWonAuctionsFromServer();
+        reloadCurrentView();
+    }
+
+    @FXML
+    private void handleChangePassword() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Đổi mật khẩu");
+        dialog.initOwner(bidderNameLabel.getScene().getWindow());
+        dialog.getDialogPane().setHeaderText("Cập nhật mật khẩu tài khoản bidder");
+
+        PasswordField oldPasswordField = new PasswordField();
+        oldPasswordField.setPromptText("Nhập mật khẩu cũ");
+        PasswordField newPasswordField = new PasswordField();
+        newPasswordField.setPromptText("Nhập mật khẩu mới");
+        PasswordField confirmPasswordField = new PasswordField();
+        confirmPasswordField.setPromptText("Xác nhận mật khẩu mới");
+
+        GridPane form = new GridPane();
+        form.setHgap(12);
+        form.setVgap(12);
+        form.addRow(0, new Label("Mật khẩu cũ"), oldPasswordField);
+        form.addRow(1, new Label("Mật khẩu mới"), newPasswordField);
+        form.addRow(2, new Label("Xác nhận mật khẩu mới"), confirmPasswordField);
+        dialog.getDialogPane().setContent(form);
+
+        ButtonType updateButtonType = new ButtonType(
+                "Cập nhật", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
+        Node updateButton = dialog.getDialogPane().lookupButton(updateButtonType);
+
+        updateButton.addEventFilter(ActionEvent.ACTION, event -> {
+            String oldPassword = oldPasswordField.getText();
+            String newPassword = newPasswordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+            String validationMessage = validatePasswordChange(
+                    oldPassword, newPassword, confirmPassword);
+
+            if (validationMessage != null) {
+                showMessage(Alert.AlertType.WARNING, "Đổi mật khẩu", validationMessage);
+                event.consume();
+                return;
+            }
+
+            Map<String, String> data = new HashMap<>();
+            data.put("oldPassword", oldPassword);
+            data.put("newPassword", newPassword);
+            data.put("confirmPassword", confirmPassword);
+
+            BaseResponse response = ClientNetworkService.getInstance()
+                    .sendRequest(new BaseRequest(Action.CHANGE_PASSWORD, data));
+            if (response == null || !response.isSuccess()) {
+                String message = response != null
+                        ? response.getMessage()
+                        : "Không kết nối được server.";
+                showMessage(Alert.AlertType.ERROR, "Đổi mật khẩu thất bại", message);
+                event.consume();
+                return;
+            }
+
+            if (ClientSession.getCurrentUser() != null) {
+                ClientSession.getCurrentUser().setPassword(newPassword);
+            }
+            showMessage(Alert.AlertType.INFORMATION, "Đổi mật khẩu", response.getMessage());
+        });
+
+        dialog.showAndWait();
+    }
+
+    private String validatePasswordChange(
+            String oldPassword, String newPassword, String confirmPassword) {
+        if (oldPassword.isBlank() || newPassword.isBlank() || confirmPassword.isBlank()) {
+            return "Vui lòng nhập đầy đủ ba trường mật khẩu.";
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            return "Xác nhận mật khẩu mới không khớp.";
+        }
+        if (newPassword.equals(oldPassword)) {
+            return "Mật khẩu mới phải khác mật khẩu cũ.";
+        }
+        return null;
+    }
+
+    private void showMessage(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
     @FXML
@@ -115,8 +247,7 @@ public class BidderDashboardController
             return;
         }
         Platform.runLater(() -> {
-            loadAuctionsFromServer();
-            loadWonAuctionsFromServer();
+            reloadCurrentView();
         });
 
     }
@@ -149,28 +280,141 @@ public class BidderDashboardController
     }
     @FXML
     private void handleShowHome() {
-        showingWonAuctions = false;
+        currentView = DashboardView.HOME;
 
         sectionTitleLabel.setText("Phiên đấu giá đang diễn ra");
         sectionSubtitleLabel.setText("Chọn một sản phẩm để xem chi tiết và tham gia đấu giá.");
 
         homeButton.getStyleClass().setAll("sidebar-menu-button-active");
         wonAuctionsButton.getStyleClass().setAll("sidebar-menu-button");
+        interestedAuctionsButton.getStyleClass().setAll("sidebar-menu-button");
 
+        showCardView();
         loadAuctionsFromServer();
     }
     @FXML
     private void handleShowWonAuctions() {
-        showingWonAuctions = true;
+        currentView = DashboardView.WON;
 
         sectionTitleLabel.setText("Sản phẩm đã thắng");
         sectionSubtitleLabel.setText("Những sản phẩm bạn đã thắng sau khi phiên đấu giá kết thúc.");
 
         homeButton.getStyleClass().setAll("sidebar-menu-button");
         wonAuctionsButton.getStyleClass().setAll("sidebar-menu-button-active");
+        interestedAuctionsButton.getStyleClass().setAll("sidebar-menu-button");
 
+        showCardView();
         loadWonAuctionsFromServer();
     }
+
+    @FXML
+    private void handleShowInterestedAuctions() {
+        currentView = DashboardView.INTERESTED;
+
+        sectionTitleLabel.setText("Phiên đấu giá quan tâm");
+        sectionSubtitleLabel.setText("Các phiên bạn đã theo dõi hoặc tham gia, kể cả phiên đã kết thúc.");
+
+        homeButton.getStyleClass().setAll("sidebar-menu-button");
+        wonAuctionsButton.getStyleClass().setAll("sidebar-menu-button");
+        interestedAuctionsButton.getStyleClass().setAll("sidebar-menu-button-active");
+
+        showInterestedTableView();
+        loadInterestedAuctions();
+    }
+
+    @FXML
+    private void handleRefreshInterested() {
+        loadInterestedAuctions();
+    }
+
+    private void showCardView() {
+        interestedAuctionPane.setVisible(false);
+        interestedAuctionPane.setManaged(false);
+        auctionContainer.setVisible(true);
+        auctionContainer.setManaged(true);
+    }
+
+    private void showInterestedTableView() {
+        stopCountdowns();
+        auctionContainer.setVisible(false);
+        auctionContainer.setManaged(false);
+        interestedAuctionPane.setVisible(true);
+        interestedAuctionPane.setManaged(true);
+    }
+
+    private void reloadCurrentView() {
+        if (currentView == DashboardView.WON) {
+            loadWonAuctionsFromServer();
+        } else if (currentView == DashboardView.INTERESTED) {
+            loadInterestedAuctions();
+        } else {
+            loadAuctionsFromServer();
+        }
+    }
+
+    private void setupInterestedAuctionTable() {
+        interestIdColumn.setCellValueFactory(cell ->
+                new ReadOnlyObjectWrapper<>(cell.getValue().getId()));
+        interestProductColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getItemName()));
+        interestSellerColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getSellerName()));
+        interestLeaderColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getLeaderName() != null
+                        ? cell.getValue().getLeaderName() : "Chưa có"));
+        interestPriceColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getDisplayPrice() != null
+                        ? "$" + cell.getValue().getDisplayPrice().toPlainString() : "$0"));
+        interestStatusColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getStatus() != null
+                        ? cell.getValue().getStatus().name() : ""));
+        interestEndTimeColumn.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getEndTime() != null
+                        ? cell.getValue().getEndTime().toString() : ""));
+
+        interestedStatusFilterBox.getItems().addAll(
+                "ALL", "WAITING_APPROVAL", "OPEN", "RUNNING", "FINISHED", "CANCELLED"
+        );
+        interestedStatusFilterBox.setValue("ALL");
+        interestedAuctionTable.setItems(filteredInterestedAuctions);
+
+        interestedSearchField.textProperty().addListener((observable, oldValue, newValue) ->
+                applyInterestedFilters());
+        interestedStatusFilterBox.valueProperty().addListener((observable, oldValue, newValue) ->
+                applyInterestedFilters());
+    }
+
+    private void loadInterestedAuctions() {
+        BaseResponse response = ClientNetworkService.getInstance()
+                .sendRequest(new BaseRequest(Action.GET_INTERESTED_AUCTIONS, null));
+
+        interestedAuctions.clear();
+        if (response != null && response.isSuccess() && response.getData() != null) {
+            for (Object object : (List<?>) response.getData()) {
+                interestedAuctions.add((AuctionDTO) object);
+            }
+        }
+        applyInterestedFilters();
+    }
+
+    private void applyInterestedFilters() {
+        String keyword = interestedSearchField.getText() == null
+                ? "" : interestedSearchField.getText().trim().toLowerCase();
+        String selectedStatus = interestedStatusFilterBox.getValue();
+
+        filteredInterestedAuctions.setPredicate(auction -> {
+            String itemName = auction.getItemName() == null ? "" : auction.getItemName().toLowerCase();
+            String sellerName = auction.getSellerName() == null ? "" : auction.getSellerName().toLowerCase();
+            boolean keywordMatches = keyword.isEmpty()
+                    || itemName.contains(keyword)
+                    || sellerName.contains(keyword);
+            boolean statusMatches = "ALL".equals(selectedStatus)
+                    || (auction.getStatus() != null
+                    && auction.getStatus().name().equals(selectedStatus));
+            return keywordMatches && statusMatches;
+        });
+    }
+
     private void loadWonAuctionsFromServer() {
         BaseResponse response = ClientNetworkService.getInstance()
                 .sendRequest(new BaseRequest(Action.GET_WON_AUCTIONS, null));
@@ -384,7 +628,6 @@ public class BidderDashboardController
 
     @FXML
     private void handleLogout(ActionEvent event) {
-        stopAutoRefresh();
         stopCountdowns();
         ClientNetworkService.getInstance().removeEventListener(realtimeListener);
         ClientNetworkService.getInstance().sendRequest(new BaseRequest(Action.LOGOUT, null));
@@ -401,7 +644,6 @@ public class BidderDashboardController
     }
     @FXML
     private void viewDetail(Item item) {
-        stopAutoRefresh();
         stopCountdowns();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/auction-detail.fxml"));
@@ -427,20 +669,4 @@ public class BidderDashboardController
     public void setBidderName(String bidderName) {
         bidderNameLabel.setText(bidderName);
     }
-    private void startAutoRefresh()
-    {
-        refreshTimeLine = new Timeline(new KeyFrame(Duration.seconds(5), event -> loadAuctionsFromServer()));
-        refreshTimeLine.setCycleCount(Timeline.INDEFINITE);
-        refreshTimeLine.play();
-    }
-
-    private void stopAutoRefresh()
-    {
-        if(refreshTimeLine != null)
-        {
-            refreshTimeLine.stop();
-            refreshTimeLine = null;
-        }
-    }
-
 }

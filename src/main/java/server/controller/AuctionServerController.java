@@ -69,6 +69,60 @@ public class AuctionServerController {
     }
 
     /** getAuctionDetail - lấy chi tiết thông tin của 1 phiên đấu giá */
+    public BaseResponse followAuction(BaseRequest request, ClientConnectionHandler handler) {
+        if (request.getData() == null) {
+            return new BaseResponse(false, "Thiếu auctionId để theo dõi.", null);
+        }
+        try {
+            Long auctionId = Long.parseLong(request.getData().toString());
+            boolean saved = auctionService.followAuction(handler.getUser().getId(), auctionId);
+            return new BaseResponse(saved,
+                    saved ? "Đã thêm phiên đấu giá vào danh sách quan tâm."
+                            : "Không thể theo dõi phiên đấu giá này.",
+                    null);
+        } catch (NumberFormatException e) {
+            return new BaseResponse(false, "auctionId không hợp lệ.", null);
+        }
+    }
+
+    public BaseResponse joinAuction(BaseRequest request, ClientConnectionHandler handler) {
+        if (request.getData() == null) {
+            return new BaseResponse(false, "Thiếu auctionId để tham gia.", null);
+        }
+        try {
+            Long auctionId = Long.parseLong(request.getData().toString());
+            boolean saved = auctionService.joinAuction(handler.getUser().getId(), auctionId);
+            return new BaseResponse(saved,
+                    saved ? "Đã ghi nhận phiên đấu giá bạn tham gia."
+                            : "Không thể ghi nhận phiên đấu giá này.",
+                    null);
+        } catch (NumberFormatException e) {
+            return new BaseResponse(false, "auctionId không hợp lệ.", null);
+        }
+    }
+
+    public BaseResponse getInterestedAuctions(ClientConnectionHandler handler) {
+        List<AuctionDTO> auctions =
+                auctionService.getInterestedAuctionsByBidderId(handler.getUser().getId());
+        return new BaseResponse(
+                true,
+                auctions.isEmpty() ? "Bạn chưa quan tâm phiên đấu giá nào."
+                        : "Danh sách phiên đấu giá quan tâm:",
+                auctions
+        );
+    }
+
+    public BaseResponse getApprovedAuctionsBySeller(ClientConnectionHandler handler) {
+        List<AuctionDTO> auctions =
+                auctionService.getApprovedAuctionsBySellerId(handler.getUser().getId());
+        return new BaseResponse(
+                true,
+                auctions.isEmpty() ? "Bạn chưa có phiên đấu giá nào được duyệt."
+                        : "Danh sách phiên đấu giá đã được duyệt:",
+                auctions
+        );
+    }
+
     public BaseResponse getAuctionDetail(BaseRequest request) {
         try {
             Long auctionId = Long.parseLong(request.getData().toString());

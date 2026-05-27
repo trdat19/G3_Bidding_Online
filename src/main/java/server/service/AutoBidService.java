@@ -75,10 +75,36 @@ public class AutoBidService {
         AutoBidRule rule = new AutoBidRule(auctionId, bidderId, maxAmount, stepAmount);
         boolean saved = autoBidRuleDAO.saveOrUpdateRule(rule);
         if (saved) {
+            // Cho Rule Đầu Tiên Tạo Bid Ban Đầu Nếu Chưa Có Bid Nào
             Bid highest = bidDAO.getHighestBidByAuctionId(auctionId);
-            //nếu thằng đặt rule vẫn đang dẫn đầu thì không tự react
-            if (highest != null && !highest.getBidderId().equals(bidderId)) {
-                reactToIncomingBid(auctionId, bidderId);
+
+            if (highest == null) {
+                BigDecimal firstBid = auction.getStartPrice()
+                        .add(stepAmount.max(auction.getMinIncrement()));
+
+                if (firstBid.compareTo(maxAmount) > 0) {
+                    firstBid = maxAmount;
+                }
+
+                BigDecimal minimumValidBid = auction.getStartPrice()
+                        .add(auction.getMinIncrement());
+
+                if (firstBid.compareTo(minimumValidBid) >= 0) {
+                    try {
+                        bidService.placeAutoBid(auctionId, bidderId, firstBid);
+                    } catch (Exception e) {
+                        AutoBidRule savedRule =
+                                autoBidRuleDAO.findByAuctionIdAndBidderId(auctionId, bidderId);
+
+                        if (savedRule != null) {
+                            autoBidRuleDAO.updateStatus(savedRule.getId(), false);
+                        }
+
+                        throw e;
+                    }
+                }
+            } else {
+                reactToIncomingBid(auctionId, highest.getBidderId());
             }
         }
         return saved;
@@ -89,13 +115,10 @@ public class AutoBidService {
     }
 
     //---------------MAIN_METHOD-------------
-    /** phương thức chính - các autobid đấu giá qua lại, phản ứng với nhau đến khi chạm ngưỡng điều kiện
-     * sử dụng PriorityQueue cho các điều kiện
-     * 1. maxAmount cao hơn
-     * 2. created_at sớm hơn
-     * 3. id nhỏ hơn
-     * Không insert tất cả các auto bid vào DB, chỉ insert bid cuối mạnh nhất của người thắng
-     */
+
+    /*
+    A và B tự động đấu qua lại bằng đúng stepAmount của từng người.
+    */
     public synchronized void reactToIncomingBid(Long auctionId, Long currentBidderId) {
         Auction auction = auctionDAO.findById(auctionId);
         if (auction == null) {
@@ -107,235 +130,52 @@ public class AutoBidService {
             return;
         }
 
+        BigDecimal minIncrement = auction.getMinIncrement();
         BigDecimal currentPrice = highestBid.getAmount();
-        Long highestBidderId = highestBid.getBidderId();
+        Long currentLeaderId = highestBid.getBidderId();
 
-        BigDecimal minIncrement = auction.getMinIncrement() != null
-                ? auction.getMinIncrement()
-                : BigDecimal.ZERO;
+        while (true) {
+            AutoBidRule challenger = findNextChallenger(
+                    auctionId,
+                    currentLeaderId,
+                    currentPrice,
+                    minIncrement
+            );
 
-        BigDecimal minNextBid = currentPrice.add(minIncrement);
+            if (challenger == null) {
+                return;
+            }
 
-        PriorityQueue<AutoBidRule> queue = buildAutoBidQueue(auctionId);
+            BigDecimal nextAmount = calculateNextAutoBidAmount(
+                    challenger,
+                    currentPrice,
+                    minIncrement
+            );
 
-        AutoBidDecision decision = calculateDecision(
-                queue,
-                highestBidderId,
-                currentPrice,
-                minIncrement,
-                minNextBid
-        );
-
-        if (decision == null) {
-            return;
-        }
-
-        boolean placed = BidService.getInstance().placeAutoBid(
-                auctionId,
-                decision.getBidderId(),
-                decision.getAmount()
-        );
-
-        if (!placed) {
-            return;
-        }
-    }
-
-    //----------------HELPER_CLASS-----------------
-    private static class AutoBidDecision {
-        private final Long bidderId;
-        private final BigDecimal amount;
-
-        private AutoBidDecision(Long bidderId, BigDecimal amount) {
-            this.bidderId = bidderId;
-            this.amount = amount;
-        }
-
-        public Long getBidderId() { return bidderId; }
-
-        public BigDecimal getAmount() { return amount; }
-    }
-    //-------------------HELPER-----------------------
-    /**
-     * Tính kết quả cuối của AutoBid mà không insert từng bước.
-     *
-     * Ý tưởng:
-     * - topRule: rule mạnh nhất trong PriorityQueue.
-     * - secondRule: rule mạnh thứ hai.
-     *
-     * Nếu topRule thuộc người đang dẫn đầu: -> đã có rule mạnh nhất -> không cần tự bid.
-     *
-     * Nếu topRule mạnh hơn secondRule: -> topRule chỉ cần đặt giá vượt secondRule.
-     *
-     * Nếu topRule và secondRule cùng maxAmount:
-     *      topRule thắng nhờ createdAt sớm hơn/id nhỏ hơn,
-     *      nhưng phải đặt tới đúng maxAmount.
-     */
-    private AutoBidDecision calculateDecision(
-            PriorityQueue<AutoBidRule> queue,
-            Long highestBidderId,
-            BigDecimal currentPrice,
-            BigDecimal minIncrement,
-            BigDecimal minNextBid) {
-
-        AutoBidRule topRule = takeNextUsableRule(queue, minNextBid);
-        if (topRule == null) {
-            return null;
-        }
-
-        // Nếu người đang dẫn đầu cũng là người có rule mạnh nhất,
-        // không cần tự động đặt thêm giá cho chính mình.
-        if (topRule.getBidderId().equals(highestBidderId)) {
-            return null;
-        }
-
-        AutoBidRule secondRule = takeNextDifferentBidderRule(
-                queue,
-                topRule.getBidderId(),
-                minNextBid
-        );
-
-        BigDecimal finalAmount = calculateAmount(
-                topRule,
-                secondRule,
-                currentPrice,
-                minIncrement,
-                minNextBid
-        );
-        if (finalAmount == null) {
-            return null;
-        }
-
-        // Nếu không amount k đạt yêu cầu mới bid tối thiểu tiếp theo
-        if (finalAmount.compareTo(minNextBid) < 0) {
-            autoBidRuleDAO.updateStatus(topRule.getId(), false);
-            return null;
-        }
-
-        return new AutoBidDecision(topRule.getBidderId(), finalAmount);
-    }
-    /**
-     * Lấy rule tiếp theo có maxAmount đủ để đặt giá tối thiểu.
-     */
-    private AutoBidRule takeNextUsableRule(
-            PriorityQueue<AutoBidRule> queue,
-            BigDecimal minNextBid
-    ) {
-        while (!queue.isEmpty()) {
-            AutoBidRule rule = queue.poll();
-
-            if (rule.getMaxAmount().compareTo(minNextBid) < 0) {
-                autoBidRuleDAO.updateStatus(rule.getId(), false);
+            if (nextAmount == null) {
+                autoBidRuleDAO.updateStatus(challenger.getId(), false);
                 continue;
             }
 
-            return rule;
-        }
+            try {
+                boolean placed = BidService.getInstance().placeAutoBid(
+                        auctionId,
+                        challenger.getBidderId(),
+                        nextAmount
+                );
 
-        return null;
-    }
-    /**
-     * Lấy rule mạnh thứ hai, khác bidder với topRule.
-     */
-    private AutoBidRule takeNextDifferentBidderRule(
-            PriorityQueue<AutoBidRule> queue,
-            Long topBidderId,
-            BigDecimal minNextBid
-    ) {
-        while (!queue.isEmpty()) {
-            AutoBidRule rule = queue.poll();
-
-            if (rule.getBidderId().equals(topBidderId)) {
+                if (!placed) {
+                    autoBidRuleDAO.updateStatus(challenger.getId(), false);
+                    continue;
+                }
+            } catch (Exception e) {
+                autoBidRuleDAO.updateStatus(challenger.getId(), false);
                 continue;
             }
 
-            if (rule.getMaxAmount().compareTo(minNextBid) < 0) {
-                autoBidRuleDAO.updateStatus(rule.getId(), false);
-                continue;
-            }
-
-            return rule;
+            currentPrice = nextAmount;
+            currentLeaderId = challenger.getBidderId();
         }
-
-        return null;
-    }
-
-    /**
-     * Tính số tiền auto bid cuối mạnh nhất sẽ insert.
-     */
-    private BigDecimal calculateAmount(
-            AutoBidRule topRule,
-            AutoBidRule secondRule,
-            BigDecimal currentPrice,
-            BigDecimal minIncrement,
-            BigDecimal minNextBid) {
-
-        BigDecimal expectedAmount = calculateExpectedAmount(topRule, secondRule,
-                currentPrice, minIncrement);
-
-        if (expectedAmount == null) {
-            return null;
-        }
-
-        // Dù tính kiểu gì thì bid mới vẫn phải >= currentPrice + minIncrement.
-        if (expectedAmount.compareTo(minNextBid) < 0) {
-            return minNextBid;
-        }
-
-        // Không bao giờ vượt quá maxAmount của topRule.
-        if (expectedAmount.compareTo(topRule.getMaxAmount()) > 0) {
-            return topRule.getMaxAmount();
-        }
-
-        return expectedAmount;
-    }
-
-    private BigDecimal calculateExpectedAmount(AutoBidRule topRule, AutoBidRule secondRule,
-                                               BigDecimal currentPrice, BigDecimal minIncrement) {
-        BigDecimal topStep = topRule.getStepAmount() != null
-                ? topRule.getStepAmount()
-                : minIncrement;
-
-        BigDecimal actualStep = topStep.max(minIncrement);
-
-        if (secondRule == null) {
-            // Chỉ có 1 auto rule đủ điều kiện
-            // đặt giá hiện tại + step
-            return currentPrice.add(actualStep);
-        }
-
-        int compareMax = topRule.getMaxAmount().compareTo(secondRule.getMaxAmount());
-
-        if (compareMax > 0) {
-            // topRule mạnh hơn secondRule:
-            // chỉ cần vượt max của secondRule.
-            return secondRule.getMaxAmount().add(actualStep);
-        }
-
-        if (compareMax == 0) {
-            // Cùng maxAmount:
-            // topRule thắng nhờ createdAt sớm hơn/id nhỏ hơn,
-            // nhưng phải lên tới đúng maxAmount.
-            return topRule.getMaxAmount();
-        }
-
-        // Trường hợp còn lại gần như không xảy ra vì PriorityQueue đã xếp topRule theo created_at
-        return null;
-    }
-
-    private PriorityQueue<AutoBidRule> buildAutoBidQueue(Long auctionId) {
-        Comparator<AutoBidRule> comparator = Comparator
-                .comparing(AutoBidRule::getMaxAmount, Comparator.reverseOrder())
-                .thenComparing(AutoBidRule::getCreatedAt,
-                        Comparator.nullsLast(Comparator.naturalOrder()))
-                .thenComparing(AutoBidRule::getId,
-                        Comparator.nullsLast(Comparator.naturalOrder()));
-
-        PriorityQueue<AutoBidRule> queue = new PriorityQueue<>(comparator);
-
-        queue.addAll(autoBidRuleDAO.getActiveRulesByAuctionId(auctionId));
-
-        return queue;
     }
 
     //----------------SWITCH----------------
@@ -354,4 +194,63 @@ public class AutoBidService {
     public AutoBidRule getRule(Long auctionId, Long bidderId) {
         return autoBidRuleDAO.findByAuctionIdAndBidderId(auctionId, bidderId);
     }
+
+    /*
+    • Bình thường tăng theo stepAmount.
+    • Nếu bước tăng vượt max nhưng bidder vẫn còn đủ để đặt một giá hợp lệ, đặt đúng maxAmount.
+    • Nếu max còn nhỏ hơn giá tối thiểu hợp lệ, bidder không thể tiếp tục.
+     */
+    private BigDecimal calculateNextAutoBidAmount(
+            AutoBidRule rule,
+            BigDecimal currentPrice,
+            BigDecimal minIncrement) {
+
+        BigDecimal step = rule.getStepAmount().max(minIncrement);
+        BigDecimal nextAmount = currentPrice.add(step);
+
+        if (nextAmount.compareTo(rule.getMaxAmount()) <= 0) {
+            return nextAmount;
+        }
+
+        BigDecimal minimumValidBid = currentPrice.add(minIncrement);
+
+        if (rule.getMaxAmount().compareTo(minimumValidBid) >= 0) {
+            return rule.getMaxAmount();
+        }
+
+        return null;
+    }
+
+    private AutoBidRule findNextChallenger(
+            Long auctionId,
+            Long currentLeaderId,
+            BigDecimal currentPrice,
+            BigDecimal minIncrement) {
+
+        BigDecimal minimumValidBid = currentPrice.add(minIncrement);
+
+        return autoBidRuleDAO.getActiveRulesByAuctionId(auctionId)
+                .stream()
+                .filter(rule -> !rule.getBidderId().equals(currentLeaderId))
+                .filter(rule -> rule.getMaxAmount().compareTo(minimumValidBid) >= 0)
+                .sorted(
+                        Comparator.comparing(
+                                        AutoBidRule::getMaxAmount,
+                                        Comparator.reverseOrder()
+                                )
+                                .thenComparing(
+                                        AutoBidRule::getCreatedAt,
+                                        Comparator.nullsLast(Comparator.naturalOrder())
+                                )
+                                .thenComparing(
+                                        AutoBidRule::getId,
+                                        Comparator.nullsLast(Comparator.naturalOrder())
+                                )
+                )
+                .findFirst()
+                .orElse(null);
+    }
+
+
+
 }

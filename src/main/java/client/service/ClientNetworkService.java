@@ -64,7 +64,8 @@ public class ClientNetworkService {
         }
     }
 
-    public BaseResponse sendRequest(BaseRequest request) {
+    // Responses do not include a request id, so requests must wait in order.
+    public synchronized BaseResponse sendRequest(BaseRequest request) {
         if (!isConnected()) {
             System.err.println("Chưa kết nối tới server.");
             return null;
