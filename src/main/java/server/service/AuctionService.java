@@ -542,8 +542,16 @@ public class AuctionService {
 
         return dtos;
     }
+
+    public List<AuctionDTO> getAllAuctionsForAdmin() {
+        return auctionDAO.getAdminAuctionSummaries();
+    }
+
     public long countAllAuctions() {
         return auctionDAO.getAllAuctions().size();
+    }
+    public long countAuctionsByStatus(AuctionStatus status) {
+        return auctionDAO.countAuctionsByStatus(status);
     }
 
     /** Lấy chi tiết 1 phiên */

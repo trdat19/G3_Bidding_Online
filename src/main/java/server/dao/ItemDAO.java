@@ -6,6 +6,7 @@ import server.model.item.Electronics;
 import server.model.item.Item;
 import server.model.item.Vehicle;
 
+import shared.dto.common.ItemDTO;
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
 
@@ -102,6 +103,68 @@ public class ItemDAO {
 
         } catch (SQLException e) {
             System.err.println("getAllItems error: " + e.getMessage());
+        }
+
+        return items;
+    }
+    //Lay tong so item
+    public long countAllItems() {
+        String sql = "SELECT COUNT(*) FROM items";
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("countAllItems error: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
+    public List<ItemDTO> getAdminItemSummaries() {
+        String sql = """
+                SELECT
+                    i.id_item,
+                    i.name_item,
+                    i.category,
+                    i.description,
+                    i.id_seller,
+                    i.status_item,
+                    i.created_atItem AS created_at_item,
+                    u.full_name AS seller_name,
+                    latest_auction.start_price,
+                    latest_auction.max_price
+                FROM items i
+                LEFT JOIN users u ON u.id = i.id_seller
+                LEFT JOIN (
+                    SELECT a.*
+                    FROM auctions a
+                    INNER JOIN (
+                        SELECT id_item, MAX(id_auction) AS latest_auction_id
+                        FROM auctions
+                        GROUP BY id_item
+                    ) latest_ids ON latest_ids.latest_auction_id = a.id_auction
+                ) latest_auction ON latest_auction.id_item = i.id_item
+                ORDER BY i.id_item DESC
+                """;
+
+        List<ItemDTO> items = new ArrayList<>();
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                items.add(mapResultSetToAdminItemDTO(rs));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("getAdminItemSummaries error: " + e.getMessage());
         }
 
         return items;
@@ -233,5 +296,34 @@ public class ItemDAO {
             default:
                 throw new SQLException("Invalid item category: " + category);
         }
+    }
+
+    private ItemDTO mapResultSetToAdminItemDTO(ResultSet rs) throws SQLException {
+        ItemDTO dto = new ItemDTO();
+
+        dto.setId(rs.getLong("id_item"));
+        dto.setName(rs.getString("name_item"));
+        dto.setDescription(rs.getString("description"));
+        dto.setCategory(ItemCategory.valueOf(rs.getString("category")));
+        dto.setStatus(ItemStatus.valueOf(rs.getString("status_item")));
+        dto.setSellerId(rs.getLong("id_seller"));
+
+        String sellerName = rs.getString("seller_name");
+        dto.setSellerName(sellerName != null ? sellerName : "Khong xac dinh");
+
+        Timestamp createdAt = rs.getTimestamp("created_at_item");
+        if (createdAt != null) {
+            dto.setCreatedAt(createdAt.toLocalDateTime());
+        }
+
+        if (dto.getStatus() != ItemStatus.PENDING) {
+            BigDecimal startPrice = rs.getBigDecimal("start_price");
+            BigDecimal currentPrice = rs.getBigDecimal("max_price");
+
+            dto.setPriceStart(startPrice);
+            dto.setCurrentPrice(currentPrice != null ? currentPrice : startPrice);
+        }
+
+        return dto;
     }
 }

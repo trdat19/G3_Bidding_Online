@@ -6,6 +6,7 @@ import server.dao.BidDAO;
 import server.model.core.Auction;
 import server.model.item.Item;
 import server.model.item.ItemFactory;
+import shared.dto.common.ItemDTO;
 import shared.dto.response.BaseResponse;
 import shared.enums.AuctionStatus;
 import shared.enums.ItemCategory;
@@ -140,6 +141,14 @@ public class ItemService {
     public List<Item> findAllItems() {
         return itemDAO.getAllItems();
     }
+
+    public List<ItemDTO> findAllItemsForAdmin() {
+        return itemDAO.getAdminItemSummaries();
+    }
+    public long countAllItems() {
+        return itemDAO.countAllItems();
+    }
+
 
     private void deleteNoBidAuctionsForItem(Long itemId) {
         List<Auction> auctions = auctionDAO.getAllAuctionsByItemId(itemId);
