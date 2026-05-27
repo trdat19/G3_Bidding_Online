@@ -90,12 +90,14 @@ public class BiddingViewController {
     private final List<String> priceChartTimeLabels = new ArrayList<>();
 
 
+
     private Item currentItem;
     private Timeline countdownTimeLine;
     private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
     private final ObservableList<BidDTO> bidHistory = FXCollections.observableArrayList();
     private final DateTimeFormatter bidTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     private boolean returnedToDashboard = false;
+    private boolean auctionFinishedAlertShown = false;
 
     @FXML
     private void initialize() {
@@ -185,7 +187,7 @@ public class BiddingViewController {
                 countdownTimeLine.stop();
             }
 
-            goToBidderDashboard();
+            messageLabel.setText("Phiên đấu giá đã kết thúc, đang chờ kết quả");
             return;
         }
         long hours = seconds / 3600;
@@ -317,6 +319,10 @@ public class BiddingViewController {
     }
 
     private void handleAuctionFinishedEvent(BaseResponse response) {
+        if (auctionFinishedAlertShown || returnedToDashboard) {
+            return;
+        }
+        auctionFinishedAlertShown = true;
         statusTextLabel.setText("FINISHED");
         timeLeftLabel.setText("00:00:00");
         messageLabel.setText(response.getMessage());
@@ -325,6 +331,21 @@ public class BiddingViewController {
             countdownTimeLine.stop();
         }
 
+        showAuctionFinishedAlert(response.getMessage());
+    }
+    private void showAuctionFinishedAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Kết quả phiên đấu giá");
+        alert.setHeaderText("Phiên đấu giá đã kết thúc");
+        alert.setContentText(message);
+        ButtonType exitButton = new ButtonType("Thoát", ButtonBar.ButtonData.OK_DONE);
+        alert.getButtonTypes().setAll(exitButton);
+
+        if (nameLabel.getScene() != null) {
+            alert.initOwner(nameLabel.getScene().getWindow());
+        }
+
+        alert.showAndWait();
         goToBidderDashboard();
     }
 

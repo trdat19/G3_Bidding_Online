@@ -638,6 +638,23 @@ public class SellerDashboardController {
                 refreshProducts();
             }
             loadSellerWalletBalance();
+            if (response.getData() instanceof Map<?, ?> data) {
+                Object eventType = data.get("eventType");
+                if ("AUCTION_SOLD".equals(eventType)) {
+                    showMessage(
+                            Alert.AlertType.INFORMATION,
+                            "Sản phẩm đã bán",
+                            response.getMessage()
+                    );
+                } else if ("AUCTION_FINISHED_NO_BID".equals(eventType)) {
+                    showMessage(
+                            Alert.AlertType.INFORMATION,
+                            "Phiên đấu giá kết thúc mà không ai đặt giá",
+                            response.getMessage()
+                    );
+
+                }
+            }
         });
     }
 

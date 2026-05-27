@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="46d58188-6a47-4a70-8660-102ddfb8c121" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/client/controller/AdminPageLifecycle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/server/dao/InterestedAuctionDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/shared/dto/common/SellerWalletDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/server/service/WalletServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AdminAuctionsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AdminAuctionsController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/AdminDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/AdminDashboardController.java" afterDir="false" />
@@ -18,11 +22,12 @@
       <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/SellerDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/SellerDashboardController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/controller/SellerWalletPopupController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/controller/SellerWalletPopupController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/service/ClientNetworkService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/service/ClientNetworkService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AdminServerController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuctionServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuctionServerController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/AuthServerController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/WalletServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/WalletServerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/AuctionDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/dao/BidDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/dao/BidDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/model/core/AutoBidRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/model/core/AutoBidRule.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RealtimePushServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RealtimePushServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/network/RequestRouter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" afterDir="false" />
@@ -38,7 +43,6 @@
       <change beforePath="$PROJECT_DIR$/src/main/resources/css/seller-dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/css/seller-dashboard.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/view/add-product-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/add-product-view.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/view/admin/admin-dashboard.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-dashboard.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/admin/admin-home.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-home.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/view/admin/admin-reports.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/admin/admin-reports.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/view/auction-detail.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/auction-detail.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/view/bidder-dashboard.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/bidder-dashboard.fxml" afterDir="false" />
@@ -121,27 +125,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.ClientLauncher.executor&quot;: &quot;Run&quot;,
-    &quot;Application.SocketServer.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.java in G3_BiddingOnline.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Duong__Socket&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.ClientLauncher.executor": "Run",
+    "Application.SocketServer.executor": "Run",
+    "JUnit.java in G3_BiddingOnline.executor": "Run",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "Merging vanh",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Application.ClientLauncher">
     <configuration name="ClientLauncher" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="client.ClientLauncher" />
@@ -206,6 +210,17 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

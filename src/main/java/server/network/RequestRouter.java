@@ -208,10 +208,6 @@ public class RequestRouter {
                 /**
                  * Thao tác của Admin
                  */
-                case Action.GET_ADMIN_DASHBOARD_SUMMARY: {
-                    requireRole(handler, UserRole.ADMIN);
-                    return AdminServerController.getInstance().getDashboardSummary();
-                }
 
                 case Action.GET_USERS_LIST: {
                     requireRole(handler, UserRole.ADMIN);
@@ -256,6 +252,9 @@ public class RequestRouter {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().rejectCreateAuctionRequest(request);
                 }
+                case Action.GET_ADMIN_DASHBOARD_STATS:
+                    requireRole(handler, UserRole.ADMIN);
+                    return AdminServerController.getInstance().getDashboardStats();
                 default: {
                     return new BaseResponse(false,
                             "Hành động '" + action + "' không tồn tại trên hệ thống", null);

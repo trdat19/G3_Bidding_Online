@@ -279,6 +279,7 @@ public class AuctionDAO {
 
             ps.setBigDecimal(1, newMaxPrice);
             ps.setLong(2, idAuction);
+            ps.setBigDecimal(3, newMaxPrice);
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {

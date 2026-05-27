@@ -398,17 +398,13 @@ public class AuctionService {
         } catch (Exception e) {
             throw new RuntimeException("Lỗi kết thúc phiên: " + e.getMessage());
         }
-
-        BaseResponse sellerEvent = new BaseResponse(
-                true,
-                "Phiên đấu giá đã kết thúc, trạng thái sản phẩm đã thay đổi",
-                auction.getItemId()
-        );
-        sellerEvent.setAction("SELLER_ITEMS_CHANGED");
-
-        RealtimePushServer.pushToUser(auction.getSellerId(), sellerEvent);
-
         String winnerMsg;
+        String sellerMsg;
+        Map<String, Object> sellerEventData = new HashMap<>();
+
+        sellerEventData.put("auctionId", auctionId);
+        sellerEventData.put("itemId", auction.getItemId());
+        sellerEventData.put("itemName", item != null ? item.getNameItem() : "Sản phẩm");
         if (highestBid != null) {
             User winner = userDAO.findById(highestBid.getBidderId());
 
@@ -418,9 +414,27 @@ public class AuctionService {
 
             winnerMsg = String.format("Phiên #%d kết thúc! Người thắng: %s với giá %s",
                     auctionId, winnerName, highestBid.getAmount());
+            sellerMsg = String.format("Sản phẩn %s đã được bán với giá  %s. Người thắng: %s",item != null ? item.getNameItem() : "#" + auction.getItemId(),
+                    highestBid.getAmount(),
+                    winnerName);
+            sellerEventData.put("eventType", "AUCTION_SOLD");
+            sellerEventData.put("winnerName", winnerName);
+            sellerEventData.put("finalPrice", highestBid.getAmount());
         } else {
             winnerMsg = "Phiên #" + auctionId + " kết thúc. Không có ai đặt giá.";
+
+            sellerMsg = String.format("Phiên đấu giá của sản phẩm %s đã kết thức nhưng không có ai đặt giá",
+                    item != null ? item.getNameItem() : "#" + auction.getItemId()
+                    );
+            sellerEventData.put("eventType", "AUCTION_FINISHED_NO_BID");
         }
+        BaseResponse sellerEvent = new BaseResponse(
+                true,
+                sellerMsg,
+                sellerEventData
+        );
+        sellerEvent.setAction("SELLER_ITEMS_CHANGED");
+        RealtimePushServer.pushToUser(auction.getSellerId(), sellerEvent);
 
         System.out.println(">>> [AuctionService] " + winnerMsg);
 
