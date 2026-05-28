@@ -4,6 +4,7 @@ import server.model.item.Item;
 import server.network.ClientConnectionHandler;
 import server.service.ItemService;
 
+import shared.dto.common.AuctionDTO;
 import shared.dto.common.ItemDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
@@ -125,7 +126,12 @@ public class SellerServerController {
                 dto.setCategory(item.getCategory());
                 dto.setStatus(item.getStatusItem());
                 dto.setSellerId(item.getSellerId());
-                dto.setPriceStart(BigDecimal.ZERO);
+                AuctionDTO latestAuction = itemService.findLatestAuctionSummaryByItemId(item.getId());
+
+                if (latestAuction != null) {
+                    dto.setPriceStart(latestAuction.getStartPrice());
+                    dto.setCurrentPrice(latestAuction.getCurrentPrice());
+                }
                 dto.setImageUrl(item.getImageUrl());
                 dto.setCreatedAt(item.getCreatedAtItem());
                 dto.setImageBytes(item.getImageBytes());

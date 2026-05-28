@@ -234,6 +234,8 @@ public class SellerDashboardController {
         statusDesc.getStyleClass().add("status-desc");
         statusDesc.setWrapText(true);
         statusDesc.setMaxWidth(324);
+        Label soldPriceLabel = new Label("Giá bán: $" + item.getCurrentPrice());
+        soldPriceLabel.getStyleClass().add("sold-price");
         statusBox.getChildren().addAll(statusLabel, statusValue);
 
         Region spacer = new Region();
@@ -260,7 +262,13 @@ public class SellerDashboardController {
 
         actionRow.getChildren().addAll(editButton, deleteButton, createAuctionButton);
 
-        body.getChildren().addAll(titleLabel, descLabel, priceRow, statusDesc, actionRow);
+        body.getChildren().addAll(titleLabel, descLabel, priceRow, statusDesc);
+
+        if ("SOLD".equals(item.getStatus())) {
+            body.getChildren().add(soldPriceLabel);
+        }
+
+        body.getChildren().add(actionRow);
         card.getChildren().addAll(imageBox, body);
         return card;
     }
@@ -567,13 +575,18 @@ public class SellerDashboardController {
             List<Item> loadedItems = new ArrayList<>();
             for (Object obj : (List<?>) response.getData()) {
                 ItemDTO serverItem = (ItemDTO) obj;
-
+                double startPrice = serverItem.getPriceStart() != null
+                        ? serverItem.getPriceStart().doubleValue()
+                        : 0;
+                double currentPrice = serverItem.getCurrentPrice() != null
+                        ? serverItem.getCurrentPrice().doubleValue()
+                        : startPrice;
                 Item item = new Item(
                         serverItem.getName(),
                         serverItem.getCategory().name(),
                         serverItem.getDescription(),
-                        1,
-                        1,
+                        startPrice,
+                        currentPrice,
                         "",
                         serverItem.getCreatedAt(),
                         serverItem.getCreatedAt(),
