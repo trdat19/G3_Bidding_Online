@@ -6,6 +6,7 @@ import server.dao.BidDAO;
 import server.model.core.Auction;
 import server.model.item.Item;
 import server.model.item.ItemFactory;
+import shared.dto.common.AuctionDTO;
 import shared.dto.common.ItemDTO;
 import shared.dto.response.BaseResponse;
 import shared.enums.AuctionStatus;
@@ -175,5 +176,27 @@ public class ItemService {
         return status == AuctionStatus.FINISHED
                 || status == AuctionStatus.CANCELLED
                 || status == AuctionStatus.CLOSED;
+    }
+    //Method lấy auction mới nhất
+    public AuctionDTO findLatestAuctionSummaryByItemId(Long itemId) {
+        List<Auction> auctions = auctionDAO.getAllAuctionsByItemId(itemId);
+
+        if (auctions == null || auctions.isEmpty()) {
+            return null;
+        }
+
+        Auction latestAuction = auctions.get(0);
+
+        AuctionDTO dto = new AuctionDTO();
+        dto.setId(latestAuction.getId());
+        dto.setItemId(latestAuction.getItemId());
+        dto.setStartPrice(latestAuction.getStartPrice());
+        dto.setCurrentPrice(
+                latestAuction.getMaxPrice() != null
+                        ? latestAuction.getMaxPrice()
+                        : latestAuction.getStartPrice()
+        );
+
+        return dto;
     }
 }
