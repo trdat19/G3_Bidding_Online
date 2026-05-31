@@ -5,8 +5,82 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="46d58188-6a47-4a70-8660-102ddfb8c121" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/MainApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/controller/AuctionDetailController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/controller/AuctionListController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/controller/BidingViewController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/controller/LoginController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/controller/SellerDashboardController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/controller/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/realtime/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/service/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/state/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/client/view/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/module-info.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/resource.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/Database/database.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/concurrency/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/config/DBconnectio.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/config/DBconnection.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/controller/AdminSeverController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/controller/AuctionSeverController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/controller/AuthSeverController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/controller/BidSeverController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/controller/SellerSeverController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/controller/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/exception/exception.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/Entity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/core/Auction.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/core/AuctionManager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/core/Bid.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/core/BidTransaction.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/item/Art.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/item/Electronics.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/item/Item.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/item/ItemFactory.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/item/Vehicle.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/user/Admin.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/user/Bidder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/user/Seller.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/model/user/User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/network/ClientConnectionHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/network/RealtimePushSever.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/network/RequestRouter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/network/SocketSever.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/network/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/realtime/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/scheduler/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/service/AuctionService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/service/AuditService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/service/AuthService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/service/AutoBidService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/service/BidService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/service/ItemService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/service/RealtimeEventService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/service/UserService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/server/service/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/shared/enums/AuctionStatus.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/shared/enums/ItemType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/shared/enums/UserRole.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/shared/event/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/shared/exception/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/shared/request/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/shared/response/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/shared/utility/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/view/admin-dashboard.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/view/auction-detail.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/view/auction-detail.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/view/auction-list-view.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/view/auction-list.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/view/bidding-view.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/view/login.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/view/login.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/view/seller-dashboard.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/G3_Bidding_Online/view/seller-dashboard.fxml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
