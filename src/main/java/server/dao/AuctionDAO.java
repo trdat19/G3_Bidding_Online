@@ -146,6 +146,70 @@ public class AuctionDAO {
 
         return auctions;
     }
+    public List<AuctionDTO> getSellerAuctionSummaries(Long sellerId) {
+        String sql = """
+            SELECT
+                a.id_auction,
+                a.id_item,
+                i.name_item AS item_name,
+                i.description AS item_description,
+                i.category AS item_category,
+                i.image_url AS item_image_url,
+                a.id_seller,
+                seller.full_name AS seller_name,
+                a.start_price,
+                a.max_price,
+                a.min_increment,
+                a.buy_now_price,
+                a.status_auction,
+                a.start_time,
+                a.end_time,
+                highest_bid.bidder_id AS leader_id,
+                leader.full_name AS leader_name,
+                COALESCE(bid_counts.bid_count, 0) AS bid_count
+            FROM auctions a
+            JOIN items i ON i.id_item = a.id_item
+            LEFT JOIN users seller ON seller.id = a.id_seller
+            LEFT JOIN (
+                SELECT ranked.auction_id, ranked.bidder_id
+                FROM (
+                    SELECT b.auction_id, b.bidder_id,
+                           ROW_NUMBER() OVER (
+                               PARTITION BY b.auction_id
+                               ORDER BY b.bid_amount DESC, b.bid_time ASC, b.id ASC
+                           ) AS rn
+                    FROM bids b
+                ) ranked
+                WHERE ranked.rn = 1
+            ) highest_bid ON highest_bid.auction_id = a.id_auction
+            LEFT JOIN users leader ON leader.id = highest_bid.bidder_id
+            LEFT JOIN (
+                SELECT auction_id, COUNT(*) AS bid_count
+                FROM bids
+                GROUP BY auction_id
+            ) bid_counts ON bid_counts.auction_id = a.id_auction
+            WHERE a.id_seller = ?
+              AND a.status_auction IN ('OPEN', 'RUNNING', 'FINISHED', 'CLOSED')
+            ORDER BY a.id_auction DESC
+            """;
+
+        List<AuctionDTO> auctions = new ArrayList<>();
+
+        try (Connection con = DBConnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, sellerId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    auctions.add(mapResultSetToAdminAuctionDTO(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("getSellerAuctionSummaries error: " + e.getMessage());
+        }
+
+        return auctions;
+    }
 
     // lấy tất cả auction của một seller
     public List<Auction> getAllAuctionsBySellerId(Long sellerId) {

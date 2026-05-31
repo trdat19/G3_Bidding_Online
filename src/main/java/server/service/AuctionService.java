@@ -344,7 +344,6 @@ public class AuctionService {
         }
         return checkOpenAuction;
     }
-
     //--------------FINISH------------------
     /*
      * kết thúc phiên đấu giá, chuyển trạng thái sang FINISHED
@@ -610,31 +609,11 @@ public class AuctionService {
     }
 
     public List<AuctionDTO> getApprovedAuctionsBySellerId(Long sellerId) {
-        List<AuctionDTO> dtos = new ArrayList<>();
         if (sellerId == null) {
-            return dtos;
+            return new ArrayList<>();
         }
-
-        for (Auction auction : auctionDAO.getAllAuctionsBySellerId(sellerId)) {
-            if (!isApprovedSellerAuction(auction.getStatus())) {
-                continue;
-            }
-
-            Item item = itemDAO.findById(auction.getItemId());
-            if (item != null) {
-                dtos.add(toDTO(auction, item));
-            }
-        }
-        return dtos;
+        return auctionDAO.getSellerAuctionSummaries(sellerId);
     }
-
-    private boolean isApprovedSellerAuction(AuctionStatus status) {
-        return status == AuctionStatus.OPEN
-                || status == AuctionStatus.RUNNING
-                || status == AuctionStatus.FINISHED
-                || status == AuctionStatus.CLOSED;
-    }
-
     /** Lấy tất cả phiên (dành cho Admin) */
     public List<AuctionDTO> getAllAuctions() {
         List<Auction> auctions = auctionDAO.getAllAuctions();
