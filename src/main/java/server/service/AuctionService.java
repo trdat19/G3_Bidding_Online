@@ -193,20 +193,6 @@ public class AuctionService {
                 || status == AuctionStatus.CLOSED;
     }
 
-    //Thêm method admin lấy danh sách request
-    public List<AuctionDTO> getCreateAuctionRequests() {
-        List<Auction> auctions = auctionDAO.getAllAuctionsByStatus(AuctionStatus.PREPARING);
-        List<AuctionDTO> dtos = new ArrayList<>();
-
-        for (Auction auction : auctions) {
-            Item item = itemDAO.findById(auction.getItemId());
-            if (item != null) {
-                dtos.add(toDTO(auction, item));
-            }
-        }
-        return dtos;
-    }
-
     public boolean rejectCreateAuctionRequest(Long auctionId) {
         Auction auction = auctionDAO.findById(auctionId);
 
@@ -304,46 +290,6 @@ public class AuctionService {
         return false;
     }
 
-    //-------------------START-------------------
-    /**
-     * Mở phiên đấu giá (Chuyển status: preparing -> open)
-     * synchronized đảm bảo các thread đều xem được trạng thái mới nhất của auction,
-     * tránh logic lỗi mở auction 2 lần
-     */
-    public synchronized boolean startAuction(Long auctionId)
-    {
-        Auction auction = auctionDAO.findById(auctionId);
-        if (auction == null) {
-            return false;
-        }
-        if (auction.getStatus() != AuctionStatus.PREPARING) {
-            //không ở trạng thái preparing thì thôi return false
-            return false;
-        }
-
-        auction.setStatus(AuctionStatus.OPEN);
-
-        boolean checkOpenAuction = auctionDAO.updateStatus(auctionId, AuctionStatus.OPEN);
-        if (checkOpenAuction) {
-            System.out.println(">>> [AuctionService] Đã mở auction #" + auctionId);
-
-            //push thông báo cho tất cả client đang xem
-            BaseResponse event = new BaseResponse(true, "Phiên đấu giá đã bắt đầu", null);
-            event.setAction("AUCTION_STARTED");
-            RealtimePushServer.pushToAuctionSubscribers(auctionId, event);
-
-            // Thông báo danh sách phiên đấu giá thay đổi
-            BaseResponse listEvent = new BaseResponse(
-                    true,
-                    "Danh sách phiên đấu giá đã thay đổi",
-                    null
-            );
-            listEvent.setAction("AUCTION_LIST_CHANGED");
-
-            RealtimePushServer.pushToAuctionListSubscribers(listEvent);
-        }
-        return checkOpenAuction;
-    }
     //--------------FINISH------------------
     /*
      * kết thúc phiên đấu giá, chuyển trạng thái sang FINISHED
@@ -361,7 +307,8 @@ public class AuctionService {
             return finishAuctionInternal(auctionId);
         } finally {
             lock.unlock();
-            AuctionLockManager.getInstance().removeLock(auctionId);
+            //không remove lock tránh tạo 2 lock khác nhau trong cùng auction
+            // AuctionLockManager.getInstance().removeLock(auctionId);
         }
     }
 

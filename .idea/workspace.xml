@@ -5,17 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="46d58188-6a47-4a70-8660-102ddfb8c121" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/test/java/server/service/AutoBidServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/~$Do_HeThongDauGia.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/model/Item.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/model/Item.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/controller/SellerServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/controller/SellerServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AutoBidService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AutoBidService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/edit-product-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/edit-product-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/server/service/AuctionServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/service/AuctionServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/service/AuctionService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -231,7 +222,7 @@
       <workItem from="1780224458048" duration="4003000" />
       <workItem from="1780231482948" duration="1543000" />
       <workItem from="1780233177746" duration="1666000" />
-      <workItem from="1780236414543" duration="1183000" />
+      <workItem from="1780236414543" duration="1820000" />
     </task>
     <servers />
   </component>
