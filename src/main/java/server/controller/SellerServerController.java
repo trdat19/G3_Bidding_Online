@@ -4,12 +4,10 @@ import server.model.item.Item;
 import server.network.ClientConnectionHandler;
 import server.service.ItemService;
 
-import shared.dto.common.AuctionDTO;
 import shared.dto.common.ItemDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

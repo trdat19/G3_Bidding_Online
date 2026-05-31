@@ -247,6 +247,7 @@ public class AutoBidService {
             }
 
             if (rule.getMaxAmount().compareTo(minimumValidBid) < 0) {
+                autoBidRuleDAO.updateStatus(rule.getId(), false);
                 continue;
             }
 

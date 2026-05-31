@@ -6,7 +6,7 @@
 ---
 
 ## 1. Giới thiệu hệ thống
-BidZone là ứng dụng desktop hỗ trợ tổ chức và tham gia đấu giá trực tuyến.
+BidZone là hệ thống hỗ trợ tổ chức và tham gia đấu giá trực tuyến.
 
 Hệ thống được xây dựng theo kiến trúc Client-Server: client JavaFX cung cấp giao diện người dùng, server xử lý nghiệp vụ và trao đổi dữ liệu với cơ sở dữ liệu MySQL/TiDB qua JDBC.
 
@@ -209,5 +209,5 @@ Nếu chạy trong IntelliJ IDEA hoặc IDE tương đương:
 
 ## 10. Báo cáo và video demo
 
-- Báo cáo PDF: _Chưa bổ sung link._
-- Video demo: _Chưa bổ sung link._
+- Báo cáo PDF: _https://drive.google.com/file/d/1-siIgf-ROlgKxeyknQ909ceOcURJFTEB/view?usp=sharing_
+- Video demo: _https://drive.google.com/file/d/1vWKG5a669OAawddiPOi7_N5ShSS_HWmN/view?usp=sharing_

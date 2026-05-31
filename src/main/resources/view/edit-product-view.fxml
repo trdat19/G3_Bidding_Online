@@ -92,7 +92,7 @@
 
                     <Button onAction="#handleCancel" styleClass="cancel-button" text="Hủy" />
 
-                    <Button onAction="#handleSave" styleClass="save-button" text="Gửi yêu cầu" />
+                    <Button onAction="#handleSave" styleClass="save-button" text="Xác nhận" />
                 </HBox>
 
             </VBox>

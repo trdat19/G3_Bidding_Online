@@ -79,6 +79,7 @@ public class Item {
     public void setMinIncrement(double minIncrement) {this.minIncrement = minIncrement;}
 
     public void setImageBytes(byte[] imageBytes) {this.imageBytes = imageBytes;}
+
     public void setImageContentType(String imageContentType) {
         this.imageContentType = imageContentType;
     }
@@ -129,9 +130,11 @@ public class Item {
     public String getImageUrl() {return imageUrl;}
 
     public double getMinIncrement() {return minIncrement;}
+
     public byte[] getImageBytes() {
         return imageBytes;
     }
+
     public String getImageContentType() {
         return imageContentType;
     }
