@@ -117,36 +117,11 @@ public class SellerServerController {
     }
 
     // ---------------------- GET ALL BY SELLER ----------------------
-
     public BaseResponse getItemsBySeller(ClientConnectionHandler handler) {
         try {
             Long sellerId = handler.getUser().getId();
-
-            List<Item> items = itemService.findBySeller(sellerId);
-            List<ItemDTO> dtos = new ArrayList<>();
-            for (Item item : items) {
-                ItemDTO dto = new ItemDTO();
-                dto.setId(item.getId());
-                dto.setName(item.getNameItem());
-                dto.setDescription(item.getDescription());
-                dto.setCategory(item.getCategory());
-                dto.setStatus(item.getStatusItem());
-                dto.setSellerId(item.getSellerId());
-                AuctionDTO latestAuction = itemService.findLatestAuctionSummaryByItemId(item.getId());
-
-                if (latestAuction != null) {
-                    dto.setPriceStart(latestAuction.getStartPrice());
-                    dto.setCurrentPrice(latestAuction.getCurrentPrice());
-                }
-                dto.setImageUrl(item.getImageUrl());
-                dto.setCreatedAt(item.getCreatedAtItem());
-                dto.setImageBytes(item.getImageBytes());
-                dto.setImageContentType(item.getImageContentType());
-
-                dtos.add(dto);
-            }
+            List<ItemDTO> dtos = itemService.findSellerItemSummaries(sellerId);
             return new BaseResponse(true, "Lấy danh sách sản phẩm thành công!", dtos);
-
         } catch (Exception e) {
             return new BaseResponse(false, "Lỗi lấy danh sách sản phẩm: " + e.getMessage(), null);
         }

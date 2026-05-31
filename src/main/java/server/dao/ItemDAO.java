@@ -54,7 +54,7 @@ public class ItemDAO {
     }
 
     // tìm item theo id
-    public Item findById(long id) {
+    public Item findById(Long id) {
         String sql = "SELECT * FROM items WHERE id_item = ?";
 
         try (Connection con = DBConnection.getInstance().getConnection();
@@ -173,8 +173,57 @@ public class ItemDAO {
         return items;
     }
 
+    public List<ItemDTO> getSellerItemSummaries(Long sellerId) {
+        String sql = """
+            SELECT
+                i.id_item,
+                i.name_item,
+                i.category,
+                i.description,
+                i.id_seller,
+                i.status_item,
+                i.created_atItem AS created_at_item,
+                i.image_url,
+                i.image_data,
+                i.image_content_type,
+                latest_auction.start_price,
+                latest_auction.max_price
+            FROM items i
+            LEFT JOIN (
+                SELECT a.*
+                FROM auctions a
+                INNER JOIN (
+                    SELECT id_item, MAX(id_auction) AS latest_auction_id
+                    FROM auctions
+                    GROUP BY id_item
+                ) latest_ids ON latest_ids.latest_auction_id = a.id_auction
+            ) latest_auction ON latest_auction.id_item = i.id_item
+            WHERE i.id_seller = ?
+            ORDER BY i.id_item DESC
+            """;
+
+        List<ItemDTO> items = new ArrayList<>();
+
+        try (Connection con = DBConnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, sellerId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    items.add(mapResultSetToSellerItemDTO(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("getSellerItemSummaries error: " + e.getMessage());
+        }
+
+        return items;
+    }
+
     // lấy item theo id của seller
-    public List<Item> findBySellerId(long sellerId) {
+    public List<Item> findBySellerId(Long sellerId) {
         String sql = "SELECT * FROM items WHERE id_seller = ?";
         List<Item> items = new ArrayList<>();
 
@@ -196,8 +245,12 @@ public class ItemDAO {
 
     // cập nhật toàn bộ item
     public boolean updateItem(Item item) {
-        String sql = "UPDATE items SET name_item = ?, category = ?, description = ?, " +
-                "id_seller = ?, price_start = ?, status_item = ?,  image_url = ?, image_data = ?, image_content_type = ? WHERE id_item = ?";
+        String sql = """
+                    UPDATE items SET name_item = ?, category = ?, description = ?, id_seller = ?,
+                                     price_start = ?, status_item = ?,  image_url = ?, image_data = ?,
+                                     image_content_type = ?
+                    WHERE id_item = ?
+                """;
 
         try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
@@ -222,7 +275,7 @@ public class ItemDAO {
     }
 
     // đổi status item
-    public boolean updateStatus(long idItem, ItemStatus status) {
+    public boolean updateStatus(Long idItem, ItemStatus status) {
         String sql = "UPDATE items SET status_item = ? WHERE id_item = ?";
 
         try (Connection con = DBConnection.getInstance().getConnection();
@@ -239,7 +292,7 @@ public class ItemDAO {
     }
 
     // xóa item
-    public boolean deleteItem(long idItem) {
+    public boolean deleteItem(Long idItem) {
         String sql = "DELETE FROM items WHERE id_item = ?";
 
         try (Connection con = DBConnection.getInstance().getConnection();
@@ -331,6 +384,33 @@ public class ItemDAO {
             dto.setPriceStart(startPrice);
             dto.setCurrentPrice(currentPrice != null ? currentPrice : startPrice);
         }
+
+        return dto;
+    }
+
+    private ItemDTO mapResultSetToSellerItemDTO(ResultSet rs) throws SQLException {
+        ItemDTO dto = new ItemDTO();
+
+        dto.setId(rs.getLong("id_item"));
+        dto.setName(rs.getString("name_item"));
+        dto.setDescription(rs.getString("description"));
+        dto.setCategory(ItemCategory.valueOf(rs.getString("category")));
+        dto.setStatus(ItemStatus.valueOf(rs.getString("status_item")));
+        dto.setSellerId(rs.getLong("id_seller"));
+
+        Timestamp createdAt = rs.getTimestamp("created_at_item");
+        if (createdAt != null) {
+            dto.setCreatedAt(createdAt.toLocalDateTime());
+        }
+
+        BigDecimal startPrice = rs.getBigDecimal("start_price");
+        BigDecimal currentPrice = rs.getBigDecimal("max_price");
+        dto.setPriceStart(startPrice);
+        dto.setCurrentPrice(currentPrice != null ? currentPrice : startPrice);
+
+        dto.setImageUrl(rs.getString("image_url"));
+        dto.setImageBytes(rs.getBytes("image_data"));
+        dto.setImageContentType(rs.getString("image_content_type"));
 
         return dto;
     }

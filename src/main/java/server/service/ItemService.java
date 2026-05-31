@@ -124,6 +124,14 @@ public class ItemService {
         return itemDAO.findBySellerId(sellerId);
     }
 
+    public List<ItemDTO> findSellerItemSummaries(Long sellerId) {
+        return itemDAO.getSellerItemSummaries(sellerId);
+    }
+
+    public List<Item> findAllItems() {
+        return itemDAO.getAllItems();
+    }
+
     public List<ItemDTO> findAllItemsForAdmin() {
         return itemDAO.getAdminItemSummaries();
     }
