@@ -80,8 +80,6 @@ Trong đó:
 - `server.port`: cổng Socket mà Server lắng nghe
 - `db.url`, `db.username`, `db.password`: thông tin kết nối MySQL/TiDB
 
-Lưu ý: Không commit tài khoản, mật khẩu database thật vào repository công khai.
-
 ---
 
 ## 6. Cấu trúc thư mục và module chính
@@ -157,11 +155,7 @@ Sau khi server đã chạy, mở terminal thứ hai:
 java -jar target/G3_BiddingOnline-1.0-SNAPSHOT-client.jar
 ```
 
-Có thể mở nhiều client để kiểm thử đấu giá thời gian thực. Khi cần ghi đè địa chỉ server cho riêng một client:
-
-```bash
-java -Dserver.host=127.0.0.1 -Dserver.port=8888 -jar target/G3_BiddingOnline-1.0-SNAPSHOT-client.jar
-```
+Có thể mở nhiều client để kiểm thử đấu giá thời gian thực.
 
 ### Chạy trực tiếp bằng IDE
 
