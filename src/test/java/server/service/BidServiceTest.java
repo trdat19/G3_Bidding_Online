@@ -37,25 +37,31 @@ public class BidServiceTest {
     @Mock private AuctionDAO auctionDAO;
     @Mock private BidDAO bidDAO;
     @Mock private UserDAO userDAO;
-    @Mock private WalletService walletService;
 
     private BidService bidService;
+    private WalletService walletService;
 
     @BeforeEach
     public void setup() throws Exception {
         SingletonTestUtil.resetSingleton(BidService.class);
+        SingletonTestUtil.resetSingleton(WalletService.class);
+
         bidService = BidService.getInstance();
-        inject("auctionService", auctionService);
-        inject("auctionDAO", auctionDAO);
-        inject("bidDAO", bidDAO);
-        inject("userDAO", userDAO);
-        inject("walletService", walletService);
+        walletService = WalletService.getInstance();
+
+        inject(BidService.class, bidService, "auctionService", auctionService);
+        inject(BidService.class, bidService, "auctionDAO", auctionDAO);
+        inject(BidService.class, bidService, "bidDAO", bidDAO);
+        inject(BidService.class, bidService, "userDAO", userDAO);
+
+        inject(WalletService.class, walletService, "userDAO", userDAO);
+        inject(WalletService.class, walletService, "bidDAO", bidDAO);
     }
 
-    private void inject(String name, Object mock) throws Exception {
-        Field field = BidService.class.getDeclaredField(name);
+    private void inject(Class<?> type, Object target, String name, Object mock) throws Exception {
+        Field field = type.getDeclaredField(name);
         field.setAccessible(true);
-        field.set(bidService, mock);
+        field.set(target, mock);
     }
 
     //---------------PLACE-BID------------------
@@ -74,7 +80,9 @@ public class BidServiceTest {
 
         when(auctionDAO.findById(5L)).thenReturn(auction);
         when(bidDAO.getHighestBidByAuctionId(5L)).thenReturn(null);
-        doNothing().when(walletService).checkCanBid(3L, new BigDecimal("500.00"));
+        when(userDAO.getBalance(3L)).thenReturn(new BigDecimal("500.00"));
+        when(bidDAO.getReservedAmountByBidderIdExcludingAuction(3L, 5L))
+                .thenReturn(BigDecimal.ZERO);
         when(bidDAO.insertBid(any(Bid.class))).thenReturn(true);
         when(userDAO.findById(3L)).thenReturn(bidder);
         when(auctionService.finishAuction(5L)).thenReturn(new HashMap<>());
@@ -166,7 +174,9 @@ public class BidServiceTest {
         assertThrows(BidTooLowException.class, () ->
                 bidService.placeBid(5L, 3L, new BigDecimal("105.00")));
 
-        verify(walletService, never()).checkCanBid(anyLong(), any(BigDecimal.class));
+        verify(userDAO, never()).getBalance(anyLong());
+        verify(bidDAO, never())
+                .getReservedAmountByBidderIdExcludingAuction(anyLong(), anyLong());
         verify(bidDAO, never()).insertBid(any(Bid.class));
     }
 
@@ -181,7 +191,9 @@ public class BidServiceTest {
 
         when(auctionDAO.findById(5L)).thenReturn(auction);
         when(bidDAO.getHighestBidByAuctionId(5L)).thenReturn(null);
-        doNothing().when(walletService).checkCanBid(3L, new BigDecimal("120.00"));
+        when(userDAO.getBalance(3L)).thenReturn(new BigDecimal("120.00"));
+        when(bidDAO.getReservedAmountByBidderIdExcludingAuction(3L, 5L))
+                .thenReturn(BigDecimal.ZERO);
         when(bidDAO.insertBid(any(Bid.class))).thenReturn(false);
 
         assertFalse(bidService.placeBid(5L, 3L, new BigDecimal("120.00")));

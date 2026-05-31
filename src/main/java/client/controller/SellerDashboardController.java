@@ -56,59 +56,25 @@ import java.io.ByteArrayInputStream;
 
 public class SellerDashboardController {
 
-    @FXML
-    private Label sellerNameLabel;
-
-    @FXML
-    private FlowPane productContainer;
-
-    @FXML
-    private Label sellerWalletBalanceLabel;
-
-    @FXML
-    private Button productsButton;
-
-    @FXML
-    private Button approvedAuctionsButton;
-
-    @FXML
-    private Label sectionTitleLabel;
-
-    @FXML
-    private Label sectionSubtitleLabel;
-
-    @FXML
-    private VBox approvedAuctionPane;
-
-    @FXML
-    private TableView<AuctionDTO> approvedAuctionTable;
-
-    @FXML
-    private TableColumn<AuctionDTO, Long> auctionIdColumn;
-
-    @FXML
-    private TableColumn<AuctionDTO, String> auctionProductColumn;
-
-    @FXML
-    private TableColumn<AuctionDTO, String> auctionStartPriceColumn;
-
-    @FXML
-    private TableColumn<AuctionDTO, String> auctionCurrentPriceColumn;
-
-    @FXML
-    private TableColumn<AuctionDTO, String> auctionStartTimeColumn;
-
-    @FXML
-    private TableColumn<AuctionDTO, String> auctionEndTimeColumn;
-
-    @FXML
-    private TableColumn<AuctionDTO, String> auctionStatusColumn;
-
-    @FXML
-    private TableColumn<AuctionDTO, Integer> auctionBidCountColumn;
+    @FXML private Label sellerNameLabel;
+    @FXML private FlowPane productContainer;
+    @FXML private Label sellerWalletBalanceLabel;
+    @FXML private Button productsButton;
+    @FXML private Button approvedAuctionsButton;
+    @FXML private Label sectionTitleLabel;
+    @FXML private Label sectionSubtitleLabel;
+    @FXML private VBox approvedAuctionPane;
+    @FXML private TableView<AuctionDTO> approvedAuctionTable;
+    @FXML private TableColumn<AuctionDTO, Long> auctionIdColumn;
+    @FXML private TableColumn<AuctionDTO, String> auctionProductColumn;
+    @FXML private TableColumn<AuctionDTO, String> auctionStartPriceColumn;
+    @FXML private TableColumn<AuctionDTO, String> auctionCurrentPriceColumn;
+    @FXML private TableColumn<AuctionDTO, String> auctionStartTimeColumn;
+    @FXML private TableColumn<AuctionDTO, String> auctionEndTimeColumn;
+    @FXML private TableColumn<AuctionDTO, String> auctionStatusColumn;
+    @FXML private TableColumn<AuctionDTO, Integer> auctionBidCountColumn;
 
     private final Consumer<BaseResponse> realtimeListener = this::handleRealtimeEvent;
-
     private final List<Item> itemList = new ArrayList<>();
     private final ObservableList<AuctionDTO> approvedAuctions = FXCollections.observableArrayList();
     private final DateTimeFormatter tableDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -188,7 +154,8 @@ public class SellerDashboardController {
 
         if (item.getImageBytes() != null && item.getImageBytes().length > 0) {
             Image image = new Image(
-                    new ByteArrayInputStream(item.getImageBytes()), 340, 150, true, true);
+                    new ByteArrayInputStream(item.getImageBytes()),
+                    340, 150, true, true);
             ImageView imageView = new ImageView(image);
             imageView.setFitWidth(340);
             imageView.setFitHeight(150);
@@ -591,7 +558,7 @@ public class SellerDashboardController {
                         serverItem.getCreatedAt(),
                         serverItem.getCreatedAt(),
                         serverItem.getStatus().name(),
-                        0
+                        0L
                 );
 
                 item.setId(serverItem.getId());
@@ -615,8 +582,8 @@ public class SellerDashboardController {
         });
     }
     private boolean canManageItem(Item item) {
-        return "PENDING".equals(item.getStatus())
-                || "CANCELLED".equals(item.getStatus());
+        String status = item.getStatus();
+        return "PENDING".equals(status) || "CANCELLED".equals(status);
     }
 
     private void showCannotActionAlert(String action, Item item) {
@@ -688,7 +655,7 @@ public class SellerDashboardController {
                 new SimpleStringProperty(cell.getValue().getStatus() != null
                         ? cell.getValue().getStatus().name() : ""));
         auctionBidCountColumn.setCellValueFactory(cell ->
-                new ReadOnlyObjectWrapper<>(cell.getValue().getBidCount()));
+                new ReadOnlyObjectWrapper<>(Integer.parseInt((cell.getValue().getBidCount().toString()))));
         approvedAuctionTable.setItems(approvedAuctions);
     }
 

@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.database.DBConnection;
 import server.model.user.Admin;
 import server.model.user.Bidder;
 import server.model.user.Seller;
@@ -15,10 +15,12 @@ import java.math.BigDecimal;
 public class UserDAO {
 
     public boolean insertUser(User user) {
-        String sql = "INSERT INTO users(username, password, full_name, email, role, status, balance) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = """
+                     INSERT INTO users(username, password, full_name, email, role, status, balance)
+                     VALUES (?, ?, ?, ?, ?, ?, ?)
+                     """;
 
-        try (Connection connection = DBconnection.getInstance().getConnection();
+        try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, user.getUsername());
@@ -38,16 +40,16 @@ public class UserDAO {
                 return true;
             }
         } catch (SQLException e) {
-            System.err.println("insertUser error: " + e.getMessage());
+            System.err.println("Lỗi khi thêm người dùng: " + e.getMessage());
         }
         return false;
     }
 
     // tìm user theo id
-    public User findById(long id) {
+    public User findById(Long id) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
-        try (Connection connection = DBconnection.getInstance().getConnection();
+        try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setLong(1, id);
@@ -59,7 +61,7 @@ public class UserDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace(); // dùng khi viết logging
-            System.err.println("findById error: " + e.getMessage());
+            System.err.println("Lỗi khi tìm người dùng theo ID: " + e.getMessage());
         }
         return null;
     }
@@ -68,7 +70,7 @@ public class UserDAO {
     public User findByUsername(String username) {
         String sql = "SELECT * FROM users WHERE username = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, username);
@@ -80,7 +82,7 @@ public class UserDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            System.err.println("findByUsername error: " + e.getMessage());
+            System.err.println("Lỗi khi tìm người dùng theo Username: " + e.getMessage());
         }
         return null;
     }
@@ -90,7 +92,7 @@ public class UserDAO {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
 
-        try (Connection connection = DBconnection.getInstance().getConnection();
+        try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery())
         {
@@ -100,18 +102,19 @@ public class UserDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            System.err.println("getAllUsers error: " + e.getMessage());
+            System.err.println("Lỗi khi lấy tất cả người dùng: " + e.getMessage());
         }
 
         return users;
     }
 
+    //----------------UPDATE--------------------
     // cập nhật lại từ đầu users
     public boolean updateUser(User user) {
         String sql = "UPDATE users SET username = ?, password = ?, full_name = ?, " +
                      "email = ?, role = ?, status = ? WHERE id = ?";
 
-        try (Connection connection = DBconnection.getInstance().getConnection();
+        try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, user.getUsername());
@@ -125,8 +128,6 @@ public class UserDAO {
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -134,28 +135,28 @@ public class UserDAO {
     }
 
     // đổi mật khẩu user
-    public boolean updatePassword(long id , String passwordNew) {
-        String sql = "UPDATE users SET password = ? Where id = ?";
+    public boolean updatePassword(Long id , String passwordNew) {
+        String sql = "UPDATE users SET password = ? WHERE id = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
-            PreparedStatement ps = con.prepareStatement(sql))
+        try (Connection con = DBConnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql))
         {
-            ps.setString(1,passwordNew);
-            ps.setLong(2,id);
+            ps.setString(1, passwordNew);
+            ps.setLong(2, id);
             int row = ps.executeUpdate();
             return row > 0;
 
         } catch (SQLException e) {
-            System.out.println("updatePassword error: " + e.getMessage());
+            System.out.println("Lỗi khi cập nhật mật khẩu: " + e.getMessage());
         }
         return false ;
     }
 
     // đổi username
-    public boolean updateUsername(long id, String newUsername) {
+    public boolean updateUsername(Long id, String newUsername) {
         String sql = "UPDATE users SET username = ? WHERE id = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
         {
 
@@ -165,16 +166,16 @@ public class UserDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.err.println("updateUsername error: " + e.getMessage());
+            System.err.println("Lỗi khi cập nhật tên người dùng: " + e.getMessage());
         }
         return false;
     }
 
     // đổi trạng thái
-    public boolean updateStatus(long id, UserStatus status) {
+    public boolean updateStatus(Long id, UserStatus status) {
         String sql = "UPDATE users SET status = ? WHERE id = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
         {
             ps.setString(1, status.name());
@@ -188,10 +189,11 @@ public class UserDAO {
         return false;
     }
 
+    //---------------DELETE-------------------
     // xoá user
-    public boolean deleteUser(long id) {
+    public boolean deleteUser(Long id) {
         String sql = "DELETE FROM users WHERE id = ?";
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
         {
             ps.setLong(1, id);
@@ -200,15 +202,16 @@ public class UserDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            System.err.println("deleteUser error: " + e.getMessage());
+            System.err.println("Lỗi khi xoá người dùng: " + e.getMessage());
         }
         return false;
     }
 
+    //------------CHECK-EXISTS-----------
     // kiểm tra xem username tồn tại chưa
     public boolean existsByUsername(String username) {
         String sql = "SELECT 1 FROM users WHERE username = ?";
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
         {
             ps.setString(1, username);
@@ -217,7 +220,7 @@ public class UserDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("existsByUsername error: " + e.getMessage());
+            System.err.println("Lỗi khi kiểm tra tồn tại bằng tên người dùng: " + e.getMessage());
         }
         return false;
     }
@@ -226,7 +229,7 @@ public class UserDAO {
     public boolean existsByEmail(String email) {
         String sql = "SELECT 1 FROM users WHERE email = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
         {
             ps.setString(1, email);
@@ -234,7 +237,7 @@ public class UserDAO {
                 return rs.next();
             }
         } catch (SQLException e) {
-            System.err.println("existsByEmail error: " + e.getMessage());
+            System.err.println("Lỗi khi kiểm tra tồn tại bằng email người dùng: " + e.getMessage());
         }
         return false;
     }
@@ -243,21 +246,24 @@ public class UserDAO {
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         String role = rs.getString("role");
 
-        User user = null;
+        User user;
         switch (role) {
-            case "ADMIN":
+            case "ADMIN": {
                 user = new Admin();
                 break;
-            case "SELLER":
+            }
+            case "SELLER": {
                 user = new Seller();
-                //user.setTotalEarning();
+                //((Seller) user).setTotalEarning();
                 break;
-            default:
+            }
+            default: {
                 user = new Bidder();
-                //user.setBalance()
-                //user.setMaxBid();
-                //user.setBidIncrement();
+                //((Bidder) user).setBalance();
+                //((Bidder) user).setMaxBid();
+                //((Bidder) user).setBidIncrement();
                 break;
+            }
         }
 
         user.setId(rs.getLong("id"));
@@ -279,28 +285,11 @@ public class UserDAO {
         return user;
     }
 
-    // dùng ở trong TestUserDao, test xong thì bỏ
-    public List<User> findAll() {
-        String sql = "SELECT * FROM users";
-        List<User> users = new ArrayList<>();
-        try (
-                Connection con = DBconnection.getInstance().getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()
-        ) {
-            while (rs.next()) {
-                users.add(mapResultSetToUser(rs));
-            }
-        } catch (SQLException e) {
-            System.err.println("findAll error: " + e.getMessage());
-        }
-        return users;
-    }
-
-    public BigDecimal getBalance(long userId) {
+    //----------Balance----------------
+    public BigDecimal getBalance(Long userId) {
         String sql = "SELECT balance FROM users WHERE id = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, userId);
@@ -312,16 +301,20 @@ public class UserDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("getBalance error: " + e.getMessage());
+            System.err.println("Lỗi khi lấy số dư người dùng: " + e.getMessage());
         }
 
         return BigDecimal.ZERO;
     }
 
-    public boolean increaseBalance(long userId, BigDecimal amount) {
+    public boolean increaseBalance(Long userId, BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            return false;
+        }
+
         String sql = "UPDATE users SET balance = balance + ? WHERE id = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setBigDecimal(1, amount);
@@ -330,16 +323,20 @@ public class UserDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.err.println("increaseBalance error: " + e.getMessage());
+            System.err.println("Lỗi khi nạp vào ví: " + e.getMessage());
         }
 
         return false;
     }
 
-    public boolean decreaseBalanceIfEnough(long userId, BigDecimal amount) {
+    public boolean decreaseBalanceIfEnough(Long userId, BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            return false;
+        }
+
         String sql = "UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setBigDecimal(1, amount);
@@ -349,17 +346,21 @@ public class UserDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.err.println("decreaseBalanceIfEnough error: " + e.getMessage());
+            System.err.println("Lỗi khi rút khỏi ví: " + e.getMessage());
         }
 
         return false;
     }
 
-    public boolean transferBalanceIfEnough(long fromUserId, long toUserId, BigDecimal amount) {
+    public boolean transferBalanceIfEnough(Long fromUserId, Long toUserId, BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            return false;
+        }
+
         String subtractSql = "UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?";
         String addSql = "UPDATE users SET balance = balance + ? WHERE id = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection()) {
+        try (Connection con = DBConnection.getInstance().getConnection()) {
             con.setAutoCommit(false);
 
             try (PreparedStatement subtractPs = con.prepareStatement(subtractSql);
@@ -393,7 +394,7 @@ public class UserDAO {
                 con.setAutoCommit(true);
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.err.println("transferBalanceIfEnough connection error: " + e.getMessage());
             return false;
         }

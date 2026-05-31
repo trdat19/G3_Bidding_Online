@@ -59,18 +59,27 @@ public class AdminRequestController implements AdminPageLifecycle {
     private void initialize() {
         productNameColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getItemName()));
+
         sellerColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getSellerName()));
+
         categoryColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getItemCategory()));
+
         statusColumn.setCellValueFactory(data -> new SimpleStringProperty(
-                data.getValue().getStatus() != null ? data.getValue().getStatus().name() : ""));
+                data.getValue().getStatus() != null
+                        ? data.getValue().getStatus().name()
+                        : ""));
+
         startPriceColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(String.valueOf(data.getValue().getStartPrice())));
+
         minIncrementColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(String.valueOf(data.getValue().getMinIncrement())));
+
         startTimeColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(String.valueOf(data.getValue().getStartTime())));
+        
         endTimeColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(String.valueOf(data.getValue().getEndTime())));
 
@@ -81,8 +90,10 @@ public class AdminRequestController implements AdminPageLifecycle {
         statusFilterBox.setValue("ALL");
         requestTable.setItems(filteredRequests);
         requestTable.setPlaceholder(new Label("Đang tải dữ liệu..."));
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> applyFilters());
-        statusFilterBox.valueProperty().addListener((observable, oldValue, newValue) -> applyFilters());
+        searchField.textProperty().addListener(
+                (observable, oldValue, newValue) -> applyFilters());
+        statusFilterBox.valueProperty().addListener(
+                (observable, oldValue, newValue) -> applyFilters());
         setupActionColumn();
         ClientNetworkService.getInstance().addEventListener(realtimeListener);
     }

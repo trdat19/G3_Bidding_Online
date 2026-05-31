@@ -12,10 +12,7 @@ import server.network.RealtimePushServer;
 import shared.dto.common.BidDTO;
 import shared.dto.response.BaseResponse;
 import shared.enums.AuctionStatus;
-import shared.exception.AuctionClosedException;
-import shared.exception.AuctionNotFoundException;
-import shared.exception.BidTooLowException;
-import shared.exception.InvalidAuctionTimeException;
+import shared.exception.*;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -28,11 +25,12 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class BidService {
 
+    //anti-sniping
     private static final int ANTI_SNIPE_THRESHOLD_SECONDS = 60; // bid trong 60s cuối
     private static final int ANTI_SNIPE_EXTENSION_SECONDS = 60; // gia hạn thêm 60s
 
     // Sử dụng Singleton để đảm bảo mọi luồng đều dùng chung một đối tượng xử lý giá
-    private static BidService instance;
+    private static volatile BidService instance;
 
     private final AuctionService auctionService = AuctionService.getInstance();
     private final AuctionDAO auctionDAO = new AuctionDAO();
@@ -102,7 +100,11 @@ public class BidService {
         }
 
         // 8. Kiểm tra ví
-        WalletService.getInstance().checkCanBid(bidderId, auctionId, amount);
+        try {
+            WalletService.getInstance().checkCanBid(bidderId, auctionId, amount);
+        } catch (InsufficientBalanceException e) {
+            return false;
+        }
 
         // 9. Kiểm tra Buy-Now: Nếu bid >= buyNow -> chốt ngay
         boolean buyNowTriggered = auction.getBuyNowPrice() != null
@@ -110,7 +112,7 @@ public class BidService {
 
         // 10. Tạo và lưu Bid vào DB
         Bid bid = new Bid(auctionId, bidderId, amount);
-        bid.setTimestamp(LocalDateTime.now());;
+        bid.setTimestamp(LocalDateTime.now());
         bid.setIsAutoBid(isAutoBid);
 
         boolean saved = bidDAO.insertBid(bid);
@@ -150,7 +152,7 @@ public class BidService {
 
         BaseResponse listEvent = new BaseResponse(
                 true,
-                "Danh sach phien dau gia da thay doi",
+                "Danh sách phiên đấu giá đã thay đổi!",
                 null
         );
         listEvent.setAction("AUCTION_LIST_CHANGED");
@@ -163,7 +165,6 @@ public class BidService {
                 amount,
                 auctionId
         );
-
         return true;
     }
 

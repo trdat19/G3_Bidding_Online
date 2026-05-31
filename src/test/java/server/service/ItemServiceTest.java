@@ -75,6 +75,7 @@ public class ItemServiceTest {
         });
 
         assertEquals("Thiếu thông tin cần thiết để tạo sản phẩm!", exception.getMessage());
+        verify(itemDAO, never()).insertItem(any(Item.class));
     }
 
     @Test
@@ -101,7 +102,7 @@ public class ItemServiceTest {
         when(item.getStatusItem()).thenReturn(ItemStatus.CANCELLED);
         when(itemDAO.findById(1L)).thenReturn(item);
         when(auctionDAO.getAllAuctionsByItemId(1L)).thenReturn(List.of(auction));
-        when(bidDAO.countBidByAuctionId(5L)).thenReturn(0);
+        when(bidDAO.countBidByAuctionId(5L)).thenReturn(0L);
         when(auctionDAO.deleteAuctionsByItemId(1L)).thenReturn(true);
         when(itemDAO.deleteItem(1L)).thenReturn(true);
 
@@ -120,7 +121,7 @@ public class ItemServiceTest {
         when(item.getStatusItem()).thenReturn(ItemStatus.CANCELLED);
         when(itemDAO.findById(1L)).thenReturn(item);
         when(auctionDAO.getAllAuctionsByItemId(1L)).thenReturn(List.of(auction));
-        when(bidDAO.countBidByAuctionId(5L)).thenReturn(1);
+        when(bidDAO.countBidByAuctionId(5L)).thenReturn(1L);
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
             itemService.deleteItem(1L);

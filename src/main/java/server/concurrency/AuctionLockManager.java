@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class AuctionLockManager {
-    private static AuctionLockManager instance;
+    private static volatile AuctionLockManager instance;
 
     private final ConcurrentHashMap<Long, ReentrantLock> locks;
 

@@ -13,16 +13,21 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class WalletService {
-    private static WalletService instance;
-    private UserDAO userDAO = new UserDAO();
-    private BidDAO bidDAO = new BidDAO();
-    private AuctionDAO auctionDAO = new AuctionDAO();
+    private static volatile WalletService instance;
+
+    private final UserDAO userDAO = new UserDAO();
+    private final BidDAO bidDAO = new BidDAO();
+    private final AuctionDAO auctionDAO = new AuctionDAO();
 
     private WalletService() {}
 
     public static WalletService getInstance() {
         if (instance == null) {
-            instance = new WalletService();
+            synchronized (WalletService.class) {
+                if (instance == null) {
+                    instance = new WalletService();
+                }
+            }
         }
         return instance;
     }
@@ -33,7 +38,7 @@ public class WalletService {
 
     public BigDecimal deposit(Long userId, BigDecimal amount) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Số tiền nạp phải lớn hơn 0");
+            throw new IllegalArgumentException("Số tiền nạp phải lớn hơn 0!");
         }
 
         boolean ok = userDAO.increaseBalance(userId, amount);

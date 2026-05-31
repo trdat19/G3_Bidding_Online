@@ -2,23 +2,23 @@ package shared.dto.common;
 
 import shared.enums.AuctionStatus;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * AuctionDTO – dữ liệu phiên đấu giá truyền giữa client và server.
- *
  * Dùng khi:
  *   - Hiển thị danh sách phiên (BidderDashboard, AdminDashboard)
  *   - Hiển thị chi tiết phiên (AuctionDetailController)
  *   - Cập nhật realtime khi có bid mới hoặc phiên thay đổi trạng thái
- *
  * Nhúng luôn thông tin item và người dẫn đầu
  * để client không phải gửi thêm request phụ.
  */
 public class AuctionDTO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -52,9 +52,9 @@ public class AuctionDTO implements Serializable {
     private String leaderName;
 
     // Thống kê
-    private int bidCount;
+    private Long bidCount;
 
-    // ─── CONSTRUCTORS ─────────────────────────────────────────────────────────
+    //----------constructor--------------------
 
     public AuctionDTO() {}
 
@@ -66,7 +66,7 @@ public class AuctionDTO implements Serializable {
                       AuctionStatus status,
                       LocalDateTime startTime, LocalDateTime endTime,
                       Long leaderId, String leaderName,
-                      int bidCount) {
+                      Long bidCount) {
         this.id = id;
         this.itemId = itemId;
         this.itemName = itemName;
@@ -84,7 +84,7 @@ public class AuctionDTO implements Serializable {
         this.bidCount = bidCount;
     }
 
-    // ─── GETTERS ──────────────────────────────────────────────────────────────
+    //getter
 
     public Long getId()                  { return id; }
     public Long getItemId()              { return itemId; }
@@ -103,11 +103,11 @@ public class AuctionDTO implements Serializable {
     public LocalDateTime getEndTime()    { return endTime; }
     public Long getLeaderId()            { return leaderId; }
     public String getLeaderName()        { return leaderName; }
-    public int getBidCount() { return bidCount; }
+    public Long getBidCount() { return bidCount; }
     public byte[] getImageBytes() {return imageBytes;}
     public String getImageContentType() {return imageContentType;}
 
-    // ─── SETTERS ──────────────────────────────────────────────────────────────
+    // setter
 
     public void setId(Long id)                       { this.id = id; }
     public void setItemId(Long itemId)               { this.itemId = itemId; }
@@ -126,12 +126,12 @@ public class AuctionDTO implements Serializable {
     public void setEndTime(LocalDateTime t)          { this.endTime = t; }
     public void setLeaderId(Long leaderId)           { this.leaderId = leaderId; }
     public void setLeaderName(String leaderName)     { this.leaderName = leaderName; }
-    public void setBidCount(int bidCount)            { this.bidCount = bidCount; }
+    public void setBidCount(Long bidCount)            { this.bidCount = bidCount; }
     public void setImageBytes(byte[] imageBytes) {this.imageBytes = imageBytes;}
     public void setImageContentType(String imageContentType) {this.imageContentType = imageContentType;}
 
 
-    // ─── HELPERS ──────────────────────────────────────────────────────────────
+    // helper
 
     /** Giá hiển thị: currentPrice nếu đã có bid, ngược lại dùng startPrice */
     public BigDecimal getDisplayPrice() {

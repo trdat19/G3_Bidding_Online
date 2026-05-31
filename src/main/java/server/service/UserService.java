@@ -8,16 +8,14 @@ import java.util.List;
 
 /**
  * UserService – xử lý logic nghiệp vụ liên quan đến người dùng, admin sẽ gọi
- *
  * Các chức năng:
  *   - Tìm kiếm người dùng
  *   - Thay đổi trạng thái (kích hoạt, khóa)
  *   Phân quyền (admin, user)
- *
  * Singleton
  */
 public class UserService {
-    private static UserService instance = null;
+    private static volatile UserService instance = null;
 
     private final UserDAO userDAO =  new UserDAO();
 
@@ -56,7 +54,6 @@ public class UserService {
 
     // ---------------------- STATUS ----------------------
 
-
     public boolean changeStatus(Long userId, UserStatus status) {
         // Kiểm tra tồn tại trước khi update
         User user = userDAO.findById(userId);
@@ -66,16 +63,4 @@ public class UserService {
 
         return userDAO.updateStatus(userId, status);
     }
-
-    // ---------------------- ROLE ----------------------
-
-//    //phân quyền
-//    public boolean assignRole(Long userId, String role) {
-//        User user = userDAO.findById(userId);
-//        if (user == null) {
-//            throw new IllegalArgumentException("Không tìm thấy người dùng #" + userId);
-//        }
-//
-//        return userDAO.updateRole(userId, role);
-//    }
 }

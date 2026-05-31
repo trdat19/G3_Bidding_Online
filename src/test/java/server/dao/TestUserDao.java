@@ -122,28 +122,11 @@ public class TestUserDao {
                     u.getStatus());
         }
 
-        System.out.println("\n===== TEST FIND ALL =====");
-        List<User> allUsers2 = userDao.findAll();
-        for (User u : allUsers2) {
-            System.out.println(u.getId() + " | " +
-                    u.getUsername() + " | " +
-                    u.getRole() + " | " +
-                    u.getStatus());
-        }
-
         System.out.println("\n===== TEST DELETE =====");
         if (seller.getId() != null) {
             boolean deleted = userDao.deleteUser(seller.getId());
             System.out.println("Delete seller: " + deleted);
         }
 
-        System.out.println("\n===== TEST FIND ALL SAU KHI DELETE =====");
-        List<User> allUsers3 = userDao.findAll();
-        for (User u : allUsers3) {
-            System.out.println(u.getId() + " | " +
-                    u.getUsername() + " | " +
-                    u.getRole() + " | " +
-                    u.getStatus());
-        }
     }
 }

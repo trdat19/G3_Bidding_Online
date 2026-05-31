@@ -2,10 +2,14 @@ package server.model.core;
 
 import server.model.Entity;
 
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class AutoBidRule extends Entity {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private Long auctionId;
     private Long bidderId;

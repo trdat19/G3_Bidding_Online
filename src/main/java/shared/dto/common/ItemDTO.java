@@ -2,25 +2,24 @@ package shared.dto.common;
 
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
-import shared.enums.AuctionStatus;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * ItemDTO – dữ liệu sản phẩm truyền giữa client và server.
- *
  * Dùng khi:
  *   - Seller tạo / sửa sản phẩm (client → server)
  *   - Bidder xem danh sách sản phẩm (server → client)
  *   - AuctionDTO nhúng thông tin sản phẩm
- *
  * Không chứa các trường đặc thù của từng loại (artist, brand…)
  * vì client chỉ cần thông tin chung để hiển thị.
  */
 public class ItemDTO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -37,10 +36,7 @@ public class ItemDTO implements Serializable {
     private byte[] imageBytes;
     private String imageContentType;
 
-
-
-
-    // ─── CONSTRUCTORS ─────────────────────────────────────────────────────────
+    //------constructor
 
     public ItemDTO() {}
 
@@ -72,7 +68,7 @@ public class ItemDTO implements Serializable {
         this.status = ItemStatus.PENDING;
     }
 
-    // ─── GETTERS ──────────────────────────────────────────────────────────────
+    // getter
 
     public Long getId()               { return id; }
     public String getName()           { return name; }
@@ -89,7 +85,7 @@ public class ItemDTO implements Serializable {
     public BigDecimal getCurrentPrice() { return currentPrice; }
 
 
-    // ─── SETTERS ──────────────────────────────────────────────────────────────
+    // getter
 
     public void setId(Long id)                     { this.id = id; }
     public void setName(String name)               { this.name = name; }

@@ -16,10 +16,9 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
-/*Đây laf màn hình khi admin đã duyệt sản phầm
-  Seller sẽ nhập startPrice, startTime, endTime, bidCount
+/**
+ * Seller nhập thông tin tạo phiên
  */
-
 public class SetupAuctionViewController {
 
     @FXML private Label productNameLabel;
@@ -63,9 +62,9 @@ public class SetupAuctionViewController {
             endMinuteBox.getItems().add(i);
         }
 
-        startHourBox.setValue(19);
+        startHourBox.setValue(0);
         startMinuteBox.setValue(0);
-        endHourBox.setValue(20);
+        endHourBox.setValue(0);
         endMinuteBox.setValue(0);
 
         startDatePicker.setValue(LocalDate.now());
@@ -143,7 +142,7 @@ public class SetupAuctionViewController {
         data.put("itemId", item.getId());
         data.put("startPrice", BigDecimal.valueOf(startPrice));
         data.put("minIncrement", BigDecimal.valueOf(minIncrement));
-        data.put("buyNowPrice", BigDecimal.valueOf(startPrice * 10));
+        data.put("buyNowPrice", BigDecimal.valueOf(startPrice * 20));
         data.put("startTime", startDateTime);
         data.put("endTime", endDateTime);
 

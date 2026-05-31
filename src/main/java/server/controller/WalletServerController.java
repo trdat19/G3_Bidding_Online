@@ -9,14 +9,18 @@ import shared.dto.response.BaseResponse;
 import java.math.BigDecimal;
 
 public class WalletServerController {
-    private static WalletServerController instance;
+    private static volatile WalletServerController instance;
     private final WalletService walletService = WalletService.getInstance();
 
     private WalletServerController() {}
 
     public static WalletServerController getInstance() {
         if (instance == null) {
-            instance = new WalletServerController();
+            synchronized (WalletServerController.class) {
+                if (instance == null) {
+                    instance = new WalletServerController();
+                }
+            }
         }
         return instance;
     }
@@ -25,7 +29,7 @@ public class WalletServerController {
         Long userId = handler.getUser().getId();
         BigDecimal balance = walletService.getBalance(userId);
 
-        return new BaseResponse(true, "Số dư ví", balance);
+        return new BaseResponse(true, "Số dư ví:", balance);
     }
 
     public BaseResponse deposit(BaseRequest request, ClientConnectionHandler handler) {
@@ -35,7 +39,7 @@ public class WalletServerController {
 
             BigDecimal newBalance = walletService.deposit(userId, amount);
 
-            return new BaseResponse(true, "Nạp tiền thành công", newBalance);
+            return new BaseResponse(true, "Nạp tiền thành công!", newBalance);
 
         } catch (Exception e) {
             return new BaseResponse(false, e.getMessage(), null);

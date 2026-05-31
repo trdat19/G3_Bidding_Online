@@ -5,21 +5,23 @@ import java.sql.SQLException;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import shared.config.AppConfig;
 
-public class DBconnection {
-    private static DBconnection instance;
+public class DBConnection {
+    private static volatile DBConnection instance;
+
     private final HikariDataSource dataSource;
 
-    private String url = "jdbc:mysql://4Fh6tercQZ88ojp.root:Pcw7mel45GAdVwvl@gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/Bidding?sslMode=VERIFY_IDENTITY";
-    private String user = "4Fh6tercQZ88ojp.root";
-    private String pass = "Pcw7mel45GAdVwvl";
+    private static final String URL = AppConfig.getDbUrl();
+    private static final String USER = AppConfig.getDbUsername();
+    private static final String PASS = AppConfig.getDbPassword();
 
-    private DBconnection() {
+    private DBConnection() {
         HikariConfig config = new HikariConfig();
 
-        config.setJdbcUrl(url);
-        config.setUsername(user);
-        config.setPassword(pass);
+        config.setJdbcUrl(URL);
+        config.setUsername(USER);
+        config.setPassword(PASS);
 
         config.setMaximumPoolSize(50);
         config.setMinimumIdle(10);
@@ -29,12 +31,17 @@ public class DBconnection {
 
         this.dataSource = new HikariDataSource(config);
     }
-    public static synchronized DBconnection getInstance() {
+    public static  DBConnection getInstance() {
         if (instance == null) {
-            instance = new DBconnection();
+            synchronized (DBConnection.class) {
+                if (instance == null) {
+                    instance = new DBConnection();
+                }
+            }
         }
         return instance;
     }
+
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }

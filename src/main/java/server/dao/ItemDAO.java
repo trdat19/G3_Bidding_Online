@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.database.DBConnection;
 import server.model.item.Art;
 import server.model.item.Electronics;
 import server.model.item.Item;
@@ -19,10 +19,13 @@ public class ItemDAO {
 
     // thêm item mới
     public boolean insertItem(Item item) {
-        String sql = "INSERT INTO items(name_item, category, description, id_seller, price_start, status_item, image_url, image_data, image_content_type) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = """
+                INSERT INTO items(name_item, category, description, id_seller,
+                                  price_start, status_item, image_url, image_data, image_content_type)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
             ps.setString(1, item.getNameItem());
@@ -54,7 +57,7 @@ public class ItemDAO {
     public Item findById(long id) {
         String sql = "SELECT * FROM items WHERE id_item = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
         {
             ps.setLong(1, id);
@@ -72,7 +75,7 @@ public class ItemDAO {
     // tìm item theo tên
     public Item findByName(String nameItem) {
         String sql = "SELECT * FROM items WHERE name_item = ?";
-        try(Connection con = DBconnection.getInstance().getConnection();
+        try(Connection con = DBConnection.getInstance().getConnection();
             PreparedStatement ps = con.prepareStatement(sql))
         {
             ps.setString(1,nameItem);
@@ -93,7 +96,7 @@ public class ItemDAO {
         String sql = "SELECT * FROM items";
 
         List<Item> items = new ArrayList<>();
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery())
         {
@@ -111,7 +114,7 @@ public class ItemDAO {
     public long countAllItems() {
         String sql = "SELECT COUNT(*) FROM items";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -155,7 +158,7 @@ public class ItemDAO {
 
         List<ItemDTO> items = new ArrayList<>();
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -175,7 +178,7 @@ public class ItemDAO {
         String sql = "SELECT * FROM items WHERE id_seller = ?";
         List<Item> items = new ArrayList<>();
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
         {
             ps.setLong(1, sellerId);
@@ -196,7 +199,7 @@ public class ItemDAO {
         String sql = "UPDATE items SET name_item = ?, category = ?, description = ?, " +
                 "id_seller = ?, price_start = ?, status_item = ?,  image_url = ?, image_data = ?, image_content_type = ? WHERE id_item = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
         {
             ps.setString(1, item.getNameItem());
@@ -222,7 +225,7 @@ public class ItemDAO {
     public boolean updateStatus(long idItem, ItemStatus status) {
         String sql = "UPDATE items SET status_item = ? WHERE id_item = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql))
         {
             ps.setString(1, status.name());
@@ -239,7 +242,7 @@ public class ItemDAO {
     public boolean deleteItem(long idItem) {
         String sql = "DELETE FROM items WHERE id_item = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, idItem);
             return ps.executeUpdate() > 0;
@@ -264,7 +267,7 @@ public class ItemDAO {
         byte[] imageBytes = rs.getBytes("image_data");
         String imageContentType = rs.getString("image_content_type");
         switch (category) {
-            case ART:
+            case ART: {
                 Art art = new Art(nameItem, description, sellerId, statusItem);
                 art.setId(id);
                 if (createdAtItem != null) {
@@ -274,27 +277,32 @@ public class ItemDAO {
                 art.setImageBytes(imageBytes);
                 art.setImageContentType(imageContentType);
                 return art;
-
-            case ELECTRONICS:
+            }
+            case ELECTRONICS: {
                 Electronics electronics = new Electronics(nameItem, description, sellerId, statusItem);
                 electronics.setId(id);
-                electronics.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                if (createdAtItem != null) {
+                    electronics.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                }
                 electronics.setImageUrl(imageUrl);
                 electronics.setImageBytes(imageBytes);
                 electronics.setImageContentType(imageContentType);
                 return electronics;
-
-            case VEHICLE:
+            }
+            case VEHICLE: {
                 Vehicle vehicle = new Vehicle(nameItem, description, sellerId, statusItem);
                 vehicle.setId(id);
-                vehicle.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                if (createdAtItem != null) {
+                    vehicle.setCreatedAtItem(createdAtItem.toLocalDateTime());
+                }
                 vehicle.setImageUrl(imageUrl);
                 vehicle.setImageBytes(imageBytes);
                 vehicle.setImageContentType(imageContentType);
                 return vehicle;
-
-            default:
+            }
+            default: {
                 throw new SQLException("Invalid item category: " + category);
+            }
         }
     }
 

@@ -2,11 +2,13 @@ package server.model.core;
 
 import server.model.Entity;
 
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Bid extends Entity { //thông tin 1 lần đặt giá
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long auctionId;

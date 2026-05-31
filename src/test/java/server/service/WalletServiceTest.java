@@ -108,7 +108,7 @@ public class WalletServiceTest {
         when(userDAO.getBalance(1L)).thenReturn(new BigDecimal("500.00"));
 
         assertDoesNotThrow(() ->
-                walletService.checkCanBid(1L, new BigDecimal("200.00")));
+                walletService.checkCanBid(1L, 5L, new BigDecimal("200.00")));
 
         verify(userDAO, times(1)).getBalance(1L);
     }
@@ -119,7 +119,7 @@ public class WalletServiceTest {
         when(userDAO.getBalance(1L)).thenReturn(new BigDecimal("50.00"));
 
         assertThrows(InsufficientBalanceException.class, () ->
-                walletService.checkCanBid(1L, new BigDecimal("200.00")));
+                walletService.checkCanBid(1L, 5L, new BigDecimal("200.00")));
 
         verify(userDAO, times(1)).getBalance(1L);
     }

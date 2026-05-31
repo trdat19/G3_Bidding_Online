@@ -1,8 +1,11 @@
 package shared.dto.response;
 
+import java.io.Serial;
 import java.io.Serializable;
 // gói phản hồi chung gửi từ server về client
 public class BaseResponse implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = 1L; // Đảm bảo đồng bộ khi truyền qua Socket
 
     private boolean success;

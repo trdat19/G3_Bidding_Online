@@ -3,14 +3,13 @@ package shared.dto.common;
 import shared.enums.UserRole;
 import shared.enums.UserStatus;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * UserDTO – dữ liệu người dùng truyền giữa client và server.
- *
  * KHÔNG chứa password để đảm bảo bảo mật.
- *
  * Dùng khi:
  *   - Server trả về thông tin user sau khi login thành công
  *   - Admin xem danh sách người dùng
@@ -18,6 +17,7 @@ import java.time.LocalDateTime;
  */
 public class UserDTO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -28,7 +28,7 @@ public class UserDTO implements Serializable {
     private UserStatus status;
     private LocalDateTime createdAt;
 
-    // ─── CONSTRUCTORS ─────────────────────────────────────────────────────────
+    //-------constructor------------
 
     public UserDTO() {}
 
@@ -52,7 +52,7 @@ public class UserDTO implements Serializable {
         this.fullname = fullname;
     }
 
-    // ─── GETTERS ──────────────────────────────────────────────────────────────
+    // getter
 
     public Long getId()               { return id; }
     public String getUsername()       { return username; }
@@ -62,8 +62,7 @@ public class UserDTO implements Serializable {
     public UserStatus getStatus()     { return status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
-    // ─── SETTERS ──────────────────────────────────────────────────────────────
-
+    // setter
     public void setId(Long id)                   { this.id = id; }
     public void setUsername(String username)     { this.username = username; }
     public void setFullname(String fullname)     { this.fullname = fullname; }
@@ -72,7 +71,7 @@ public class UserDTO implements Serializable {
     public void setStatus(UserStatus status)     { this.status = status; }
     public void setCreatedAt(LocalDateTime t)    { this.createdAt = t; }
 
-    // ─── HELPERS ──────────────────────────────────────────────────────────────
+    // helper
 
     /** Tài khoản có đang hoạt động không */
     public boolean isActive() {

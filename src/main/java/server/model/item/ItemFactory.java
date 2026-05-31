@@ -3,7 +3,6 @@ package server.model.item;
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 /**

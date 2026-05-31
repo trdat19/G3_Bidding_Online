@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.database.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,8 +30,8 @@ public class InterestedAuctionDAO {
     }
 
     private boolean saveInterest(String sql, Long bidderId, Long auctionId) {
-        try (Connection connection = DBconnection.getInstance().getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = DBConnection.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, bidderId);
             statement.setLong(2, auctionId);
             statement.executeUpdate();
@@ -51,7 +51,7 @@ public class InterestedAuctionDAO {
                 """;
         List<Long> auctionIds = new ArrayList<>();
 
-        try (Connection connection = DBconnection.getInstance().getConnection();
+        try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, bidderId);
             try (ResultSet resultSet = statement.executeQuery()) {

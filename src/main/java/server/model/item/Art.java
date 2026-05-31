@@ -2,10 +2,11 @@ package server.model.item;
 
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
-import java.math.BigDecimal;
+import java.io.Serial;
 
 public class Art extends Item {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String artist;

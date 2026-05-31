@@ -10,7 +10,6 @@ import java.util.Map;
  * Registry gom tất cả concrete factory vào một chỗ.
  * Dùng khi cần tạo Item rỗng theo category (ví dụ: deserialize từ DB,
  * hoặc khởi tạo form nhập liệu).
- *
  * Cách dùng:
  *   Item item = ItemFactoryRegistry.create(ItemCategory.ART);
  */

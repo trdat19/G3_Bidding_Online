@@ -11,6 +11,9 @@ import shared.enums.Action;
 
 import java.math.BigDecimal;
 
+/**
+ * Điều khiển ví người dùng
+ */
 public class WalletPopupController {
 
     @FXML private Label walletBalanceLabel;

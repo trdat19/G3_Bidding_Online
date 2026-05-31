@@ -15,7 +15,8 @@ import java.util.Map;
  * Singleton
  */
 public class AuctionServerController {
-    private static AuctionServerController instance;
+    private static volatile AuctionServerController instance;
+
     private final AuctionService auctionService = AuctionService.getInstance();
 
     //double-checked locking để đảm bảo thread-safe khi khởi tạo instance
@@ -143,7 +144,8 @@ public class AuctionServerController {
         }
     }
 
-    /** createAuction – Seller tạo phiên mới */
+    //---------------------CREATE-----------------------
+    /* createAuction – Seller tạo phiên mới */
     public BaseResponse createAuction(BaseRequest request, ClientConnectionHandler handler) {
         try {
             Map<String, Object> data = (Map<String, Object>) request.getData();

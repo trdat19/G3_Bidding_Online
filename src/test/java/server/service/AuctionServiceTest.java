@@ -8,10 +8,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import server.dao.AuctionDAO;
+import server.dao.AutoBidRuleDAO;
 import server.dao.BidDAO;
 import server.dao.ItemDAO;
 import server.dao.UserDAO;
 import server.model.core.Auction;
+import server.model.core.AutoBidRule;
 import server.model.core.Bid;
 import server.model.item.Electronics;
 import server.model.item.Item;
@@ -39,25 +41,29 @@ public class AuctionServiceTest {
     @Mock private ItemDAO itemDAO;
     @Mock private UserDAO userDAO;
     @Mock private BidDAO bidDAO;
-    @Mock private WalletService walletService;
+    @Mock private AutoBidRuleDAO autoBidRuleDAO;
 
     private AuctionService auctionService;
+    private WalletService walletService;
 
     @BeforeEach
     public void setUp() throws Exception {
         SingletonTestUtil.resetSingleton(AuctionService.class);
+        SingletonTestUtil.resetSingleton(WalletService.class);
         auctionService = AuctionService.getInstance();
-        inject("auctionDAO", auctionDAO);
-        inject("itemDAO", itemDAO);
-        inject("userDAO", userDAO);
-        inject("bidDAO", bidDAO);
-        inject("walletService", walletService);
+        walletService = WalletService.getInstance();
+        inject(AuctionService.class, auctionService, "auctionDAO", auctionDAO);
+        inject(AuctionService.class, auctionService, "itemDAO", itemDAO);
+        inject(AuctionService.class, auctionService, "userDAO", userDAO);
+        inject(AuctionService.class, auctionService, "bidDAO", bidDAO);
+        inject(AuctionService.class, auctionService, "autoBidRuleDAO", autoBidRuleDAO);
+        inject(WalletService.class, walletService, "userDAO", userDAO);
     }
 
-    private void inject(String name, Object mock) throws Exception {
-        Field field = AuctionService.class.getDeclaredField(name);
+    private void inject(Class<?> type, Object target, String name, Object mock) throws Exception {
+        Field field = type.getDeclaredField(name);
         field.setAccessible(true);
-        field.set(auctionService, mock);
+        field.set(target, mock);
     }
 
     //--------------CREATE----------------------
@@ -75,7 +81,7 @@ public class AuctionServiceTest {
             auction.setId(99L);
             return true;
         });
-        when(bidDAO.countBidByAuctionId(99L)).thenReturn(0);
+        when(bidDAO.countBidByAuctionId(99L)).thenReturn(0L);
         when(userDAO.findById(7L)).thenReturn(seller);
 
         AuctionDTO result = auctionService.createAuction(auctionData(10L, 7L, start, end));
@@ -140,14 +146,14 @@ public class AuctionServiceTest {
 
         when(itemDAO.findById(10L)).thenReturn(item);
         when(auctionDAO.getAllAuctionsByItemId(10L)).thenReturn(List.of(oldAuction));
-        when(bidDAO.countBidByAuctionId(5L)).thenReturn(0);
+        when(bidDAO.countBidByAuctionId(5L)).thenReturn(0L);
         when(auctionDAO.deleteAuctionsByItemId(10L)).thenReturn(true);
         when(auctionDAO.insertAuction(any(Auction.class))).thenAnswer(invocation -> {
             Auction auction = invocation.getArgument(0);
             auction.setId(99L);
             return true;
         });
-        when(bidDAO.countBidByAuctionId(99L)).thenReturn(0);
+        when(bidDAO.countBidByAuctionId(99L)).thenReturn(0L);
         when(userDAO.findById(7L)).thenReturn(seller);
 
         AuctionDTO result = auctionService.createAuction(auctionData(10L, 7L, start, end));
@@ -173,7 +179,7 @@ public class AuctionServiceTest {
 
         when(itemDAO.findById(10L)).thenReturn(item(10L, 7L, ItemStatus.CANCELLED));
         when(auctionDAO.getAllAuctionsByItemId(10L)).thenReturn(List.of(oldAuction));
-        when(bidDAO.countBidByAuctionId(5L)).thenReturn(1);
+        when(bidDAO.countBidByAuctionId(5L)).thenReturn(1L);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
                 auctionService.createAuction(auctionData(10L, 7L, start, end)));
@@ -205,44 +211,40 @@ public class AuctionServiceTest {
                 5L,
                 10L,
                 7L,
-                AuctionStatus.PREPARING,
+                AuctionStatus.WAITING_APPROVAL,
                 LocalDateTime.now().plusHours(1),
                 LocalDateTime.now().plusHours(3));
-        Item item = item(10L, 7L, ItemStatus.WAITING_APPROVAL);
-        User seller = user(7L, "Seller One");
 
         when(auctionDAO.findById(5L)).thenReturn(auction);
-        when(itemDAO.findById(10L)).thenReturn(item);
-        when(userDAO.findById(7L)).thenReturn(seller);
+        when(auctionDAO.updateStatus(5L, AuctionStatus.OPEN)).thenReturn(true);
+        when(itemDAO.updateStatus(10L, ItemStatus.ACTIVE)).thenReturn(true);
 
-        AuctionDTO result = auctionService.approveCreateAuctionRequest(5L);
+        boolean result = auctionService.approveCreateAuctionRequest(5L);
 
-        assertNotNull(result);
-        assertEquals(AuctionStatus.OPEN, result.getStatus());
+        assertTrue(result);
         verify(auctionDAO).updateStatus(5L, AuctionStatus.OPEN);
         verify(itemDAO).updateStatus(10L, ItemStatus.ACTIVE);
     }
 
     @Test
-    @DisplayName("approveCreateAuctionRequest - chấp nhận thành công request tạo phiên, RUNNING!")
-    public void approveCreateAuctionRequest_successRunning() {
+    @DisplayName("approveCreateAuctionRequest - phiên đã tới giờ vẫn chuyển sang OPEN để scheduler xử lý")
+    public void approveCreateAuctionRequest_pastStartTime_stillOpen() {
         Auction auction = auction(
                 5L,
                 10L,
                 7L,
-                AuctionStatus.PREPARING,
+                AuctionStatus.WAITING_APPROVAL,
                 LocalDateTime.now().minusMinutes(5),
                 LocalDateTime.now().plusHours(1));
-        Item item = item(10L, 7L, ItemStatus.WAITING_APPROVAL);
 
         when(auctionDAO.findById(5L)).thenReturn(auction);
-        when(itemDAO.findById(10L)).thenReturn(item);
-        when(userDAO.findById(7L)).thenReturn(user(7L, "Seller One"));
+        when(auctionDAO.updateStatus(5L, AuctionStatus.OPEN)).thenReturn(true);
+        when(itemDAO.updateStatus(10L, ItemStatus.ACTIVE)).thenReturn(true);
 
-        AuctionDTO result = auctionService.approveCreateAuctionRequest(5L);
+        boolean result = auctionService.approveCreateAuctionRequest(5L);
 
-        assertEquals(AuctionStatus.RUNNING, result.getStatus());
-        verify(auctionDAO).updateStatus(5L, AuctionStatus.RUNNING);
+        assertTrue(result);
+        verify(auctionDAO).updateStatus(5L, AuctionStatus.OPEN);
         verify(itemDAO).updateStatus(10L, ItemStatus.ACTIVE);
     }
 
@@ -253,20 +255,19 @@ public class AuctionServiceTest {
                 5L,
                 10L,
                 7L,
-                AuctionStatus.PREPARING,
+                AuctionStatus.WAITING_APPROVAL,
                 LocalDateTime.now().plusHours(1),
                 LocalDateTime.now().plusHours(3));
-        Item item = item(10L, 7L, ItemStatus.WAITING_APPROVAL);
 
         when(auctionDAO.findById(5L)).thenReturn(auction);
-        when(itemDAO.findById(10L)).thenReturn(item);
-        when(userDAO.findById(7L)).thenReturn(user(7L, "Seller One"));
+        when(auctionDAO.updateStatus(5L, AuctionStatus.CANCELLED)).thenReturn(true);
+        when(itemDAO.updateStatus(10L, ItemStatus.PENDING)).thenReturn(true);
 
-        AuctionDTO result = auctionService.rejectCreateAuctionRequest(5L);
+        boolean result = auctionService.rejectCreateAuctionRequest(5L);
 
-        assertEquals(AuctionStatus.CANCELLED, result.getStatus());
+        assertTrue(result);
         verify(auctionDAO).updateStatus(5L, AuctionStatus.CANCELLED);
-        verify(itemDAO).updateStatus(10L, ItemStatus.CANCELLED);
+        verify(itemDAO).updateStatus(10L, ItemStatus.PENDING);
     }
 
     //---------------FINISH--------------
@@ -282,12 +283,15 @@ public class AuctionServiceTest {
                 LocalDateTime.now().plusMinutes(5));
         Bid highestBid = new Bid(5L, 3L, new BigDecimal("150.00"));
         highestBid.setId(11L);
+        AutoBidRule autoBidRule = new AutoBidRule(
+                5L, 3L, new BigDecimal("200.00"), new BigDecimal("10.00"));
 
         when(auctionDAO.findById(5L)).thenReturn(auction);
         when(bidDAO.getHighestBidByAuctionId(5L)).thenReturn(highestBid);
         when(userDAO.findById(3L)).thenReturn(user(3L, "Bidder One"));
         when(itemDAO.findById(10L)).thenReturn(item(10L, 7L, ItemStatus.ACTIVE));
-        doNothing().when(walletService).payWinnerToSeller(3L, 7L, new BigDecimal("150.00"));
+        when(autoBidRuleDAO.getActiveRulesByAuctionId(5L)).thenReturn(List.of(autoBidRule));
+        when(userDAO.transferBalanceIfEnough(3L, 7L, new BigDecimal("150.00"))).thenReturn(true);
         when(itemDAO.updateStatus(10L, ItemStatus.SOLD)).thenReturn(true);
         when(auctionDAO.updateStatus(5L, AuctionStatus.FINISHED)).thenReturn(true);
 
@@ -298,6 +302,8 @@ public class AuctionServiceTest {
         assertTrue(result.get("message").toString().contains("Bidder One"));
         verify(auctionDAO).updateStatus(5L, AuctionStatus.FINISHED);
         verify(itemDAO).updateStatus(10L, ItemStatus.SOLD);
+        verify(autoBidRuleDAO).switchRuleByAuctionIdAndBidderId(5L, 3L, false);
+        verify(userDAO).transferBalanceIfEnough(3L, 7L, new BigDecimal("150.00"));
     }
 
     @Test
@@ -326,33 +332,25 @@ public class AuctionServiceTest {
 
     //---------------GET----------------
     @Test
-    @DisplayName("getCreateAuctionRequests - maps only requests with existing items")
-    public void getCreateAuctionRequests_skipsMissingItems() {
-        Auction first = auction(
+    @DisplayName("getAuctionApprovalRequests - trả các yêu cầu đang chờ admin duyệt")
+    public void getAuctionApprovalRequests_returnsWaitingApprovalAuctions() {
+        Auction waitingApproval = auction(
                 5L,
                 10L,
                 7L,
-                AuctionStatus.PREPARING,
-                LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(3));
-        Auction missingItem = auction(
-                6L,
-                11L,
-                7L,
-                AuctionStatus.PREPARING,
+                AuctionStatus.WAITING_APPROVAL,
                 LocalDateTime.now().plusHours(1),
                 LocalDateTime.now().plusHours(3));
 
-        when(auctionDAO.getAllAuctionsByStatus(AuctionStatus.PREPARING))
-                .thenReturn(List.of(first, missingItem));
+        when(auctionDAO.getAllAuctionsByStatus(AuctionStatus.WAITING_APPROVAL))
+                .thenReturn(List.of(waitingApproval));
         when(itemDAO.findById(10L)).thenReturn(item(10L, 7L, ItemStatus.WAITING_APPROVAL));
-        when(itemDAO.findById(11L)).thenReturn(null);
         when(userDAO.findById(7L)).thenReturn(user(7L, "Seller One"));
 
-        List<AuctionDTO> result = auctionService.getCreateAuctionRequests();
+        List<AuctionDTO> result = auctionService.getAuctionApprovalRequests();
 
         assertEquals(1, result.size());
-        assertEquals(5L, result.get(0).getId());
+        assertEquals(5L, result.getFirst().getId());
     }
 
     @Test

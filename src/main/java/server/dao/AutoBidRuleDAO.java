@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.database.DBConnection;
 import server.model.core.AutoBidRule;
 
 import java.math.BigDecimal;
@@ -16,7 +16,7 @@ public class AutoBidRuleDAO {
                 INSERT INTO auto_bid_rules(auction_id, bidder_id, max_amount, step_amount, is_active)
                 VALUES (?, ?, ?, ?, ?)""";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setLong(1, rule.getAuctionId());
@@ -57,7 +57,7 @@ public class AutoBidRuleDAO {
     public AutoBidRule findById(Long id) {
         String sql ="SELECT * FROM auto_bid_rules WHERE id = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, id);
@@ -77,7 +77,7 @@ public class AutoBidRuleDAO {
     public AutoBidRule findByAuctionIdAndBidderId(Long auctionId, Long bidderId) {
         String sql = "SELECT * FROM auto_bid_rules WHERE auction_id = ? AND bidder_id = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, auctionId);
@@ -105,7 +105,7 @@ public class AutoBidRuleDAO {
 
         List<AutoBidRule> rules = new ArrayList<>();
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, auctionId);
@@ -134,7 +134,7 @@ public class AutoBidRuleDAO {
 
         List<AutoBidRule> rules = new ArrayList<>();
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, auctionId);
@@ -161,7 +161,7 @@ public class AutoBidRuleDAO {
                 WHERE id = ?
                 """;
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setBigDecimal(1, maxAmount);
@@ -186,7 +186,7 @@ public class AutoBidRuleDAO {
                 WHERE id = ?
                 """;
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setBoolean(1, active);
@@ -202,18 +202,18 @@ public class AutoBidRuleDAO {
     }
 
     /** Tắt/Bật auto bid của 1 bidder trong 1 auction */
-    public boolean switchActiveStateRule(Long auctionId, Long bidderId, boolean state) {
+    public boolean switchRuleByAuctionIdAndBidderId(Long auctionId, Long bidderId, boolean state) {
         String sql = """
                 UPDATE auto_bid_rules
                 SET is_active = ?
                 WHERE auction_id = ? AND bidder_id = ?
                 """;
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setBoolean(1, state);
-            ps.setLong(2, auctionId);;
+            ps.setLong(2, auctionId);
             ps.setLong(3, bidderId);
 
             return ps.executeUpdate() > 0;
@@ -229,7 +229,7 @@ public class AutoBidRuleDAO {
     public boolean deleteRuleById(Long id) {
         String sql = "DELETE FROM auto_bid_rules WHERE id = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, id);

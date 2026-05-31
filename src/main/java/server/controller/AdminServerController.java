@@ -3,7 +3,7 @@ package server.controller;
 import server.model.user.User;
 import server.service.AuctionService;
 import server.service.UserService;
-import shared.dto.AdminDashboardDTO;
+import shared.dto.common.AdminDashboardDTO;
 import shared.dto.common.AuctionDTO;
 import shared.dto.common.UserDTO;
 import shared.dto.request.BaseRequest;
@@ -24,7 +24,7 @@ import java.util.Map;
  * không chứa logic nghiệp vụ
  */
 public class AdminServerController {
-    private static AdminServerController instance;
+    private static volatile AdminServerController instance;
 
     private final UserService userService = UserService.getInstance();
     private final AuctionService auctionService = AuctionService.getInstance();
@@ -56,8 +56,6 @@ public class AdminServerController {
         return dto;
     }
 
-
-
     //--------------USER MANAGEMENT-------------------------
     public BaseResponse getAllUsers() {
         try {
@@ -71,7 +69,8 @@ public class AdminServerController {
             return new BaseResponse(true, "Lấy danh sách người dùng thành công!", users);
 
         } catch (Exception e) {
-            return new BaseResponse(false, "Lỗi lấy danh sách người dùng: " + e.getMessage(), null);
+            return new BaseResponse(false,
+                    String.format("Lỗi lấy danh sách người dùng: %s", e.getMessage()), null);
         }
     }
 
@@ -85,7 +84,7 @@ public class AdminServerController {
 
         } catch (Exception e) {
             return new BaseResponse(false,
-                    "Lỗi lấy danh sách sản phẩm: " + e.getMessage(),
+                    String.format("Lỗi lấy danh sách sản phẩm: %s", e.getMessage()),
                     null);
         }
     }
@@ -94,6 +93,10 @@ public class AdminServerController {
      * @param request chứa userId của người dùng cần mở khóa
      */
     public BaseResponse enableUser(BaseRequest request) {
+        if (request.getData() == null) {
+            return new BaseResponse(false, "Thiếu dữ liệu userId để mở khóa!", null);
+        }
+
         try {
             Long userId = Long.parseLong(request.getData().toString());
 
@@ -111,11 +114,16 @@ public class AdminServerController {
             return new BaseResponse(false, "Lỗi mở khóa: " + e.getMessage(), null);
         }
     }
+
     /**
      * DisableUser - khoá, vô hiệu hoá tài khoản người dùng
      * @param request chứa userId của người dùng cần khoá
      */
     public BaseResponse disableUser(BaseRequest request) {
+        if (request.getData() == null) {
+            return new BaseResponse(false, "Thiếu dữ liệu userId để khóa!", null);
+        }
+
         try {
             Long userId = Long.parseLong(request.getData().toString());
 
@@ -173,7 +181,7 @@ public class AdminServerController {
     public BaseResponse acceptCreateAuctionRequest(BaseRequest request) {
         Long auctionId = Long.parseLong(request.getData().toString());
 
-        boolean ok = auctionService.approveAuctionRequest(auctionId);
+        boolean ok = auctionService.approveCreateAuctionRequest(auctionId);
 
         return ok
                 ? new BaseResponse(true, "Đã duyệt yêu cầu tạo đấu giá", null)
@@ -184,7 +192,7 @@ public class AdminServerController {
     public BaseResponse rejectCreateAuctionRequest(BaseRequest request) {
         Long auctionId = Long.parseLong(request.getData().toString());
 
-        boolean ok = auctionService.rejectAuctionRequest(auctionId);
+        boolean ok = auctionService.rejectCreateAuctionRequest(auctionId);
 
         return ok
                 ? new BaseResponse(true, "Đã từ chối yêu cầu tạo đấu giá", null)
@@ -197,10 +205,11 @@ public class AdminServerController {
             return new BaseResponse(true, "Lấy danh sách phiên đấu giá thành công", auctions);
         } catch (Exception e) {
             return new BaseResponse(false,
-                    "Lỗi lấy danh sách phiên đấu giá: " + e.getMessage(),
+                    String.format("Lỗi lấy danh sách phiên đấu giá: %s", e.getMessage()),
                     null);
         }
     }
+
     public BaseResponse getDashboardStats() {
         try {
             AdminDashboardDTO dto = new AdminDashboardDTO(
@@ -214,7 +223,8 @@ public class AdminServerController {
             return new BaseResponse(true, "Lấy thống kê dashboard thành công", dto);
 
         } catch (Exception e) {
-            return new BaseResponse(false, "Lỗi lấy thống kê dashboard: " + e.getMessage(), null);
+            return new BaseResponse(false,
+                    String.format("Lỗi lấy thống kê dashboard: %s", e.getMessage()), null);
         }
     }
 

@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import shared.enums.Action;
 import shared.enums.UserRole;
@@ -40,7 +39,7 @@ public class RegisterFormController {
         UserRole role = comboBox.getValue();
 
         // 1. Kiểm tra không được để trống
-        if (user.isEmpty() || name.isEmpty() || mail.isEmpty() || pass.isEmpty()) {
+        if (user.isEmpty() || name.isEmpty() || mail.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
             showAlert("Lỗi", "Vui lòng nhập đầy đủ thông tin!");
             return;
         }
@@ -64,44 +63,28 @@ public class RegisterFormController {
         data.put("email", mail);
         data.put("role", role.name());
 
-        try
-        {
+        try {
             BaseRequest request = new BaseRequest(Action.REGISTER, data);
             BaseResponse response = ClientNetworkService.getInstance().sendRequest(request);
 
-            if(response != null && response.isSuccess())
-            {
+            if(response != null && response.isSuccess()) {
                 showAlert("Thành công", "Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.");
                 goToLogin();
             }
-            else
-            {
+            else {
                 // Lấy message từ server gửi về
                 String msgFromServer = (response != null) ? response.getMessage() : "Lỗi kết nối server";
-
-                String finalShowMsg;
-                // So khớp mã lỗi để hiện thông báo tiếng Việt
-                if ("USERNAME_EXISTS".equals(msgFromServer)) {
-                    finalShowMsg = "Tên đăng nhập này đã tồn tại!";
-                } else if ("EMAIL_EXISTS".equals(msgFromServer)) {
-                    finalShowMsg = "Email này đã được sử dụng!";
-                } else {
-                    finalShowMsg = "Đăng ký không thành công: " + msgFromServer;
-                }
-
-                showAlert("Lỗi đăng ký", finalShowMsg);
+                showAlert("Lỗi đăng ký", msgFromServer);
             }
-
         }
-        catch (Exception e)
-        {
+        catch (Exception e){
             showAlert("Lỗi", "Có lỗi xảy ra: " + e.getMessage());
         }
 
     }
 
     private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION); // Bạn có thể đổi sang AlertType.ERROR nếu là lỗi
+        Alert alert = new Alert(Alert.AlertType.INFORMATION); //có thể đổi sang AlertType.ERROR nếu là lỗi
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);

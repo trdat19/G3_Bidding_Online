@@ -1,5 +1,6 @@
 package client.service;
 
+import shared.config.AppConfig;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 
@@ -16,9 +17,9 @@ import java.util.function.Consumer;
 public class ClientNetworkService {
     private static ClientNetworkService instance;
 
-    private static final int DEFAULT_PORT = 8888;
-    //private static final String DEFAULT_HOST = "26.198.98.181";
-    private static final String DEFAULT_HOST = "localhost";
+    private static final int DEFAULT_PORT = AppConfig.getServerPort();
+    private static final String DEFAULT_HOST = AppConfig.getServerHost();
+
     private final String host;
     private final int port;
 
@@ -37,9 +38,13 @@ public class ClientNetworkService {
         connect();
     }
 
-    public static synchronized ClientNetworkService getInstance() {
+    public static ClientNetworkService getInstance() {
         if (instance == null) {
-            instance = new ClientNetworkService();
+            synchronized (ClientNetworkService.class) {
+                if (instance == null) {
+                    instance = new ClientNetworkService();
+                }
+            }
         }
         return instance;
     }

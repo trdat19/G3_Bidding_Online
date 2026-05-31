@@ -1,6 +1,6 @@
 package server.dao;
 
-import server.database.DBconnection;
+import server.database.DBConnection;
 import server.model.core.Auction;
 import shared.dto.common.AuctionDTO;
 import shared.enums.AuctionStatus;
@@ -14,11 +14,15 @@ public class AuctionDAO {
 
     // thêm auction mới vào bảng auctions
     public boolean insertAuction(Auction auction) {
-        String sql = "INSERT INTO auctions(id_item, id_seller, start_price, max_price, min_increment, " +
-                "buy_now_price, start_time, end_time, status_auction) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = """
+                INSERT INTO auctions (id_item, id_seller, start_price, max_price, min_increment,
+                                      buy_now_price, start_time, end_time, status_auction)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             ps.setLong(1, auction.getItemId());
             ps.setLong(2, auction.getSellerId());
             ps.setBigDecimal(3, auction.getStartPrice());
@@ -39,16 +43,16 @@ public class AuctionDAO {
                 return true;
             }
         } catch (SQLException e) {
-            System.err.println("insertAuction error: " + e.getMessage());
+            System.err.println("Lỗi khi thêm phiên đấu giá: " + e.getMessage());
         }
         return false;
     }
 
     // tìm auction theo id_auction
-    public Auction findById(long id) {
+    public Auction findById(Long id) {
         String sql = "SELECT * FROM auctions WHERE id_auction = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -57,7 +61,7 @@ public class AuctionDAO {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("findById error: " + e.getMessage());
+            System.err.println("Lỗi tìm phiên theo ID: " + e.getMessage());
         }
         return null;
     }
@@ -67,14 +71,14 @@ public class AuctionDAO {
         String sql = "SELECT * FROM auctions";
         List<Auction> auctions = new ArrayList<>();
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 auctions.add(mapResultSetToAuction(rs));
             }
         } catch (SQLException e) {
-            System.err.println("getAllAuctions error: " + e.getMessage());
+            System.err.println("Lỗi khi lấy tất cả phiên: " + e.getMessage());
         }
         return auctions;
     }
@@ -128,7 +132,7 @@ public class AuctionDAO {
 
         List<AuctionDTO> auctions = new ArrayList<>();
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -137,17 +141,17 @@ public class AuctionDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("getAdminAuctionSummaries error: " + e.getMessage());
+            System.err.println("Lỗi khi lấy các phiên cho quản trị viên: " + e.getMessage());
         }
 
         return auctions;
     }
 
     // lấy tất cả auction của một seller
-    public List<Auction> getAllAuctionsBySellerId(long sellerId) {
+    public List<Auction> getAllAuctionsBySellerId(Long sellerId) {
         String sql = "SELECT * FROM auctions WHERE id_seller = ?";
         List<Auction> auctions = new ArrayList<>();
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, sellerId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -156,18 +160,18 @@ public class AuctionDAO {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("getAllAuctionsBySellerId error: " + e.getMessage());
+            System.err.println("Lỗi khi lấy các phiên theo SellerID: " + e.getMessage());
         }
         return auctions;
     }
 
     // lấy tất cả auction của một item
     // dùng để xem lịch sử đấu giá của món hàng đó
-    public List<Auction> getAllAuctionsByItemId(long itemId) {
+    public List<Auction> getAllAuctionsByItemId(Long itemId) {
         String sql = "SELECT * FROM auctions WHERE id_item = ? ORDER BY id_auction DESC";
         List<Auction> auctions = new ArrayList<>();
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, itemId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -176,7 +180,7 @@ public class AuctionDAO {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("getAllAuctionsByItemId error: " + e.getMessage());
+            System.err.println("Lỗi khi lấy các phiên theo ItemID: " + e.getMessage());
         }
         return auctions;
     }
@@ -186,7 +190,7 @@ public class AuctionDAO {
         String sql = "SELECT * FROM auctions WHERE status_auction = ?";
         List<Auction> auctions = new ArrayList<>();
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, status.name());
             try (ResultSet rs = ps.executeQuery()) {
@@ -200,27 +204,6 @@ public class AuctionDAO {
         return auctions;
     }
 
-    // tìm auction đang OPEN của một item
-    // dùng khi cần kiểm tra item này hiện có đang được đấu giá hay không
-    public Auction findOpeningAuctionsByItemId(long itemId) {
-        String sql = "SELECT * FROM auctions WHERE id_item = ? AND status_auction = 'OPEN' LIMIT 1";
-
-        try (Connection con = DBconnection.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setLong(1, itemId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToAuction(rs);
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("findOpeningAuctionsByItemId error: " + e.getMessage());
-        }
-        return null;
-    }
-
     // cập nhật toàn bộ thông tin của auction
     // DB vẫn sẽ tự kiểm tra lại các ràng buộc check
     public boolean updateAuction(Auction auction) {
@@ -228,7 +211,7 @@ public class AuctionDAO {
                 "min_increment = ?, buy_now_price = ?, start_time = ?, end_time = ?, status_auction = ? " +
                 "WHERE id_auction = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, auction.getItemId());
@@ -250,10 +233,10 @@ public class AuctionDAO {
     }
 
     // cập nhật riêng trạng thái của auction
-    public boolean updateStatus(long idAuction, AuctionStatus status) {
+    public boolean updateStatus(Long idAuction, AuctionStatus status) {
         String sql = "UPDATE auctions SET status_auction = ? WHERE id_auction = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, status.name());
             ps.setLong(2, idAuction);
@@ -266,7 +249,7 @@ public class AuctionDAO {
 
     // cập nhật riêng giá cao nhất hiện tại
     // dùng khi có người bid thành công
-    public boolean updateMaxPrice(long idAuction, BigDecimal newMaxPrice) {
+    public boolean updateMaxPrice(Long idAuction, BigDecimal newMaxPrice) {
         String sql = """
             UPDATE auctions
             SET max_price = ?
@@ -274,7 +257,7 @@ public class AuctionDAO {
               AND (max_price IS NULL OR max_price < ?)
             """;
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setBigDecimal(1, newMaxPrice);
@@ -289,10 +272,10 @@ public class AuctionDAO {
     }
 
     // kiểm tra auction có tồn tại không
-    public boolean existsAuctionById(long idAuction) {
+    public boolean existsAuctionById(Long idAuction) {
         String sql = "SELECT 1 FROM auctions WHERE id_auction = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, idAuction);
             try (ResultSet rs = ps.executeQuery()) {
@@ -304,26 +287,11 @@ public class AuctionDAO {
         return false;
     }
 
-    // kiểm tra item này có auction OPEN chưa
-    public boolean existsOpenAuctionByItemId(long itemId) {
-        String sql = "SELECT 1 FROM auctions WHERE id_item = ? AND status_auction = 'OPEN'";
-
-        try (Connection con = DBconnection.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setLong(1, itemId);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            System.err.println("existsOpenAuctionByItemId error: " + e.getMessage());
-        }
-        return false;
-    }
     //Kiem tra item nay co auction chưa
-    public boolean existsAuctionByItemId(long itemId) {
+    public boolean existsAnyAuctionByItemId(Long itemId) {
         String sql = "SELECT 1 FROM auctions WHERE id_item = ? LIMIT 1";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, itemId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -336,10 +304,10 @@ public class AuctionDAO {
     }
 
     // xóa auction theo id
-    public boolean deleteAuction(long idAuction) {
+    public boolean deleteAuction(Long idAuction) {
         String sql = "DELETE FROM auctions WHERE id_auction = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, idAuction);
             return ps.executeUpdate() > 0;
@@ -405,7 +373,7 @@ public class AuctionDAO {
             dto.setEndTime(endTime.toLocalDateTime());
         }
 
-        long leaderId = rs.getLong("leader_id");
+        Long leaderId = rs.getLong("leader_id");
         if (!rs.wasNull()) {
             dto.setLeaderId(leaderId);
 
@@ -413,15 +381,15 @@ public class AuctionDAO {
             dto.setLeaderName(leaderName != null ? leaderName : "ID: " + leaderId);
         }
 
-        dto.setBidCount(rs.getInt("bid_count"));
+        dto.setBidCount(rs.getLong("bid_count"));
 
         return dto;
     }
 
-    public boolean deleteAuctionsByItemId(long itemId) {
+    public boolean deleteAuctionsByItemId(Long itemId) {
         String sql = "DELETE FROM auctions WHERE id_item = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, itemId);
             ps.executeUpdate();
@@ -432,7 +400,7 @@ public class AuctionDAO {
         }
     }
 
-    public boolean existsActiveAuctionByItemId(long itemId) {
+    public boolean existsActiveAuctionByItemId(Long itemId) {
         String sql = """
             SELECT 1
             FROM auctions
@@ -441,7 +409,7 @@ public class AuctionDAO {
             LIMIT 1
             """;
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, itemId);
@@ -455,10 +423,11 @@ public class AuctionDAO {
             return false;
         }
     }
+
     public long countAuctionsByStatus(AuctionStatus status) {
         String sql = "SELECT COUNT(*) FROM auctions WHERE status_auction = ?";
 
-        try (Connection con = DBconnection.getInstance().getConnection();
+        try (Connection con = DBConnection.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, status.name());

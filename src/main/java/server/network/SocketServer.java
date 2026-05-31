@@ -1,6 +1,7 @@
 package server.network;
 
 import server.scheduler.AuctionScheduler;
+import shared.config.AppConfig;
 
 import java.io.IOException;
 import java.net.BindException;
@@ -10,7 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SocketServer {
-    private static final int PORT = 8888;
+    private static final int PORT = AppConfig.getServerPort();
     private static final int MAX_CLIENTS = 50;
 
     private volatile boolean isRunning = false;
@@ -55,7 +56,6 @@ public class SocketServer {
     private void acceptLoop() {
         while (isRunning) {
             try {
-
                 // Đợi Client kết nối
                 Socket clientSocket = serverSocket.accept();
                 System.out.println(">>> Có kết nối mới từ: " + clientSocket.getInetAddress());

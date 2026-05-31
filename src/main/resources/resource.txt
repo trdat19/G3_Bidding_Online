@@ -1,1 +1,0 @@
-trong này sẽ chứa các file hình ảnh, hay âm thanh khi tạo GUI

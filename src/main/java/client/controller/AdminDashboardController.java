@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;

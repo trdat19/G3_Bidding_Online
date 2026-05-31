@@ -1,8 +1,11 @@
-package shared.dto;
+package shared.dto.common;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class AdminDashboardDTO implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private long totalUsers;
@@ -19,6 +22,7 @@ public class AdminDashboardDTO implements Serializable {
         this.finishedAuctions = finishedAuctions;
         this.waitingAuctions = waitingAuctions;
     };
+
     public long getTotalUsers() {
         return totalUsers;
     }
@@ -34,6 +38,7 @@ public class AdminDashboardDTO implements Serializable {
     public long getFinishedAuctions() {
         return finishedAuctions;
     }
+
     public long getWaitingAuctions() {
         return waitingAuctions;
     }

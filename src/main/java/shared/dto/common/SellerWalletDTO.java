@@ -1,14 +1,17 @@
 package shared.dto.common;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class SellerWalletDTO implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    private final BigDecimal availableBalance;
-    private final BigDecimal totalRevenue;
-    private final long soldProductCount;
+    private BigDecimal availableBalance;
+    private BigDecimal totalRevenue;
+    private long soldProductCount;
 
     public SellerWalletDTO(BigDecimal availableBalance, BigDecimal totalRevenue,
                            long soldProductCount) {

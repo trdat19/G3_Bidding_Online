@@ -39,57 +39,33 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class BiddingViewController {
-    @FXML
-    private Label nameLabel;
-    @FXML
-    private Label categoryLabel;
-    @FXML
-    private Label descriptionLabel;
-    @FXML
-    private Label currentPriceLabel;
-    @FXML
-    private Label leaderLabel;
-    @FXML
-    private Label bidCountLabel;
-    @FXML
-    private Label timeLeftLabel;
-    @FXML
-    private Label messageLabel;
-    @FXML
-    private TextField bidAmountField;
-    @FXML
-    private TableView<BidDTO> bidTable;
-    @FXML
-    private TableColumn<BidDTO, Void> indexColumn;
-    @FXML
-    private TableColumn<BidDTO, String> amountColumn;
-    @FXML
-    private TableColumn<BidDTO, String> bidderColumn;
-    @FXML
-    private TableColumn<BidDTO, String> timeColumn;
-    @FXML
-    private Label statusTextLabel;
-    @FXML
-    private ImageView productImageView;
-    @FXML
-    private Label imagePlaceholderLabel;
-    @FXML
-    private Label minIncrementLabel;
-    @FXML
-    private TextField autoBidIncrementField;
-    @FXML
-    private TextField autoBidMaxAmountField;
-    @FXML
-    private LineChart<Number, Number> priceHistoryChart;
-    @FXML
-    private NumberAxis priceChartXAxis;
-    @FXML
-    private NumberAxis priceChartYAxis;
+
+    @FXML private Label nameLabel;
+    @FXML private Label categoryLabel;
+    @FXML private Label descriptionLabel;
+    @FXML private Label currentPriceLabel;
+    @FXML private Label leaderLabel;
+    @FXML private Label bidCountLabel;
+    @FXML private Label timeLeftLabel;
+    @FXML private Label messageLabel;
+    @FXML private TextField bidAmountField;
+    @FXML private TableView<BidDTO> bidTable;
+    @FXML private TableColumn<BidDTO, Void> indexColumn;
+    @FXML private TableColumn<BidDTO, String> amountColumn;
+    @FXML private TableColumn<BidDTO, String> bidderColumn;
+    @FXML private TableColumn<BidDTO, String> timeColumn;
+    @FXML private Label statusTextLabel;
+    @FXML private ImageView productImageView;
+    @FXML private Label imagePlaceholderLabel;
+    @FXML private Label minIncrementLabel;
+    @FXML private TextField autoBidIncrementField;
+    @FXML private TextField autoBidMaxAmountField;
+    @FXML private LineChart<Number, Number> priceHistoryChart;
+    @FXML private NumberAxis priceChartXAxis;
+    @FXML private NumberAxis priceChartYAxis;
 
     private final XYChart.Series<Number, Number> priceSeries = new XYChart.Series<>();
     private final List<String> priceChartTimeLabels = new ArrayList<>();
-
-
 
     private Item currentItem;
     private Timeline countdownTimeLine;
@@ -101,21 +77,20 @@ public class BiddingViewController {
 
     @FXML
     private void initialize() {
-
-
         bidderColumn.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getBidderName())
-        );
-        ;
+                new SimpleStringProperty(cell.getValue().getBidderName()));
+
         amountColumn.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getAmount().toPlainString())
-        );
+                new SimpleStringProperty(cell.getValue().getAmount().toPlainString()));
+
         timeColumn.setCellValueFactory(cell ->
                 new SimpleStringProperty(
                         cell.getValue().getTimestamp() != null
-                                ? cell.getValue().getTimestamp().format(bidTimeFormatter) : ""
+                                ? cell.getValue().getTimestamp().format(bidTimeFormatter)
+                                : ""
                 )
         );
+
         indexColumn.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(Void item, boolean empty) {
@@ -303,7 +278,7 @@ public class BiddingViewController {
         if (bid.getId() != null) {
             bidHistory.removeIf(existingBid -> Objects.equals(existingBid.getId(), bid.getId()));
         }
-        bidHistory.add(0, bid);
+        bidHistory.addFirst(bid);
         rebuildPriceChart();
 
         refreshAuctionDetail();
@@ -359,7 +334,7 @@ public class BiddingViewController {
     }
 
     private void setProductImage(byte[] imageBytes) {
-        if (imageBytes == null || imageBytes.length < 0) {
+        if (imageBytes == null || imageBytes.length <= 0) {
             productImageView.setImage(null);
             imagePlaceholderLabel.setVisible(true);
             return;
@@ -538,13 +513,10 @@ public class BiddingViewController {
         if (response != null && response.isSuccess()) {
             autoBidIncrementField.clear();
             autoBidMaxAmountField.clear();
-
             messageLabel.setText("Đã tắt đấu giá tự động.");
         }
         else {
             messageLabel.setText(response != null ? response.getMessage() : "Có lỗi xảy ra!");
         }
-
     }
-
 }

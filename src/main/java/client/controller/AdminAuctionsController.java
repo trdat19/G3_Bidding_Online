@@ -17,7 +17,6 @@ import shared.dto.common.AuctionDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
-
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,26 +47,43 @@ public class AdminAuctionsController implements AdminPageLifecycle {
 
     @FXML
     public void initialize() {
-        idColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getId()));
-        productColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getItemName()));
-        sellerColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getSellerName()));
-        leaderColumn.setCellValueFactory(data -> new SimpleStringProperty(
+        idColumn.setCellValueFactory(
+                data -> new ReadOnlyObjectWrapper<>(data.getValue().getId()));
+
+        productColumn.setCellValueFactory(
+                data -> new SimpleStringProperty(data.getValue().getItemName()));
+
+        sellerColumn.setCellValueFactory(
+                data -> new SimpleStringProperty(data.getValue().getSellerName()));
+
+        leaderColumn.setCellValueFactory(
+                data -> new SimpleStringProperty(
                 data.getValue().getLeaderName() != null ? data.getValue().getLeaderName() : "Chưa có"));
+
         currentPriceColumn.setCellValueFactory(data -> new SimpleStringProperty(
                 data.getValue().getDisplayPrice() != null
-                        ? data.getValue().getDisplayPrice().toPlainString() : "0"));
+                        ? data.getValue().getDisplayPrice().toPlainString()
+                        : "0"));
+
         statusColumn.setCellValueFactory(data -> new SimpleStringProperty(
-                data.getValue().getStatus() != null ? data.getValue().getStatus().name() : ""));
+                data.getValue().getStatus() != null
+                        ? data.getValue().getStatus().name()
+                        : ""));
         endTimeColumn.setCellValueFactory(data -> new SimpleStringProperty(
-                data.getValue().getEndTime() != null ? data.getValue().getEndTime().toString() : ""));
+                data.getValue().getEndTime() != null
+                        ? data.getValue().getEndTime().toString()
+                        : ""));
 
         statusFilterBox.setItems(FXCollections.observableArrayList(
                 "ALL", "WAITING_APPROVAL", "OPEN", "RUNNING", "FINISHED", "CANCELLED"));
+
         statusFilterBox.setValue("ALL");
         auctionTable.setItems(filteredAuctions);
         auctionTable.setPlaceholder(new Label("Đang tải dữ liệu..."));
-        searchField.textProperty().addListener((obs, oldValue, newValue) -> applyFilters());
-        statusFilterBox.valueProperty().addListener((obs, oldValue, newValue) -> applyFilters());
+        searchField.textProperty().addListener(
+                (obs, oldValue, newValue) -> applyFilters());
+        statusFilterBox.valueProperty().addListener(
+                (obs, oldValue, newValue) -> applyFilters());
     }
 
     @Override
@@ -114,6 +130,7 @@ public class AdminAuctionsController implements AdminPageLifecycle {
         });
     }
 
+    // tìm kiếm
     private void applyFilters() {
         String keyword = searchField.getText() == null
                 ? ""
@@ -135,6 +152,7 @@ public class AdminAuctionsController implements AdminPageLifecycle {
         });
     }
 
+    // chữ viết thường
     private String normalize(String value) {
         return value == null ? "" : value.toLowerCase();
     }

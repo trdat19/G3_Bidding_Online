@@ -13,6 +13,9 @@ import shared.enums.Action;
 
 import java.math.BigDecimal;
 
+/**
+ * Cửa sổ ví Seller
+ */
 public class SellerWalletPopupController {
 
     @FXML private Label balanceLabel;
@@ -28,8 +31,8 @@ public class SellerWalletPopupController {
     @FXML
     private void initialize() {
         walletMessageLabel.setText("");
-        withdrawAmountField.textProperty().addListener((observable, oldValue, newValue) ->
-                updateWithdrawState());
+        withdrawAmountField.textProperty().addListener(
+                (observable, oldValue, newValue) -> updateWithdrawState());
         loadSummary();
     }
 

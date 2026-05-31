@@ -22,17 +22,9 @@ import java.util.Map;
 
 public class LoginController {
 
-    @FXML
-    private TextField username;
-
-    @FXML
-    private PasswordField password;
-
-    @FXML
-    private Label errorLabel;
-
-    private BidderDashboardController bidderController;
-    private SellerDashboardController sellerController;
+    @FXML private TextField username;
+    @FXML private PasswordField password;
+    @FXML private Label errorLabel;
 
     @FXML
     private void handleLogin(ActionEvent event) {
@@ -48,17 +40,15 @@ public class LoginController {
         if (response != null && response.isSuccess()) {
             User LogginUser = (User) response.getData();
             UserRole role = LogginUser.getRole();
-            String fullName = LogginUser.getFullName();
             ClientSession.setCurrentUser(LogginUser);
             if (role == UserRole.BIDDER) {
-                loadScene("/view/bidder-dashboard.fxml", event, fullName);
-
+                loadScene("/view/bidder-dashboard.fxml", event);
             }
             else if(role == UserRole.SELLER) {
-                loadScene("/view/seller-dashboard.fxml", event, fullName);
+                loadScene("/view/seller-dashboard.fxml", event);
             }
             else if(role == UserRole.ADMIN)  {
-                loadScene("/view/admin/admin-dashboard.fxml", event, fullName);
+                loadScene("/view/admin/admin-dashboard.fxml", event);
             }
         }
         else {
@@ -67,7 +57,7 @@ public class LoginController {
             errorLabel.setText(message);
         }
     }
-    private void loadScene(String fxmlPath, ActionEvent event, String fullname) {
+    private void loadScene(String fxmlPath, ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();

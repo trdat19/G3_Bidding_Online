@@ -3,6 +3,7 @@ package server.model.core;
 import server.model.Entity;
 import shared.enums.AuctionStatus;
 
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 
 public class Auction extends Entity { //state 1 phiên đấu giá có cái gì
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long itemId;
@@ -43,16 +45,6 @@ public class Auction extends Entity { //state 1 phiên đấu giá có cái gì
         this.endTime = endTime;
         bids = new ArrayList<>();
         highestBid = null;
-    }
-
-    public void open() {
-        status = AuctionStatus.OPEN;
-    }
-    public void close() {
-        status = AuctionStatus.CLOSED;
-    }
-    public boolean isRunning() {
-        return (status == AuctionStatus.OPEN);
     }
 
     public void add(Bid bid) {

@@ -53,22 +53,42 @@ public class AdminProductsController implements AdminPageLifecycle {
 
     @FXML
     public void initialize() {
-        idColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().getId()));
-        nameColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getName()));
-        categoryColumn.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getCategory())));
-        sellerColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getSellerName()));
-        statusColumn.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getStatus())));
+        idColumn.setCellValueFactory(
+                c -> new ReadOnlyObjectWrapper<>(c.getValue().getId()));
+
+        nameColumn.setCellValueFactory(
+                c -> new SimpleStringProperty(c.getValue().getName()));
+
+        categoryColumn.setCellValueFactory(
+                c -> new SimpleStringProperty(
+                        String.valueOf(c.getValue().getCategory())));
+
+        sellerColumn.setCellValueFactory(
+                c -> new SimpleStringProperty(c.getValue().getSellerName()));
+
+        statusColumn.setCellValueFactory(
+                c -> new SimpleStringProperty(String.valueOf(c.getValue().getStatus())));
+
         startPriceColumn.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getPriceStart() == null ? "" : "$" + c.getValue().getPriceStart().toPlainString()));
+                c.getValue().getPriceStart() == null
+                        ? ""
+                        : "$" + c.getValue().getPriceStart().toPlainString()));
+
         currentPriceColumn.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getCurrentPrice() == null ? "" : "$" + c.getValue().getCurrentPrice().toPlainString()));
+                c.getValue().getCurrentPrice() == null
+                        ? ""
+                        : "$" + c.getValue().getCurrentPrice().toPlainString()));
+
         createdAtColumn.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getCreatedAt() == null ? "" : c.getValue().getCreatedAt().format(formatter)));
+                c.getValue().getCreatedAt() == null
+                        ? ""
+                        : c.getValue().getCreatedAt().format(formatter)));
 
         categoryFilterBox.getItems().add("ALL");
         for (ItemCategory category : ItemCategory.values()) {
             categoryFilterBox.getItems().add(category.name());
         }
+
         statusFilterBox.getItems().add("ALL");
         for (ItemStatus status : ItemStatus.values()) {
             statusFilterBox.getItems().add(status.name());
@@ -78,9 +98,14 @@ public class AdminProductsController implements AdminPageLifecycle {
         productTable.setItems(filteredItems);
         productTable.setPlaceholder(new Label("Đang tải dữ liệu..."));
 
-        searchField.textProperty().addListener((obs, oldValue, newValue) -> applyFilters());
-        categoryFilterBox.valueProperty().addListener((obs, oldValue, newValue) -> applyFilters());
-        statusFilterBox.valueProperty().addListener((obs, oldValue, newValue) -> applyFilters());
+        searchField.textProperty().addListener(
+                (obs, oldValue, newValue) -> applyFilters());
+
+        categoryFilterBox.valueProperty().addListener(
+                (obs, oldValue, newValue) -> applyFilters());
+
+        statusFilterBox.valueProperty().addListener(
+                (obs, oldValue, newValue) -> applyFilters());
     }
 
     @Override

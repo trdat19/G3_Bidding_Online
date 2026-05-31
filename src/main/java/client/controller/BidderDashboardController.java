@@ -42,7 +42,6 @@ import shared.dto.response.BaseResponse;
 import shared.dto.request.BaseRequest;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,41 +56,27 @@ import shared.enums.Action;
 public class BidderDashboardController
 {
     @FXML private FlowPane auctionContainer;
-
     @FXML private Label bidderNameLabel;
-
     @FXML private Label bidderWalletBalanceLabel;
-
     @FXML private Label sectionTitleLabel;
-
     @FXML private Label sectionSubtitleLabel;
 
     @FXML private Button homeButton;
-
     @FXML private Button wonAuctionsButton;
-
     @FXML private Button interestedAuctionsButton;
 
     @FXML private VBox interestedAuctionPane;
 
     @FXML private TableView<AuctionDTO> interestedAuctionTable;
-
     @FXML private TableColumn<AuctionDTO, Long> interestIdColumn;
-
     @FXML private TableColumn<AuctionDTO, String> interestProductColumn;
-
     @FXML private TableColumn<AuctionDTO, String> interestSellerColumn;
-
     @FXML private TableColumn<AuctionDTO, String> interestLeaderColumn;
-
     @FXML private TableColumn<AuctionDTO, String> interestPriceColumn;
-
     @FXML private TableColumn<AuctionDTO, String> interestStatusColumn;
-
     @FXML private TableColumn<AuctionDTO, String> interestEndTimeColumn;
 
     @FXML private TextField interestedSearchField;
-
     @FXML private ComboBox<String> interestedStatusFilterBox;
 
     private enum DashboardView {
@@ -378,10 +363,10 @@ public class BidderDashboardController
         interestedStatusFilterBox.setValue("ALL");
         interestedAuctionTable.setItems(filteredInterestedAuctions);
 
-        interestedSearchField.textProperty().addListener((observable, oldValue, newValue) ->
-                applyInterestedFilters());
-        interestedStatusFilterBox.valueProperty().addListener((observable, oldValue, newValue) ->
-                applyInterestedFilters());
+        interestedSearchField.textProperty().addListener(
+                (observable, oldValue, newValue) -> applyInterestedFilters());
+        interestedStatusFilterBox.valueProperty().addListener(
+                (observable, oldValue, newValue) -> applyInterestedFilters());
     }
 
     private void loadInterestedAuctions() {

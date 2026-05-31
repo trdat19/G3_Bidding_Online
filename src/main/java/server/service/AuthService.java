@@ -12,9 +12,9 @@ import shared.enums.UserStatus;
 public class AuthService {
 
     // 1. Singleton: Đảm bảo duy nhất 1 thực thể quản lý User online
-    private static AuthService instance;
+    private static volatile AuthService instance;
 
-    private UserDAO userDAO;
+    private final UserDAO userDAO;
 
     // Khóa constructor để không ai 'new' lung tung
     private AuthService() {
@@ -50,23 +50,26 @@ public class AuthService {
                          String email, UserRole role ) throws Exception
     {
         if (userDAO.existsByUsername(username)) {
-            throw new Exception("USERNAME_EXISTS");
+            throw new Exception("Tên đăng nhập này đã tồn tại!");
 
         }
         if (userDAO.existsByEmail(email)) {
-            throw new Exception("EMAIL_EXISTS");
+            throw new Exception("Email này đã được sử dụng!");
         }
         User newUser = null;
         switch (role) {
-            case ADMIN:
+            case ADMIN: {
                 newUser = new Admin();
-            break;
-            case SELLER:
+                break;
+            }
+            case SELLER: {
                 newUser = new Seller();
                 break;
-            case BIDDER:
+            }
+            case BIDDER: {
                 newUser = new Bidder();
                 break;
+            }
         }
 
         newUser.setUsername(username);
@@ -84,7 +87,7 @@ public class AuthService {
             System.out.println(">>> [AuthService] Đăng ký thành công: " + username);
             return newUser;
         } else {
-            throw new Exception("Có lỗi xảy ra khi đăng kí!");
+            throw new Exception("Đăng kí không thành công!");
         }
     }
 

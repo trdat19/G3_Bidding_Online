@@ -1,16 +1,16 @@
 package server.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public abstract class Entity implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected Long id; // dùng Long, không phải String
 
-    public Entity() {
-        // KHÔNG làm gì cả
-    }
+    public Entity() {}
 
     public Entity(Long id) {
         this.id = id;

@@ -2,10 +2,12 @@ package server.model.user;
 
 import shared.enums.UserRole;
 
+import java.io.Serial;
 import java.math.BigDecimal;
 
 public class Seller extends User {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private BigDecimal totalEarnings;

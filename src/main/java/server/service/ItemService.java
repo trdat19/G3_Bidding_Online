@@ -8,23 +8,19 @@ import server.model.item.Item;
 import server.model.item.ItemFactory;
 import shared.dto.common.AuctionDTO;
 import shared.dto.common.ItemDTO;
-import shared.dto.response.BaseResponse;
 import shared.enums.AuctionStatus;
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Xử lí logic các thao tác liên quan tới sản phẩm
- *
  * Singleton
  */
 public class ItemService {
-    private static ItemService instance;
+    private static volatile ItemService instance;
 
     private final ItemDAO itemDAO = new ItemDAO();
     private final AuctionDAO auctionDAO = new AuctionDAO();
@@ -45,12 +41,10 @@ public class ItemService {
 
     //-----------CREATE------------
     public Item createItem(Long sellerId, Map<String, Object> data) {
-
-        // kiểm tra đầy đủ trường dữ liệu
-        if (!data.containsKey("name")
-                || !data.containsKey("description")
-                || !data.containsKey("category"))
-            {
+        if (data == null
+                || data.get("name") == null
+                || data.get("description") == null
+                || data.get("category") == null) {
             throw new IllegalArgumentException("Thiếu thông tin cần thiết để tạo sản phẩm!");
         }
 
@@ -63,14 +57,6 @@ public class ItemService {
                 ? data.get("imageContentType").toString()
                 : null;
 
-        //validate Item
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Tên sản phẩm không được để trống!");
-        }
-        if (category == null) {
-            throw new IllegalArgumentException("Danh mục sản phẩm không được để trống!");
-        }
-
         //static factory tạo item theo category
         Item item = ItemFactory.createItem(category, name, description, sellerId, ItemStatus.PENDING);
         item.setImageUrl(imageUrl);
@@ -80,7 +66,6 @@ public class ItemService {
         boolean ok = itemDAO.insertItem(item);
         return ok ? item : null;
     }
-
 
     public Item updateItem(Map<String, Object> data) {
         // 1. Kiểm tra xem Id sản phẩm có tồn tại không?
@@ -139,17 +124,13 @@ public class ItemService {
         return itemDAO.findBySellerId(sellerId);
     }
 
-    public List<Item> findAllItems() {
-        return itemDAO.getAllItems();
-    }
-
     public List<ItemDTO> findAllItemsForAdmin() {
         return itemDAO.getAdminItemSummaries();
     }
+
     public long countAllItems() {
         return itemDAO.countAllItems();
     }
-
 
     private void deleteNoBidAuctionsForItem(Long itemId) {
         List<Auction> auctions = auctionDAO.getAllAuctionsByItemId(itemId);
@@ -177,6 +158,7 @@ public class ItemService {
                 || status == AuctionStatus.CANCELLED
                 || status == AuctionStatus.CLOSED;
     }
+
     //Method lấy auction mới nhất
     public AuctionDTO findLatestAuctionSummaryByItemId(Long itemId) {
         List<Auction> auctions = auctionDAO.getAllAuctionsByItemId(itemId);
@@ -185,7 +167,7 @@ public class ItemService {
             return null;
         }
 
-        Auction latestAuction = auctions.get(0);
+        Auction latestAuction = auctions.getFirst();
 
         AuctionDTO dto = new AuctionDTO();
         dto.setId(latestAuction.getId());

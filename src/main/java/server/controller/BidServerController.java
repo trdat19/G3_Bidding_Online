@@ -1,20 +1,16 @@
 package server.controller;
 
-import server.model.core.Bid;
 import server.network.ClientConnectionHandler;
 import server.service.BidService;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
-import shared.exception.AuctionClosedException;
-import shared.exception.AuctionNotFoundException;
-import shared.exception.BidTooLowException;
-import shared.exception.InvalidAuctionTimeException;
+import shared.exception.*;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
 public class BidServerController {
-    private static BidServerController instance;
+    private static volatile BidServerController instance;
     private final BidService bidService = BidService.getInstance();
 
     private BidServerController() {}
@@ -51,57 +47,14 @@ public class BidServerController {
 
             return new BaseResponse(true, "Yêu cầu đặt giá của bạn đã được xử lý!", null);
         }
-        catch (AuctionNotFoundException e) {
-            return new BaseResponse(false, e.getMessage(), null);
-        }
-        catch (AuctionClosedException e) {
-            return new BaseResponse(false, e.getMessage(), null);
-        }
-        catch (BidTooLowException e) {
-            return new BaseResponse(false, e.getMessage(), null);
-        }
-        catch (InvalidAuctionTimeException e) {
-            return new BaseResponse(false, e.getMessage(), null);
-        }
         catch (NumberFormatException e) {
             return new BaseResponse(false, "Số tiền đặt giá không hợp lệ!", null);
         }
+        catch (AuctionException e) {
+            return new BaseResponse(false, e.getMessage(), null);
+        }
         catch (Exception e) {
-            e.printStackTrace();
             return new BaseResponse(false, "Lỗi hệ thống: " + e.getMessage(), null);
         }
     }
-
-//    //-------------AUTO_BID----------------
-//    public BaseResponse registerAutoBid(BaseRequest request, ClientConnectionHandler handler) {
-//        try {
-//            // Lấy bidderId từ session
-//            Long bidderId = handler.getUser().getId();
-//
-//            // 1. request.getData() là một Object/Map chứa {auctionId, bidderId, maxAmount, stepAmount}
-//            // Bóc tách dữ liệu
-//            Map<String, Object> data = (Map<String, Object>) request.getData();
-//            Long auctionId = Long.parseLong(data.get("auctionId").toString());
-//            BigDecimal maxAmount = new BigDecimal(data.get("maxAmount").toString());
-//            BigDecimal stepAmount = new BigDecimal(data.get("stepAmount").toString());
-//
-//            boolean ok = bidService.registerAutoBid(auctionId, bidderId, maxAmount, stepAmount);
-//            if (!ok) {
-//                return new BaseResponse(false, "Đăng ký Auto-Bid thất bại! Vui lòng thử lại sau.", null);
-//            }
-//
-//            return new BaseResponse(true, "Bạn đã đăng ký Auto-Bid thành công!", null);
-//        } catch (Exception e) {
-//            return new BaseResponse(false, "Lỗi hệ thống: " + e.getMessage(), null);
-//        }
-//    }
-//
-//    public BaseResponse removeAutoBid(BaseRequest request, ClientConnectionHandler handler) {
-//
-//    }
-//
-//    public BaseResponse getAutoBidRule(BaseRequest request, ClientConnectionHandler handler) {
-//
-//    }
-
 }

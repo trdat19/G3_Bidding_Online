@@ -27,16 +27,13 @@ public class EditProductController {
     @FXML private Label errorLabel;
     @FXML private ImageView productImageView;
     @FXML private Label imageNameLabel;
+
     private Item editingItem;
     private File selectedImageFile;
-
-
     private SellerDashboardController sellerDashboardController;
-    public void setSellerDashboardController(SellerDashboardController sellerDashboardController) {
-        this.sellerDashboardController = sellerDashboardController;
-    }
+
     @FXML
-    private void initialize() {     //tao lua chon ngay gio cho nguoi dung
+    private void initialize() {
         errorLabel.setText("");
         categoryBox.getItems().setAll(ItemCategory.values());
     }
@@ -97,7 +94,7 @@ public class EditProductController {
                 .sendRequest(new BaseRequest(Action.UPDATE_ITEM, data));
 
         if (response == null || !response.isSuccess()) {
-            errorLabel.setText(response != null ? response.getMessage() : "Khong ket noi duoc server");
+            errorLabel.setText(response != null ? response.getMessage() : "Không kết nối được Server!");
             return;
         }
 
@@ -112,6 +109,7 @@ public class EditProductController {
     private void handleCancel() {
         closeWindow();
     }
+
     private void closeWindow() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
@@ -120,7 +118,6 @@ public class EditProductController {
     public void setData(Item item, SellerDashboardController sellerDashboardController) {
         this.editingItem = item;
         this.sellerDashboardController = sellerDashboardController;
-
         nameField.setText(item.getTitle());
         categoryBox.setValue(ItemCategory.valueOf(item.getCategory()));
         descriptionField.setText(item.getDescription());

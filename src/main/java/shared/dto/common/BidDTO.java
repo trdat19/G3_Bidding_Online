@@ -1,17 +1,18 @@
 package shared.dto.common;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * BidDTO - dữ liệu đặt giá truyền giữa client và server.
- *
  * Chứa thông tin về một lượt đặt giá: ai đặt, giá bao nhiêu, lúc nào, thuộc phiên đấu giá nào.
  * Dùng để hiển thị lịch sử đặt giá, thông tin đặt giá mới, v.v.
  */
 public class BidDTO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;

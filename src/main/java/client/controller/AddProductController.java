@@ -10,20 +10,10 @@ import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
 import shared.enums.ItemCategory;
-
 import java.io.File;
 import client.service.ClientNetworkService;
-import shared.dto.request.BaseRequest;
-import shared.dto.response.BaseResponse;
-import shared.enums.Action;
-
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
-
-
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,15 +24,16 @@ public class AddProductController {
     @FXML private Label errorLabel;
     @FXML private ImageView productImageView;
     @FXML private Label imageNameLabel;
+
     private File selectedImageFile;
-
-
     private SellerDashboardController sellerDashboardController;
+
     public void setSellerDashboardController(SellerDashboardController sellerDashboardController) {
         this.sellerDashboardController = sellerDashboardController;
     }
+
     @FXML
-    private void initialize() {     //tao lua chon ngay gio cho nguoi dung
+    private void initialize() {
        errorLabel.setText("");
        categoryBox.getItems().setAll(ItemCategory.values());
     }
@@ -50,6 +41,7 @@ public class AddProductController {
     @FXML
     private void handleChooseImage() {
         FileChooser fileChooser = new FileChooser();
+
         fileChooser.setTitle("Chọn ảnh sản phẩm");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter(
@@ -60,19 +52,18 @@ public class AddProductController {
                         "*.gif"
                 )
         );
+
         Stage stage = (Stage) nameField.getScene().getWindow();
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
-
             selectedImageFile = file;
 
             Image image = new Image(file.toURI().toString());
-
             productImageView.setImage(image);
-
             imageNameLabel.setText(file.getName());
         }
     }
+
     @FXML
     private void handleSave() {
         errorLabel.setText("");
@@ -100,8 +91,8 @@ public class AddProductController {
             data.put("imageBytes", Files.readAllBytes(selectedImageFile.toPath()));
             data.put("imageFileName", selectedImageFile.getName());
             data.put("imageContentType", Files.probeContentType(selectedImageFile.toPath()));
-        }catch(IOException e) {
-            e.printStackTrace();
+        } catch(IOException e) {
+            errorLabel.setText("Lỗi chưa thể lưu ảnh!");
         }
 
         BaseRequest request = new BaseRequest(Action.CREATE_ITEM, data);
@@ -122,6 +113,7 @@ public class AddProductController {
     private void handleCancel() {
         closeWindow();
     }
+
     private void closeWindow() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();

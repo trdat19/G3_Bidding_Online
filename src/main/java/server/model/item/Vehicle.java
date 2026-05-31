@@ -2,7 +2,6 @@ package server.model.item;
 
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
-import java.math.BigDecimal;
 
 public class Vehicle extends Item {
 

@@ -1,5 +1,6 @@
 package server.model.user;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -9,6 +10,7 @@ import shared.enums.UserStatus;
 
 public abstract class User extends Entity implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected String username;

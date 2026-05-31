@@ -1,5 +1,6 @@
 package server.service;
 
+import server.concurrency.AuctionLockManager;
 import server.dao.AuctionDAO;
 import server.dao.AutoBidRuleDAO;
 import server.dao.BidDAO;
@@ -12,11 +13,12 @@ import shared.exception.InvalidBidException;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.List;
 import java.util.PriorityQueue;
-import java.util.spi.ToolProvider;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AutoBidService {
-    private static AutoBidService instance;
+    private static volatile AutoBidService instance;
 
     private final AutoBidRuleDAO autoBidRuleDAO = new AutoBidRuleDAO();
     private final AuctionDAO auctionDAO = new AuctionDAO();
@@ -36,7 +38,6 @@ public class AutoBidService {
         }
         return instance;
     }
-
 
     public boolean registerAutoBidRule(Long auctionId, Long bidderId,
                                        BigDecimal maxAmount, BigDecimal stepAmount) {
@@ -75,7 +76,7 @@ public class AutoBidService {
         AutoBidRule rule = new AutoBidRule(auctionId, bidderId, maxAmount, stepAmount);
         boolean saved = autoBidRuleDAO.saveOrUpdateRule(rule);
         if (saved) {
-            // Cho Rule Đầu Tiên Tạo Bid Ban Đầu Nếu Chưa Có Bid Nào
+            // Cho rule tạo bid nếu ban đầu chưa có bid nào
             Bid highest = bidDAO.getHighestBidByAuctionId(auctionId);
 
             if (highest == null) {
@@ -103,23 +104,32 @@ public class AutoBidService {
                         throw e;
                     }
                 }
-            } else {
-                reactToIncomingBid(auctionId, highest.getBidderId());
+
+            } else if (!highest.getBidderId().equals(bidderId)){ //nếu thg đặt rule vẫn đang dẫn đầu thì k tự react
+                reactToIncomingBid(auctionId);
             }
         }
         return saved;
     }
 
-    public void removeAutoBidRule() {
-
-    }
-
     //---------------MAIN_METHOD-------------
-
     /*
     A và B tự động đấu qua lại bằng đúng stepAmount của từng người.
     */
-    public synchronized void reactToIncomingBid(Long auctionId, Long currentBidderId) {
+
+    //lấy lock
+    public void reactToIncomingBid(Long auctionId) {
+        ReentrantLock lock = AuctionLockManager.getInstance().getLock(auctionId);
+        lock.lock();
+
+        try {
+            reactToIncomingBidLocked(auctionId);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void reactToIncomingBidLocked(Long auctionId) {
         Auction auction = auctionDAO.findById(auctionId);
         if (auction == null) {
             return;
@@ -130,7 +140,7 @@ public class AutoBidService {
             return;
         }
 
-        BigDecimal minIncrement = auction.getMinIncrement();
+        BigDecimal minIncrement = auction.getMinIncrement() != null ? auction.getMinIncrement() : BigDecimal.ONE;
         BigDecimal currentPrice = highestBid.getAmount();
         Long currentLeaderId = highestBid.getBidderId();
 
@@ -178,23 +188,6 @@ public class AutoBidService {
         }
     }
 
-    //----------------SWITCH----------------
-    /**
-     * Bật/tắt auto bid của bidder trong auction.
-     */
-    public boolean switchAutoBid(Long auctionId, Long bidderId, boolean active) {
-        if (auctionId == null || bidderId == null) {
-            throw new IllegalArgumentException("Thiếu auctionId hoặc bidderId");
-        }
-
-        return autoBidRuleDAO.switchActiveStateRule(auctionId, bidderId, active);
-    }
-
-    //----------GET/SET---------------
-    public AutoBidRule getRule(Long auctionId, Long bidderId) {
-        return autoBidRuleDAO.findByAuctionIdAndBidderId(auctionId, bidderId);
-    }
-
     /*
     • Bình thường tăng theo stepAmount.
     • Nếu bước tăng vượt max nhưng bidder vẫn còn đủ để đặt một giá hợp lệ, đặt đúng maxAmount.
@@ -229,28 +222,53 @@ public class AutoBidService {
 
         BigDecimal minimumValidBid = currentPrice.add(minIncrement);
 
-        return autoBidRuleDAO.getActiveRulesByAuctionId(auctionId)
-                .stream()
-                .filter(rule -> !rule.getBidderId().equals(currentLeaderId))
-                .filter(rule -> rule.getMaxAmount().compareTo(minimumValidBid) >= 0)
-                .sorted(
-                        Comparator.comparing(
-                                        AutoBidRule::getMaxAmount,
-                                        Comparator.reverseOrder()
-                                )
-                                .thenComparing(
-                                        AutoBidRule::getCreatedAt,
-                                        Comparator.nullsLast(Comparator.naturalOrder())
-                                )
-                                .thenComparing(
-                                        AutoBidRule::getId,
-                                        Comparator.nullsLast(Comparator.naturalOrder())
-                                )
-                )
-                .findFirst()
-                .orElse(null);
+        List<AutoBidRule> activeRules =
+                autoBidRuleDAO.getActiveRulesByAuctionId(auctionId);
+
+        // build hàng đợi các rule theo quy tắc từ maxAmount -> created_at -> id
+        PriorityQueue<AutoBidRule> priorityQueue = new PriorityQueue<>(
+                Comparator.comparing(
+                                AutoBidRule::getMaxAmount,
+                                Comparator.reverseOrder()
+                        )
+                        .thenComparing(
+                                AutoBidRule::getCreatedAt,
+                                Comparator.nullsLast(Comparator.naturalOrder())
+                        )
+                        .thenComparing(
+                                AutoBidRule::getId,
+                                Comparator.nullsLast(Comparator.naturalOrder())
+                        )
+        );
+
+        for (AutoBidRule rule : activeRules) {
+            if (rule.getBidderId().equals(currentLeaderId)) {
+                continue;
+            }
+
+            if (rule.getMaxAmount().compareTo(minimumValidBid) < 0) {
+                continue;
+            }
+
+            priorityQueue.offer(rule);
+        }
+
+        return priorityQueue.poll();
+    }
+    //----------------SWITCH----------------
+    /**
+     * Bật/tắt auto bid của bidder trong auction.
+     */
+    public boolean switchAutoBid(Long auctionId, Long bidderId, boolean active) {
+        if (auctionId == null || bidderId == null) {
+            throw new IllegalArgumentException("Thiếu auctionId hoặc bidderId");
+        }
+
+        return autoBidRuleDAO.switchRuleByAuctionIdAndBidderId(auctionId, bidderId, active);
     }
 
-
-
+    //----------GET/SET---------------
+    public AutoBidRule getRule(Long auctionId, Long bidderId) {
+        return autoBidRuleDAO.findByAuctionIdAndBidderId(auctionId, bidderId);
+    }
 }

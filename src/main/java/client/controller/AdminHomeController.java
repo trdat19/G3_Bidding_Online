@@ -3,7 +3,7 @@ package client.controller;
 import client.service.ClientNetworkService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import shared.dto.AdminDashboardDTO;
+import shared.dto.common.AdminDashboardDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;

@@ -62,19 +62,6 @@ public class AuctionDetailController {
         this.currentItem = item;
     }
 
-    private void loadScene(String fxmlPath, ActionEvent event) {
-        stopCountdown();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            StageUtils.setMaximizedScene(stage, root);
-            stage.show();
-            ;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     @FXML
     private void handleBack(ActionEvent event) {
         stopCountdown();
@@ -224,7 +211,7 @@ public class AuctionDetailController {
     }
 
     private void setProductImage(byte[] imageBytes) {
-        if (imageBytes == null || imageBytes.length < 0) {
+        if (imageBytes == null || imageBytes.length <= 0) {
             productImageView.setImage(null);
             imagePlaceholderLabel.setVisible(true);
             return;

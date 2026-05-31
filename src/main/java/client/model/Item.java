@@ -1,6 +1,5 @@
 package client.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Item {
@@ -10,11 +9,10 @@ public class Item {
     private double startPrice;
     private double currentPrice;
     private String leader;
-    private String seller;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String status;
-    private int bidCount;
+    private Long bidCount;
     private Long id;
     private String imageUrl;
     private byte[] imageBytes;
@@ -25,7 +23,7 @@ public class Item {
     public Item(String title, String category, String description,
                 double startPrice, double currentPrice,
                 String leader, LocalDateTime startTime, LocalDateTime endTime,
-                String status, int bidCount) {
+                String status, Long bidCount) {
         this.title = title;
         this.category = category;
         this.description = description;
@@ -72,7 +70,7 @@ public class Item {
         this.status = status;
     }
 
-    public void setBidCount(int bidCount) { this.bidCount = bidCount;}
+    public void setBidCount(Long bidCount) { this.bidCount = bidCount;}
 
     public void setId(Long id) {this.id = id;}
 
@@ -122,7 +120,7 @@ public class Item {
         return status;
     }
 
-    public int getBidCount() {
+    public Long getBidCount() {
         return bidCount;
     }
 

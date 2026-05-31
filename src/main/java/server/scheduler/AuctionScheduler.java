@@ -7,7 +7,6 @@ import shared.enums.AuctionStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -16,15 +15,13 @@ import java.util.concurrent.TimeUnit;
  * AuctionScheduler - chạy nền, kiểm tra tự động
  *  1. Mở phiên khi đến startTime
  *  2. Đóng phiên khi quá endTime
- *
  * Khởi động cùng Server, chạy mỗi 10 giây
- *
  * Singleton
  */
 public class AuctionScheduler {
     private static final int CHECK_INTERVAL_MS = 10 * 1000; // 10 giây
 
-    private static AuctionScheduler instance;
+    private static volatile AuctionScheduler instance;
 
     private final AuctionDAO auctionDAO = new AuctionDAO();
     private final AuctionService auctionService = AuctionService.getInstance();
@@ -57,7 +54,10 @@ public class AuctionScheduler {
             List<Auction> approved = auctionDAO.getAllAuctionsByStatus(AuctionStatus.OPEN);
 
             for (Auction auction : approved) {
-                if (auction.getStartTime() != null && !now.isBefore(auction.getStartTime())) {
+                if (auction.getStartTime() != null
+                        && !now.isBefore(auction.getStartTime())
+                        && now.isBefore(auction.getEndTime())) {
+                    auction.setStatus(AuctionStatus.RUNNING);
                     auctionDAO.updateStatus(auction.getId(),  AuctionStatus.RUNNING);
                     System.out.println(">>> Đã mở phiên đấu giá: " + auction.getId());
                 }
@@ -69,7 +69,7 @@ public class AuctionScheduler {
             activeAuctions.addAll(auctionDAO.getAllAuctionsByStatus(AuctionStatus.RUNNING));
 
             for (Auction auction : activeAuctions) {
-                if (auction.getEndTime() != null && now.isAfter(auction.getEndTime())) {
+                if (auction.getEndTime() != null && !now.isBefore(auction.getEndTime())) {
                     auctionService.finishAuction(auction.getId());
                     System.out.println(">>> Đã đóng phiên đấu giá: " + auction.getId());
                 }

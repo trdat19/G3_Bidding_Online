@@ -11,10 +11,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ClientConnectionHandler implements Runnable {
-    private Socket clientSocket;
+    private final Socket clientSocket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private User user;
+    private volatile User user;
 
     public ClientConnectionHandler(Socket socket) {
         this.clientSocket = socket;
@@ -70,19 +70,24 @@ public class ClientConnectionHandler implements Runnable {
     private void closeConnection() {
         try {
             RealtimePushServer.removeConnection(this);
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (clientSocket != null) clientSocket.close();
+
+            if (in != null) {
+                in.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+            if (clientSocket != null) {
+                clientSocket.close();
+            }
+
             System.out.println(">>> Đã đóng kết nối.");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public User getUser()
-    {
-        return user;
-    }
+    public User getUser() { return user; }
 
     public void setUser(User user) {this.user = user; }
 

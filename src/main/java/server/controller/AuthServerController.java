@@ -12,13 +12,12 @@ import java.util.Map;
 /**
  * Quản lý xác thực người dùng khi gửi yêu cầu đăng kí
  * đăng nhập, đăng xuất vào server
- *
  * Singleton đảm bảo không bị lost dữ liệu - nhiều máy đăng kí username password giống nhau
  *                                            đăng nhập cùng lúc ở nhiều nơi, ....
  */
 
 public class AuthServerController {
-    private static AuthServerController instance;
+    private static volatile AuthServerController instance;
 
     private AuthServerController() {}
 

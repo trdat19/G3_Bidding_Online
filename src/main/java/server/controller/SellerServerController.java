@@ -9,7 +9,6 @@ import shared.dto.common.ItemDTO;
 import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +19,12 @@ import java.util.Map;
  *  - Cập nhật item đã tạo
  *  - Xóa item đã tạo
  *  - Lấy tất cả các items
- *
  *  Singleton
  */
 
 public class SellerServerController {
 
-    private static SellerServerController instance;
+    private static volatile SellerServerController instance;
 
     private final ItemService itemService = ItemService.getInstance();
 
@@ -92,8 +90,14 @@ public class SellerServerController {
 
     //--------------------DELETE------------------------
     //khi sp chưa vào phiên thì mới có thể xoá
-    public BaseResponse deleteItem(Long itemId) {
+    public BaseResponse deleteItem(BaseRequest request) {
+        if (request.getData() == null) {
+            return new BaseResponse(false, "Thiếu dữ liệu itemId để xoá!", null);
+        }
+
         try {
+            Long itemId = Long.parseLong(request.getData().toString());
+
             boolean ok = itemService.deleteItem(itemId);
 
             if (ok) {
@@ -103,6 +107,8 @@ public class SellerServerController {
 
             return new BaseResponse(false, "Lỗi xóa sản phẩm khỏi database!", null);
 
+        } catch (NumberFormatException e) {
+            return new BaseResponse(false, "itemId phải là số nguyên hợp lệ!", null);
         } catch (IllegalArgumentException e) {
             return new BaseResponse(false, e.getMessage(), null);
         } catch (Exception e) {

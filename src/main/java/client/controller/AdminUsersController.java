@@ -60,16 +60,28 @@ public class AdminUsersController implements AdminPageLifecycle {
 
     @FXML
     public void initialize() {
-        idColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().getId()));
-        usernameColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getUsername()));
-        roleColumn.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getRole())));
-        statusColumn.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getStatus())));
+        idColumn.setCellValueFactory(
+                c -> new ReadOnlyObjectWrapper<>(c.getValue().getId()));
+
+        usernameColumn.setCellValueFactory(
+                c -> new SimpleStringProperty(c.getValue().getUsername()));
+
+        roleColumn.setCellValueFactory(
+                c -> new SimpleStringProperty(String.valueOf(c.getValue().getRole())));
+
+        statusColumn.setCellValueFactory(
+                c -> new SimpleStringProperty(String.valueOf(c.getValue().getStatus())));
+
         createAtColumn.setCellValueFactory(c -> new SimpleStringProperty(
                 c.getValue().getCreatedAt() != null
                         ? c.getValue().getCreatedAt().format(dateTimeFormatter)
                         : ""));
-        fullnameColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFullname()));
-        emailColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEmail()));
+
+        fullnameColumn.setCellValueFactory(
+                c -> new SimpleStringProperty(c.getValue().getFullname()));
+
+        emailColumn.setCellValueFactory(
+                c -> new SimpleStringProperty(c.getValue().getEmail()));
 
         roleFilterBox.setItems(FXCollections.observableArrayList("ALL", "ADMIN", "SELLER", "BIDDER"));
         statusFilterBox.setItems(FXCollections.observableArrayList("ALL", "ACTIVE", "BLOCKED"));
@@ -78,9 +90,12 @@ public class AdminUsersController implements AdminPageLifecycle {
         userTable.setItems(filteredUsers);
         userTable.setPlaceholder(new Label("Đang tải dữ liệu..."));
 
-        searchField.textProperty().addListener((obs, oldValue, newValue) -> applyFilters());
-        roleFilterBox.valueProperty().addListener((obs, oldValue, newValue) -> applyFilters());
-        statusFilterBox.valueProperty().addListener((obs, oldValue, newValue) -> applyFilters());
+        searchField.textProperty().addListener(
+                (obs, oldValue, newValue) -> applyFilters());
+        roleFilterBox.valueProperty().addListener(
+                (obs, oldValue, newValue) -> applyFilters());
+        statusFilterBox.valueProperty().addListener(
+                (obs, oldValue, newValue) -> applyFilters());
         setupActionColumn();
     }
 

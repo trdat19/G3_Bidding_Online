@@ -132,7 +132,7 @@ public class AuthServiceTest {
                     UserRole.BIDDER);
         });
 
-        assertEquals("USERNAME_EXISTS", exception.getMessage());
+        assertEquals("Tên đăng nhập này đã tồn tại!", exception.getMessage());
 
         verify(userDAO, times(1)).existsByUsername("existingUser");
     }
@@ -151,7 +151,7 @@ public class AuthServiceTest {
                     UserRole.BIDDER);
         });
 
-        assertEquals("EMAIL_EXISTS", exception.getMessage());
+        assertEquals("Email này đã được sử dụng!", exception.getMessage());
 
         verify(userDAO, times(1)).existsByUsername("existingUser");
         verify(userDAO, times(1)).existsByEmail("existingEmail");

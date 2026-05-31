@@ -1,4 +1,3 @@
-
 package server.network;
 
 import server.controller.*;
@@ -6,6 +5,7 @@ import shared.dto.request.BaseRequest;
 import shared.dto.response.BaseResponse;
 import shared.enums.Action;
 import shared.enums.UserRole;
+import shared.exception.UnauthorizedException;
 
 /**
  * RequestRouter - nơi nhận request từ client và điều phối tới các controller
@@ -13,12 +13,7 @@ import shared.enums.UserRole;
  */
 public class RequestRouter {
 
-    //Custom Exception liên quan phần kiểm tra xác thực
-    private static class UnauthorizedException extends RuntimeException {
-        UnauthorizedException(String message) {
-            super(message);
-        }
-    }
+    //kiểm tra đăng nhập và role
     private static void requireLogin(ClientConnectionHandler handler) {
         if (handler.getUser() == null) {
             throw new UnauthorizedException("Bạn cần đăng nhập để thực hiện hành động này!");
@@ -50,78 +45,58 @@ public class RequestRouter {
 
         try {
             switch (action) {
-                /**
+                /*
                  * Xác thực người dùng
                  */
                 case Action.LOGIN: {
                     return AuthServerController.getInstance().login(request, handler);
                 }
-
                 case Action.REGISTER: {
                     return AuthServerController.getInstance().register(request);
                 }
-
                 case Action.LOGOUT: {
                     return AuthServerController.getInstance().logout(handler);
                 }
-
                 case Action.CHANGE_PASSWORD: {
                     requireLogin(handler);
                     return AuthServerController.getInstance().changePassword(request, handler);
                 }
 
-                /**
+                /*
                  * Thao tác của ví
                  */
-
                 case GET_WALLET: {
                     requireLogin(handler);
                     return WalletServerController.getInstance().getWallet(handler);
                 }
-
                 case DEPOSIT_WALLET: {
                     requireRole(handler, UserRole.BIDDER);
                     return WalletServerController.getInstance().deposit(request, handler);
                 }
-
                 case GET_SELLER_WALLET_SUMMARY: {
                     requireRole(handler, UserRole.SELLER);
                     return WalletServerController.getInstance().getSellerWalletSummary(handler);
                 }
-
                 case WITHDRAW_SELLER_WALLET: {
                     requireRole(handler, UserRole.SELLER);
                     return WalletServerController.getInstance().withdrawSellerWallet(request, handler);
                 }
 
-                /**
+                /*
                  * Thao tác của Seller
                  */
                 case Action.CREATE_ITEM: {
                     requireRole(handler, UserRole.SELLER);
                     return SellerServerController.getInstance().createItem(request, handler);
                 }
-
                 case Action.UPDATE_ITEM: {
                     requireRole(handler, UserRole.SELLER);
                     return SellerServerController.getInstance().updateItem(request);
                 }
-
                 case Action.DELETE_ITEM: {
                     requireRole(handler, UserRole.SELLER);
-                    if (request.getData() == null) {
-                        return new BaseResponse(false, "Thiếu dữ liệu itemId để xoá!", null);
-                    }
-
-                    try {
-                        Long itemId = Long.parseLong(request.getData().toString());
-                        return SellerServerController.getInstance().deleteItem(itemId);
-
-                    } catch (NumberFormatException e) {
-                        return new BaseResponse(false, "itemId phải là số nguyên hợp lệ!", null);
-                    }
+                    return SellerServerController.getInstance().deleteItem(request);
                 }
-
                 case Action.GET_SELLER_ITEMS: {
                     requireRole(handler, UserRole.SELLER);
                     return SellerServerController.getInstance().getItemsBySeller(handler);
@@ -136,7 +111,7 @@ public class RequestRouter {
 
                 }
 
-                /**
+                /*
                  * Thao tác của Bidder
                  */
                 case Action.PLACE_BID: {
@@ -159,7 +134,6 @@ public class RequestRouter {
                     requireRole(handler, UserRole.BIDDER);
                     return AuctionServerController.getInstance().getInterestedAuctions(handler);
                 }
-
                 case Action.SUBSCRIBE_AUCTION: {
                     requireRole(handler, UserRole.BIDDER);
                     Object data = request.getData();
@@ -179,23 +153,20 @@ public class RequestRouter {
                                 "ID phiên đấu giá phải là số nguyên hợp lệ!", null);
                     }
                 }
-                case Action.GET_AUCTION_LIST:
+                case Action.GET_AUCTION_LIST: {
                     return AuctionServerController.getInstance().getAuctions();
-                case Action.GET_AUCTION_DETAILS:
+                }
+                case Action.GET_AUCTION_DETAILS: {
                     return AuctionServerController.getInstance().getAuctionDetail(request);
-
-                case Action.GET_BID_HISTORY:
+                }
+                case Action.GET_BID_HISTORY: {
                     return AuctionServerController.getInstance().getBidHistory(request);
-
-
-                case Action.SUBSCRIBE_AUCTION_LIST:
-                {
+                }
+                case Action.SUBSCRIBE_AUCTION_LIST: {
                     requireRole(handler, UserRole.BIDDER);
                     RealtimePushServer.subscribeToAuctionList(handler);
                     return new BaseResponse(true, "Đã subscribe danh sách phiên đấu giá ", null);
                 }
-
-
                 case Action.REGISTER_AUTO_BID_RULE: {
                     requireRole(handler, UserRole.BIDDER);
                     return AutoBidController.getInstance().registerRule(request, handler);
@@ -205,41 +176,29 @@ public class RequestRouter {
                     return AutoBidController.getInstance().removeRule(request, handler);
                 }
 
-                /**
+                /*
                  * Thao tác của Admin
                  */
-
                 case Action.GET_USERS_LIST: {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().getAllUsers();
                 }
-
                 case Action.GET_ALL_AUCTIONS: {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().getAllAuctions();
                 }
-
                 case Action.GET_ALL_ITEMS: {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().getAllItems();
                 }
-
                 case Action.ENABLE_USER: {
                     requireRole(handler, UserRole.ADMIN);
-                    if (request.getData() == null) {
-                        return new BaseResponse(false, "Thiếu dữ liệu userId để mở khóa!", null);
-                    }
                     return AdminServerController.getInstance().enableUser(request);
                 }
-
                 case Action.DISABLE_USER: {
                     requireRole(handler, UserRole.ADMIN);
-                    if (request.getData() == null) {
-                        return new BaseResponse(false, "Thiếu dữ liệu userId để khóa!", null);
-                    }
                     return AdminServerController.getInstance().disableUser(request);
                 }
-
                 case Action.GET_CREATE_AUCTION_REQUESTS: {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().getCreateAuctionRequests();
@@ -252,12 +211,14 @@ public class RequestRouter {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().rejectCreateAuctionRequest(request);
                 }
-                case Action.GET_ADMIN_DASHBOARD_STATS:
+                case Action.GET_ADMIN_DASHBOARD_STATS: {
                     requireRole(handler, UserRole.ADMIN);
                     return AdminServerController.getInstance().getDashboardStats();
+                }
+
                 default: {
                     return new BaseResponse(false,
-                            "Hành động '" + action + "' không tồn tại trên hệ thống", null);
+                            "Hành động '" + action.name() + "' không tồn tại trên hệ thống", null);
                 }
             }
         } catch (Exception e) {

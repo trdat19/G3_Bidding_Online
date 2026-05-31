@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 public class AutoBidController {
-    private static AutoBidController instance;
+    private static volatile AutoBidController instance;
 
     private final AutoBidService autoBidService = AutoBidService.getInstance();
 
@@ -51,9 +51,6 @@ public class AutoBidController {
     }
 
     //----------------REMOVE---------------
-//    public BaseResponse switchRule(BaseRequest request, ClientConnectionHandler handler) {
-//
-//    }
     public BaseResponse removeRule(BaseRequest request, ClientConnectionHandler handler) {
         try {
             Long bidderId = handler.getUser().getId();

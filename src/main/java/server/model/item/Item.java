@@ -4,11 +4,12 @@ import server.model.Entity;
 import shared.enums.ItemCategory;
 import shared.enums.ItemStatus;
 
-import java.math.BigDecimal;
+import java.io.Serial;
 import java.time.LocalDateTime;
 
 public abstract class Item extends Entity {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected String nameItem;
