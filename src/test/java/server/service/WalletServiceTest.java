@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import server.dao.BidDAO;
 import server.dao.UserDAO;
 import shared.exception.InsufficientBalanceException;
 
@@ -21,6 +22,8 @@ public class WalletServiceTest {
     @Mock
     private UserDAO userDAO;
 
+    @Mock
+    private BidDAO bidDAO;
     private WalletService walletService;
 
     @BeforeEach
@@ -28,6 +31,7 @@ public class WalletServiceTest {
         SingletonTestUtil.resetSingleton(WalletService.class);
         walletService = WalletService.getInstance();
         inject("userDAO", userDAO);
+        inject("bidDAO", bidDAO);
     }
 
     private void inject(String name, Object mock) throws Exception {
@@ -106,22 +110,28 @@ public class WalletServiceTest {
     @DisplayName("checkCanBid - Du tien de dat gia")
     public void checkCanBid_success() {
         when(userDAO.getBalance(1L)).thenReturn(new BigDecimal("500.00"));
-
+        when(bidDAO.getReservedAmountByBidderIdExcludingAuction(1L, 5L))
+                .thenReturn(BigDecimal.ZERO);
         assertDoesNotThrow(() ->
                 walletService.checkCanBid(1L, 5L, new BigDecimal("200.00")));
 
         verify(userDAO, times(1)).getBalance(1L);
+        verify(bidDAO).getReservedAmountByBidderIdExcludingAuction(1L, 5L);
     }
 
     @Test
     @DisplayName("checkCanBid - Khong du tien de dat gia")
     public void checkCanBid_insufficientBalance() {
         when(userDAO.getBalance(1L)).thenReturn(new BigDecimal("50.00"));
+        when(bidDAO.getReservedAmountByBidderIdExcludingAuction(1L, 5L))
+                .thenReturn(BigDecimal.ZERO);
 
         assertThrows(InsufficientBalanceException.class, () ->
                 walletService.checkCanBid(1L, 5L, new BigDecimal("200.00")));
 
         verify(userDAO, times(1)).getBalance(1L);
+        verify(bidDAO, times(1))
+                .getReservedAmountByBidderIdExcludingAuction(1L, 5L);
     }
 
     //---------------PAY FOR WINNING BID------------------
@@ -227,5 +237,16 @@ public class WalletServiceTest {
 
         verify(userDAO, times(1)).transferBalanceIfEnough(1L, 2L, new BigDecimal("150.00"));
         verify(userDAO, times(1)).getBalance(1L);
+    }
+
+    //------------có thể đặt giá--------------
+    @Test
+    public void checkCanBid_reservedBalanceMakesFundsInsufficient() {
+        when(userDAO.getBalance(1L)).thenReturn(new BigDecimal("500.00"));
+        when(bidDAO.getReservedAmountByBidderIdExcludingAuction(1L, 5L))
+                .thenReturn(new BigDecimal("350.00"));
+
+        assertThrows(InsufficientBalanceException.class, () ->
+                walletService.checkCanBid(1L, 5L, new BigDecimal("200.00")));
     }
 }
