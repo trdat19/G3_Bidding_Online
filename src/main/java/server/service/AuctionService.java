@@ -149,7 +149,7 @@ public class AuctionService {
             throw new RuntimeException("Bước nhảy giá phải lớn hơn 0");
         }
 
-//        clearReusableNoBidAuctions(itemId);
+        clearReusableNoBidAuctions(itemId);
 
         Auction auction = new Auction(itemId, sellerId, startPrice, startPrice,
                                         minIncrement, buyNowPrice, startTime, endTime);

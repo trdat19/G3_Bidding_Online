@@ -169,6 +169,54 @@ public class ItemDAO {
 
         return items;
     }
+    public List<ItemDTO> getSellerItemSummaries(long sellerId) {
+        String sql = """
+            SELECT
+                i.id_item,
+                i.name_item,
+                i.category,
+                i.description,
+                i.id_seller,
+                i.status_item,
+                i.created_atItem AS created_at_item,
+                i.image_url,
+                i.image_data,
+                i.image_content_type,
+                latest_auction.start_price,
+                latest_auction.max_price
+            FROM items i
+            LEFT JOIN (
+                SELECT a.*
+                FROM auctions a
+                INNER JOIN (
+                    SELECT id_item, MAX(id_auction) AS latest_auction_id
+                    FROM auctions
+                    GROUP BY id_item
+                ) latest_ids ON latest_ids.latest_auction_id = a.id_auction
+            ) latest_auction ON latest_auction.id_item = i.id_item
+            WHERE i.id_seller = ?
+            ORDER BY i.id_item DESC
+            """;
+
+        List<ItemDTO> items = new ArrayList<>();
+
+        try (Connection con = DBconnection.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, sellerId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    items.add(mapResultSetToSellerItemDTO(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("getSellerItemSummaries error: " + e.getMessage());
+        }
+
+        return items;
+    }
 
     // lấy item theo id của seller
     public List<Item> findBySellerId(long sellerId) {
@@ -323,6 +371,32 @@ public class ItemDAO {
             dto.setPriceStart(startPrice);
             dto.setCurrentPrice(currentPrice != null ? currentPrice : startPrice);
         }
+
+        return dto;
+    }
+    private ItemDTO mapResultSetToSellerItemDTO(ResultSet rs) throws SQLException {
+        ItemDTO dto = new ItemDTO();
+
+        dto.setId(rs.getLong("id_item"));
+        dto.setName(rs.getString("name_item"));
+        dto.setDescription(rs.getString("description"));
+        dto.setCategory(ItemCategory.valueOf(rs.getString("category")));
+        dto.setStatus(ItemStatus.valueOf(rs.getString("status_item")));
+        dto.setSellerId(rs.getLong("id_seller"));
+
+        Timestamp createdAt = rs.getTimestamp("created_at_item");
+        if (createdAt != null) {
+            dto.setCreatedAt(createdAt.toLocalDateTime());
+        }
+
+        BigDecimal startPrice = rs.getBigDecimal("start_price");
+        BigDecimal currentPrice = rs.getBigDecimal("max_price");
+        dto.setPriceStart(startPrice);
+        dto.setCurrentPrice(currentPrice != null ? currentPrice : startPrice);
+
+        dto.setImageUrl(rs.getString("image_url"));
+        dto.setImageBytes(rs.getBytes("image_data"));
+        dto.setImageContentType(rs.getString("image_content_type"));
 
         return dto;
     }
