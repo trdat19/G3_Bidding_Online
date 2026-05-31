@@ -139,6 +139,18 @@ Sau khi build thành công, Maven tạo các file trong thư mục `target/`:
 ### Bước 1: Chuẩn bị cấu hình
 Cập nhật `src/main/resources/config.properties`, sau đó build lại dự án bằng `mvn clean package`
 
+Vào địa chỉ mạng ảo chung cùng với máy chủ Server: ở đây sử dụng Radmin VPN
+
+Join Private Network có tên và mật khẩu như sau
+```bash
+Network name: G3_Bidding Server: PORT 8888
+Password: 123456
+```
+
+Lưu ý: Client có thể tự host server bằng cách clone code từ repo về, chỉnh sửa lại server.host = <địa chỉ của máy> để tự chạy hệ thống.
+
+Khi vào cùng địa chỉ mạng ảo với Server, người dùng chỉ cần chạy client mà không cần tự khởi động server nếu đã được khởi động sẵn.
+
 ### Bước 2: Chạy Server
 Mở terminal thứ nhất tại thư mục gốc của dự án:
 
